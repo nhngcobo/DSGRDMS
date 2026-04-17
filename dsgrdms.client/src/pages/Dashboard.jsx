@@ -1,0 +1,177 @@
+import {
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+    PieChart, Pie, Cell, Legend,
+} from 'recharts';
+import { Users, Clock, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { useT } from '../hooks/useT';
+import './Dashboard.css';
+
+const barData = [
+    { month: 'Oct', registrations: 16 },
+    { month: 'Nov', registrations: 22 },
+    { month: 'Dec', registrations: 30 },
+    { month: 'Jan', registrations: 29 },
+    { month: 'Feb', registrations: 34 },
+    { month: 'Mar', registrations: 42 },
+];
+
+function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, name, value }) {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5 + 20;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+        <text x={x} y={y} fill="#374151" textAnchor="middle" dominantBaseline="central" fontSize={12}>
+            {`${name}: ${value}%`}
+        </text>
+    );
+}
+
+export default function Dashboard() {
+    const t = useT();
+    const td = t.dashboard;
+
+    const pieData = [
+        { name: td.pieLabels.lowRisk,    value: 64, color: '#22c55e' },
+        { name: td.pieLabels.mediumRisk, value: 24, color: '#f59e0b' },
+        { name: td.pieLabels.highRisk,   value: 12, color: '#ef4444' },
+    ];
+
+    const recentApplications = [
+        { id: 'APP001', name: 'Mary Wanjiku',  status: 'pending' },
+        { id: 'APP002', name: 'Grace Akinyi',  status: 'in review' },
+        { id: 'APP003', name: 'James Mwangi',  status: 'approved' },
+    ];
+
+    const pendingTasks = [
+        { label: 'Field Verification – Mary Wanjiku', due: '2026-04-15', priority: 'high' },
+        { label: 'Document Review – Grace Akinyi',    due: '2026-04-14', priority: 'medium' },
+    ];
+
+    const statCards = [
+        { title: td.statCards.totalGrowers,        value: '247', change: td.statCards.totalGrowersChange,    positive: true,  icon: Users },
+        { title: td.statCards.pendingApplications, value: '18',  change: td.statCards.pendingAppChange,      positive: null,  icon: Clock },
+        { title: td.statCards.verifiedGrowers,     value: '189', change: td.statCards.verifiedGrowersChange, positive: true,  icon: ShieldCheck },
+        { title: td.statCards.highRisk,            value: '23',  change: td.statCards.highRiskChange,        positive: false, icon: AlertTriangle },
+    ];
+
+    const today = new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    });
+
+    return (
+        <div className="dashboard">
+            <div className="dashboard-topbar">
+                <span className="dashboard-date">{today}</span>
+            </div>
+
+            <div className="dashboard-header">
+                <h1>{td.title}</h1>
+                <p>{td.subtitle}</p>
+            </div>
+
+            {/* Stat cards */}
+            <div className="stat-grid">
+                {statCards.map(({ title, value, change, positive, icon: Icon }) => (
+                    <div className="stat-card" key={title}>
+                        <div className="stat-card-body">
+                            <div>
+                                <div className="stat-title">{title}</div>
+                                <div className="stat-value">{value}</div>
+                                <div className={
+                                    'stat-change ' +
+                                    (positive === true ? 'positive' : positive === false ? 'negative' : 'neutral')
+                                }>
+                                    {change}
+                                </div>
+                            </div>
+                            <div className="stat-icon">
+                                <Icon size={22} />
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Charts row */}
+            <div className="charts-row">
+                <div className="chart-card">
+                    <h2 className="chart-title">{td.charts.monthlyRegistrations}</h2>
+                    <ResponsiveContainer width="100%" height={240}>
+                        <BarChart data={barData} margin={{ top: 8, right: 16, left: -16, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                            <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 12, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+                            <Tooltip
+                                contentStyle={{ borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 12 }}
+                                cursor={{ fill: '#f3f4f6' }}
+                            />
+                            <Bar dataKey="registrations" fill="#111827" radius={[4, 4, 0, 0]} maxBarSize={48} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+
+                <div className="chart-card">
+                    <h2 className="chart-title">{td.charts.riskDistribution}</h2>
+                    <ResponsiveContainer width="100%" height={240}>
+                        <PieChart>
+                            <Pie
+                                data={pieData}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={90}
+                                dataKey="value"
+                                labelLine={false}
+                                label={renderPieLabel}
+                            >
+                                {pieData.map((entry) => (
+                                    <Cell key={entry.name} fill={entry.color} />
+                                ))}
+                            </Pie>
+                            <Tooltip formatter={(v) => `${v}%`} />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            {/* Bottom row */}
+            <div className="bottom-row">
+                <div className="list-card">
+                    <div className="list-card-header">
+                        <h2 className="chart-title">{td.recentApplications.title}</h2>
+                        <a href="/applications" className="view-all">{td.recentApplications.viewAll}</a>
+                    </div>
+                    <div className="app-list">
+                        {recentApplications.map(({ id, name, status }) => (
+                            <div className="app-row" key={id}>
+                                <div>
+                                    <div className="app-name">{name}</div>
+                                    <div className="app-id">{td.recentApplications.idPrefix}{id}</div>
+                                </div>
+                                <span className={`badge badge-${status.replace(' ', '-')}`}>{status}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="list-card">
+                    <div className="list-card-header">
+                        <h2 className="chart-title">{td.pendingTasks.title}</h2>
+                        <a href="/field-tasks" className="view-all">{td.pendingTasks.viewAll}</a>
+                    </div>
+                    <div className="app-list">
+                        {pendingTasks.map(({ label, due, priority }) => (
+                            <div className="app-row" key={label}>
+                                <div>
+                                    <div className="app-name">{label}</div>
+                                    <div className="app-id">Due: {due}</div>
+                                </div>
+                                <span className={`badge badge-priority-${priority}`}>{priority}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

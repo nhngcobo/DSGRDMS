@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="dsgrdms.client/dsgrdms.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="DSGRDMS.Server/DSGRDMS.Server.csproj" />
+</Solution>

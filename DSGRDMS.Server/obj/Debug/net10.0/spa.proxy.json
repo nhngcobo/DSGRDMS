@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:54480",
+"RedirectUrl": "",
+"LaunchCommand": "npm run dev",
+"WorkingDirectory": "C:\\Users\\nhngcobo\\OneDrive - Deloitte (O365D)\\Documents\\DSGRDMS\\DSGRDMS\\DSGRDMS.Server\\..\\dsgrdms.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}

@@ -1,0 +1,170 @@
+.review-modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.review-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.4rem 1.5rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.review-modal-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.2rem;
+}
+
+.review-modal-header p {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Body */
+.review-modal-body {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Document preview tile */
+.review-doc-preview {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.review-doc-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.review-doc-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+}
+
+.badge-pending-review {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: #f59e0b;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.review-doc-icon {
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+}
+
+/* Rejection reason */
+.review-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.review-form-group label {
+    font-size: 0.78rem;
+    color: #6b7280;
+}
+
+.review-form-group textarea {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+    font-size: 0.875rem;
+    color: #374151;
+    background: #f9fafb;
+    resize: vertical;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.5;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.review-form-group textarea::placeholder {
+    color: #9ca3af;
+}
+
+.review-form-group textarea:focus {
+    border-color: #9ca3af;
+    background: #fff;
+}
+
+.review-error {
+    font-size: 0.75rem;
+    color: #dc2626;
+}
+
+/* Footer */
+.review-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.btn-reject {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 7px;
+    background: #dc2626;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.btn-reject:hover {
+    background: #b91c1c;
+}
+
+.btn-approve {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 7px;
+    background: #111827;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.btn-approve:hover {
+    background: #1f2937;
+}

@@ -1,0 +1,193 @@
+{
+  "app": {
+    "brand": "DSGRDMS"
+  },
+  "nav": {
+    "dashboard":    "Dashboard",
+    "growers":      "Growers",
+    "applications": "Applications",
+    "fieldTasks":   "Field Tasks",
+    "compliance":   "Compliance",
+    "development":  "Development",
+    "analytics":    "Analytics",
+    "settings":     "Settings",
+    "logout":       "Logout"
+  },
+  "user": {
+    "name": "John Admin",
+    "role": "Admin"
+  },
+  "dashboard": {
+    "title":       "Dashboard",
+    "subtitle":    "Overview of grower registration and compliance status",
+    "charts": {
+      "monthlyRegistrations": "Monthly Registrations",
+      "riskDistribution":     "Risk Distribution"
+    },
+    "recentApplications": {
+      "title":   "Recent Applications",
+      "viewAll": "View all",
+      "idPrefix": "ID: "
+    },
+    "pendingTasks": {
+      "title":   "Pending Tasks",
+      "viewAll": "View all"
+    },
+    "statCards": {
+      "totalGrowers":          "Total Growers",
+      "pendingApplications":   "Pending Applications",
+      "verifiedGrowers":       "Verified Growers",
+      "highRisk":              "High Risk",
+      "totalGrowersChange":    "+12.5% from last month",
+      "pendingAppChange":      "+3 from last month",
+      "verifiedGrowersChange": "+8.2% from last month",
+      "highRiskChange":        "-2 from last month"
+    },
+    "pieLabels": {
+      "lowRisk":    "Low Risk",
+      "mediumRisk": "Medium Risk",
+      "highRisk":   "High Risk"
+    }
+  },
+  "growers": {
+    "title":           "Growers",
+    "subtitle":        "Manage registered growers",
+    "newRegistration": "New Registration",
+    "searchPlaceholder": "Search by name, ID, or location...",
+    "filters": {
+      "all":      "All",
+      "pending":  "Pending",
+      "verified": "Verified"
+    },
+    "table": {
+      "id":               "ID",
+      "name":             "Name",
+      "location":         "Location",
+      "farmSize":         "Farm Size",
+      "status":           "Status",
+      "complianceScore":  "Compliance Score",
+      "riskLevel":        "Risk Level",
+      "actions":          "Actions",
+      "view":             "View",
+      "na":               "N/A"
+    }
+  },
+  "compliance": {
+    "title":    "Compliance Documents",
+    "subtitle": "Manage and review legality pathway documents for grower compliance",
+    "filter":   "Filter",
+    "selectGrowerLabel":    "Select Grower",
+    "filterByStatusLabel":  "Filter by Status",
+    "statusOptions": {
+      "allStatuses":    "All Statuses",
+      "approved":       "Approved",
+      "pendingReview":  "Pending Review",
+      "notUploaded":    "Not Uploaded",
+      "rejected":       "Rejected"
+    },
+    "progress": {
+      "title":              "Overall Compliance Progress",
+      "subtitleFor":        "Approved documents out of total checklist items for {grower}",
+      "subtitleNoGrower":   "Approved documents out of total checklist items for selected grower",
+      "approvedLabel":      "Approved",
+      "legend": {
+        "approved":     "Approved",
+        "pending":      "Pending Review",
+        "notUploaded":  "Not Uploaded",
+        "rejected":     "Rejected"
+      }
+    },
+    "checklist": {
+      "title":           "Document Checklist",
+      "showingOf":       "Showing {count} of {total} required documents",
+      "columns": {
+        "document":  "Document",
+        "required":  "Required",
+        "status":    "Status",
+        "reviewed":  "Reviewed",
+        "actions":   "Actions"
+      },
+      "required":   "Required",
+      "optional":   "Optional",
+      "upload":     "Upload",
+      "review":     "Review",
+      "fallback":   "—"
+    },
+    "emptyState": {
+      "heading":  "No Grower Selected",
+      "body":     "Select a grower above to view their compliance documents"
+    }
+  },
+  "modals": {
+    "newGrower": {
+      "title":    "New Grower Registration",
+      "subtitle": "Complete all sections and submit for officer review",
+      "sections": {
+        "personalDetails":   "Personal Details",
+        "businessInfo":      "Business Information",
+        "plantationDetails": "Plantation Details"
+      },
+      "fields": {
+        "firstName":             "First Name",
+        "firstNamePlaceholder":  "First name",
+        "lastName":              "Last Name",
+        "lastNamePlaceholder":   "Last name",
+        "idNumber":              "ID Number",
+        "idNumberPlaceholder":   "SA ID number",
+        "phone":                 "Phone Number",
+        "phonePlaceholder":      "+27 xx xxx xxxx",
+        "email":                 "Email Address",
+        "emailPlaceholder":      "grower@example.com",
+        "businessName":          "Business Name",
+        "businessNamePlaceholder": "Registered business name",
+        "businessRegNumber":         "Business Registration Number",
+        "businessRegNumberPlaceholder": "CIPC registration number",
+        "landTenure":            "Land Tenure Type",
+        "landTenurePlaceholder": "Select land tenure type",
+        "landTenureOptions": ["Freehold", "Leasehold", "Communal", "State Land"],
+        "treeSpecies":           "Tree Species",
+        "treeSpeciesPlaceholder": "Select species",
+        "treeSpeciesOptions":    ["Eucalyptus", "Pine", "Wattle", "Poplar"],
+        "plantationSize":        "Plantation Size (hectares)",
+        "plantationSizePlaceholder": "e.g. 12.5",
+        "gpsLat":                "GPS Latitude",
+        "gpsLatPlaceholder":     "e.g. -29.8587",
+        "gpsLng":                "GPS Longitude",
+        "gpsLngPlaceholder":     "e.g. 30.9823"
+      },
+      "cancel":        "Cancel",
+      "saveAsDraft":   "Save as Draft",
+      "submitReview":  "Submit for Review",
+      "validation": {
+        "required":          "This field is required",
+        "idNumberFormat":    "Must be a 13-digit SA ID number",
+        "phoneFormat":       "Enter a valid phone number",
+        "emailFormat":       "Enter a valid email address",
+        "plantationSizeMin": "Must be greater than 0",
+        "gpsLatRange":       "Latitude must be between -90 and 90",
+        "gpsLngRange":       "Longitude must be between -180 and 180"
+      }
+    },
+    "uploadDocument": {
+      "title":              "Upload Document",
+      "subtitle":           "Attach a file for the selected checklist item",
+      "checklistItemLabel": "Checklist Item",
+      "documentFileLabel":  "Document File",
+      "uploadPrompt":       "Click to upload a file",
+      "cancel":             "Cancel",
+      "submitUpload":       "Submit Upload"
+    },
+    "reviewDocument": {
+      "title":                 "Review Document",
+      "subtitle":              "Approve or reject the uploaded compliance document",
+      "pendingBadge":          "Uploaded \u2013 Pending Review",
+      "rejectionReasonLabel":  "(required if rejecting)",
+      "rejectionPlaceholder":  "Provide a clear reason for rejection so the grower can resubmit correctly...",
+      "rejectionRequired":     "A rejection reason is required.",
+      "cancel":  "Cancel",
+      "reject":  "Reject",
+      "approve": "Approve"
+    },
+    "close": "Close"
+  }
+}
