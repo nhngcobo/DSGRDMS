@@ -3,26 +3,37 @@ import { X, Upload } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import './UploadDocumentModal.css';
 
-export default function UploadDocumentModal({ checklistItem, onClose, onSubmit }) {
+export default function UploadDocumentModal({ doc, onClose, onSubmit }) {
     const t = useT();
     const tm = t.modals.uploadDocument;
     const [file, setFile] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
+    const [apiError, setApiError] = useState(null);
     const inputRef = useRef();
 
     function handleFile(e) {
         setFile(e.target.files[0] ?? null);
+        setApiError(null);
     }
 
     function handleDrop(e) {
         e.preventDefault();
         setFile(e.dataTransfer.files[0] ?? null);
+        setApiError(null);
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
         if (!file) return;
-        onSubmit?.({ checklistItem, file });
-        onClose();
+        setSubmitting(true);
+        setApiError(null);
+        try {
+            await onSubmit(file);
+        } catch (err) {
+            setApiError(err.message);
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     return (
@@ -41,7 +52,7 @@ export default function UploadDocumentModal({ checklistItem, onClose, onSubmit }
                 <form className="upload-modal-body" onSubmit={handleSubmit}>
                     <div className="upload-form-group">
                         <label>{tm.checklistItemLabel}</label>
-                        <div className="checklist-item-display">{checklistItem}</div>
+                        <div className="checklist-item-display">{doc.documentName}</div>
                     </div>
 
                     <div className="upload-form-group">
@@ -61,6 +72,7 @@ export default function UploadDocumentModal({ checklistItem, onClose, onSubmit }
                             <input
                                 ref={inputRef}
                                 type="file"
+                                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                                 style={{ display: 'none' }}
                                 onChange={handleFile}
                             />
@@ -68,11 +80,11 @@ export default function UploadDocumentModal({ checklistItem, onClose, onSubmit }
                     </div>
 
                     <div className="upload-modal-footer">
-                        <button type="button" className="btn-cancel" onClick={onClose}>{tm.cancel}</button>
-                        <button type="submit" className="btn-submit" disabled={!file}>
+                        {apiError && <span className="upload-api-error">{apiError}</span>}
+                        <button type="button" className="btn-cancel" onClick={onClose} disabled={submitting}>{tm.cancel}</button>
+                        <button type="submit" className="btn-submit" disabled={!file || submitting}>
                             <Upload size={14} />
-                            {tm.submitUpload}
-                            Submit Upload
+                            {submitting ? '…' : tm.submitUpload}
                         </button>
                     </div>
                 </form>

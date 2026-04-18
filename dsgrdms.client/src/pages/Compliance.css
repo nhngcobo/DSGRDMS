@@ -36,7 +36,6 @@
     border-radius: 7px;
     background: #fff;
     font-size: 0.8rem;
-    font-weight: 500;
     color: #374151;
     cursor: pointer;
     transition: background 0.15s;
@@ -62,7 +61,6 @@
 
 .selector-group label {
     font-size: 0.78rem;
-    font-weight: 500;
     color: #6b7280;
 }
 
@@ -80,6 +78,137 @@
 
 .selector-group select:focus {
     border-color: #9ca3af;
+}
+
+/* Custom grower dropdown */
+.grower-dropdown {
+    position: relative;
+}
+
+.grower-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+    font-size: 0.875rem;
+    color: #111827;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s;
+}
+
+.grower-dropdown-trigger:hover,
+.grower-dropdown-trigger.open {
+    border-color: #9ca3af;
+}
+
+.grower-dropdown-trigger .placeholder {
+    color: #9ca3af;
+}
+
+.dropdown-chevron {
+    flex-shrink: 0;
+    color: #6b7280;
+    transition: transform 0.15s;
+}
+
+.dropdown-chevron.flipped {
+    transform: rotate(180deg);
+}
+
+.grower-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    z-index: 100;
+    overflow: hidden;
+}
+
+.grower-dropdown-search {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+    color: #9ca3af;
+}
+
+.grower-dropdown-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.82rem;
+    color: #111827;
+    background: transparent;
+}
+
+.grower-dropdown-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.3rem 0;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.grower-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.875rem;
+    color: #111827;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.grower-dropdown-item:hover {
+    background: #f9fafb;
+}
+
+.grower-dropdown-item.selected {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.grower-dropdown-id {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-left: 0.5rem;
+}
+
+.grower-dropdown-empty {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.82rem;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.grower-view-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.78rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.grower-view-profile:hover {
+    color: #111827;
 }
 
 /* Progress card */
@@ -119,7 +248,6 @@
 
 .progress-count {
     font-size: 1.1rem;
-    font-weight: 700;
     color: #111827;
     line-height: 1;
 }
@@ -232,7 +360,6 @@
 
 .doc-name {
     color: #111827 !important;
-    font-weight: 500;
     max-width: 400px;
 }
 
@@ -244,19 +371,28 @@
 /* Status badges */
 .doc-status {
     font-size: 0.72rem;
-    font-weight: 600;
     padding: 0.2rem 0.6rem;
     border-radius: 999px;
     white-space: nowrap;
+}
+
+.grower-status-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    margin-left: 0.6rem;
+    vertical-align: middle;
 }
 
 .status-approved     { background: #dcfce7; color: #166534; }
 .status-pending      { background: #fef9c3; color: #854d0e; }
 .status-not-uploaded { background: #f3f4f6; color: #6b7280; }
 .status-rejected     { background: #fee2e2; color: #991b1b; }
+.status-verified     { background: #dbeafe; color: #1d4ed8; }
 
-.badge-required { font-size: 0.72rem; font-weight: 600; color: #991b1b; }
-.badge-optional { font-size: 0.72rem; font-weight: 500; color: #9ca3af; }
+.badge-required { font-size: 0.72rem; color: #991b1b; }
+.badge-optional { font-size: 0.72rem; color: #9ca3af; }
 
 /* Action buttons */
 .action-buttons {
@@ -273,15 +409,20 @@
     border-radius: 6px;
     background: #fff;
     font-size: 0.78rem;
-    font-weight: 500;
     color: #374151;
     cursor: pointer;
     transition: background 0.15s;
     white-space: nowrap;
 }
 
-.btn-upload:hover {
+.btn-upload:hover:not(:disabled) {
     background: #f3f4f6;
+}
+
+.btn-upload:disabled,
+.btn-review:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
 }
 
 .btn-review {
@@ -293,14 +434,13 @@
     border-radius: 6px;
     background: #111827;
     font-size: 0.78rem;
-    font-weight: 500;
     color: #fff;
     cursor: pointer;
     transition: background 0.15s;
     white-space: nowrap;
 }
 
-.btn-review:hover {
+.btn-review:hover:not(:disabled) {
     background: #1f2937;
 }
 
@@ -328,7 +468,6 @@
 
 .empty-state p {
     font-size: 0.95rem;
-    font-weight: 600;
     color: #374151;
     margin: 0;
 }

@@ -23,7 +23,10 @@ public class GrowerResponse
 {
     public string Id { get; set; } = string.Empty;          // GrowerId (G001)
     public string Name { get; set; } = string.Empty;
+    public string? Phone { get; set; }
     public string? Email { get; set; }
+    public string? BusinessName { get; set; }
+    public string? BusinessRegNumber { get; set; }
     public string? FarmSize { get; set; }
     public string? LandTenure { get; set; }
     public string? TreeSpecies { get; set; }

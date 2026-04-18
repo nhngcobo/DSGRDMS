@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
 import { Eye, Plus, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import NewGrowerModal from '../components/modals/NewGrowerModal';
 import { useT } from '../hooks/useT';
 import { fetchGrowers } from '../services/growersApi';
@@ -8,6 +9,7 @@ import './Growers.css';
 export default function Growers() {
     const t = useT();
     const tg = t.growers;
+    const navigate = useNavigate();
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState(tg.filters.all);
     const [showModal, setShowModal] = useState(false);
@@ -128,7 +130,7 @@ export default function Growers() {
                                     </td>
                                     <td><span className={`badge badge-risk-${g.risk}`}>{g.risk}</span></td>
                                     <td>
-                                        <button className="btn-view">
+                                        <button className="btn-view" onClick={() => navigate(`/growers/${g.id}`)}>                                            
                                             <Eye size={14} />
                                             {tg.table.view}
                                         </button>

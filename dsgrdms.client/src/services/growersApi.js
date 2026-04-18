@@ -21,6 +21,11 @@ export async function fetchGrowers() {
     return handleResponse(res);
 }
 
+export async function fetchGrowerById(growerId) {
+    const res = await fetch(`${BASE}/${encodeURIComponent(growerId)}`);
+    return handleResponse(res);
+}
+
 export async function registerGrower(formData) {
     const res = await fetch(BASE, {
         method: 'POST',

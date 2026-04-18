@@ -2,11 +2,7 @@ import { NavLink } from 'react-router-dom';
 import {
     LayoutDashboard,
     Users,
-    FileText,
-    MapPin,
     ShieldCheck,
-    GitBranch,
-    BarChart2,
     Settings,
     LogOut,
 } from 'lucide-react';
@@ -17,13 +13,9 @@ export default function Sidebar() {
     const t = useT();
 
     const navItems = [
-        { to: '/',             label: t.nav.dashboard,    icon: LayoutDashboard },
-        { to: '/growers',      label: t.nav.growers,      icon: Users },
-        { to: '/applications', label: t.nav.applications, icon: FileText },
-        { to: '/field-tasks',  label: t.nav.fieldTasks,   icon: MapPin },
-        { to: '/compliance',   label: t.nav.compliance,   icon: ShieldCheck },
-        { to: '/development',  label: t.nav.development,  icon: GitBranch },
-        { to: '/analytics',    label: t.nav.analytics,    icon: BarChart2 },
+        { to: '/',           label: t.nav.dashboard,  icon: LayoutDashboard },
+        { to: '/growers',    label: t.nav.growers,    icon: Users },
+        { to: '/compliance', label: t.nav.compliance, icon: ShieldCheck },
     ];
 
     return (

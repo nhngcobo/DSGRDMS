@@ -99,9 +99,16 @@
 /* Footer */
 .upload-modal-footer {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 0.5rem;
     padding-top: 0.5rem;
+}
+
+.upload-api-error {
+    flex: 1;
+    font-size: 0.78rem;
+    color: #dc2626;
 }
 
 .btn-submit:disabled {

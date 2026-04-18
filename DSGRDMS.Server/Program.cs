@@ -16,6 +16,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IGrowerRepository, GrowerRepository>();
 builder.Services.AddScoped<IGrowerService, GrowerService>();
+builder.Services.AddScoped<IComplianceRepository, ComplianceRepository>();
+builder.Services.AddScoped<IComplianceService, ComplianceService>();
 
 builder.Services.AddCors(options =>
 {

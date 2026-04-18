@@ -129,6 +129,37 @@
     gap: 0.5rem;
     padding: 1rem 1.5rem;
     border-top: 1px solid #f3f4f6;
+    flex-wrap: wrap;
+}
+
+.review-api-error {
+    width: 100%;
+    font-size: 0.78rem;
+    color: #dc2626;
+    text-align: right;
+}
+
+.review-filename {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin: -0.5rem 0 0 0;
+}
+
+.btn-view-file {
+    color: #374151;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+}
+
+.btn-view-file:hover {
+    color: #111827;
+}
+
+.btn-reject:disabled,
+.btn-approve:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 
 .btn-reject {

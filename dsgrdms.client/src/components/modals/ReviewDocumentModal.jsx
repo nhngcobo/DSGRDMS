@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, XCircle, CheckCircle, FileDown } from 'lucide-react';
+import { X, XCircle, CheckCircle, FileDown, ExternalLink } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import './ReviewDocumentModal.css';
 
@@ -7,20 +7,33 @@ export default function ReviewDocumentModal({ doc, onClose, onReview }) {
     const t = useT();
     const tm = t.modals.reviewDocument;
     const [reason, setReason] = useState('');
-    const [error, setError] = useState('');
+    const [reasonError, setReasonError] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+    const [apiError, setApiError] = useState(null);
 
-    function handleReject() {
-        if (!reason.trim()) {
-            setError(tm.rejectionRequired);
-            return;
+    async function handleReject() {
+        if (!reason.trim()) { setReasonError(tm.rejectionRequired); return; }
+        setSubmitting(true);
+        setApiError(null);
+        try {
+            await onReview('rejected', reason.trim());
+        } catch (err) {
+            setApiError(err.message);
+        } finally {
+            setSubmitting(false);
         }
-        onReview?.({ doc, action: 'rejected', reason });
-        onClose();
     }
 
-    function handleApprove() {
-        onReview?.({ doc, action: 'approved' });
-        onClose();
+    async function handleApprove() {
+        setSubmitting(true);
+        setApiError(null);
+        try {
+            await onReview('approved');
+        } catch (err) {
+            setApiError(err.message);
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     return (
@@ -44,13 +57,23 @@ export default function ReviewDocumentModal({ doc, onClose, onReview }) {
                     {/* Document preview */}
                     <div className="review-doc-preview">
                         <div className="review-doc-meta">
-                            <span className="review-doc-name">{doc.document}</span>
+                            <span className="review-doc-name">{doc.documentName}</span>
                             <span className="badge-pending-review">{tm.pendingBadge}</span>
                         </div>
                         <div className="review-doc-icon">
-                            <FileDown size={28} strokeWidth={1.2} />
+                            {doc.fileUrl ? (
+                                <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="btn-view-file" title="Open document">
+                                    <ExternalLink size={20} strokeWidth={1.5} />
+                                </a>
+                            ) : (
+                                <FileDown size={28} strokeWidth={1.2} />
+                            )}
                         </div>
                     </div>
+
+                    {doc.fileName && (
+                        <p className="review-filename">{doc.fileName}</p>
+                    )}
 
                     {/* Rejection reason */}
                     <div className="review-form-group">
@@ -58,23 +81,24 @@ export default function ReviewDocumentModal({ doc, onClose, onReview }) {
                         <textarea
                             placeholder={tm.rejectionPlaceholder}
                             value={reason}
-                            onChange={e => { setReason(e.target.value); setError(''); }}
+                            onChange={e => { setReason(e.target.value); setReasonError(''); }}
                             rows={3}
                         />
-                        {error && <span className="review-error">{error}</span>}
+                        {reasonError && <span className="review-error">{reasonError}</span>}
                     </div>
                 </div>
 
                 {/* Footer */}
                 <div className="review-modal-footer">
-                    <button type="button" className="btn-cancel" onClick={onClose}>{tm.cancel}</button>
-                    <button type="button" className="btn-reject" onClick={handleReject}>
+                    {apiError && <span className="review-api-error">{apiError}</span>}
+                    <button type="button" className="btn-cancel" onClick={onClose} disabled={submitting}>{tm.cancel}</button>
+                    <button type="button" className="btn-reject" onClick={handleReject} disabled={submitting}>
                         <XCircle size={15} />
                         {tm.reject}
                     </button>
-                    <button type="button" className="btn-approve" onClick={handleApprove}>
+                    <button type="button" className="btn-approve" onClick={handleApprove} disabled={submitting}>
                         <CheckCircle size={15} />
-                        {tm.approve}
+                        {submitting ? '…' : tm.approve}
                     </button>
                 </div>
             </div>
