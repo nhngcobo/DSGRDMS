@@ -1,19 +1,12 @@
+import { useState, useEffect } from 'react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { Users, Clock, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { useT } from '../hooks/useT';
+import { fetchDashboardSummary } from '../services/dashboardApi';
 import './Dashboard.css';
-
-const barData = [
-    { month: 'Oct', registrations: 16 },
-    { month: 'Nov', registrations: 22 },
-    { month: 'Dec', registrations: 30 },
-    { month: 'Jan', registrations: 29 },
-    { month: 'Feb', registrations: 34 },
-    { month: 'Mar', registrations: 42 },
-];
 
 function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, name, value }) {
     const RADIAN = Math.PI / 180;
@@ -31,16 +24,20 @@ export default function Dashboard() {
     const t = useT();
     const td = t.dashboard;
 
+    const [summary, setSummary] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchDashboardSummary()
+            .then(data => setSummary(data))
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, []);
+
     const pieData = [
         { name: td.pieLabels.lowRisk,    value: 64, color: '#22c55e' },
         { name: td.pieLabels.mediumRisk, value: 24, color: '#f59e0b' },
         { name: td.pieLabels.highRisk,   value: 12, color: '#ef4444' },
-    ];
-
-    const recentApplications = [
-        { id: 'APP001', name: 'Mary Wanjiku',  status: 'pending' },
-        { id: 'APP002', name: 'Grace Akinyi',  status: 'in review' },
-        { id: 'APP003', name: 'James Mwangi',  status: 'approved' },
     ];
 
     const pendingTasks = [
@@ -49,11 +46,14 @@ export default function Dashboard() {
     ];
 
     const statCards = [
-        { title: td.statCards.totalGrowers,        value: '247', change: td.statCards.totalGrowersChange,    positive: true,  icon: Users },
-        { title: td.statCards.pendingApplications, value: '18',  change: td.statCards.pendingAppChange,      positive: null,  icon: Clock },
-        { title: td.statCards.verifiedGrowers,     value: '189', change: td.statCards.verifiedGrowersChange, positive: true,  icon: ShieldCheck },
-        { title: td.statCards.highRisk,            value: '23',  change: td.statCards.highRiskChange,        positive: false, icon: AlertTriangle },
+        { title: td.statCards.totalGrowers,        value: loading ? '—' : String(summary?.totalGrowers  ?? 0), change: td.statCards.totalGrowersChange,    positive: true,  icon: Users },
+        { title: td.statCards.pendingApplications, value: loading ? '—' : String(summary?.pendingCount  ?? 0), change: td.statCards.pendingAppChange,      positive: null,  icon: Clock },
+        { title: td.statCards.verifiedGrowers,     value: loading ? '—' : String(summary?.verifiedCount ?? 0), change: td.statCards.verifiedGrowersChange, positive: true,  icon: ShieldCheck },
+        { title: td.statCards.highRisk,            value: loading ? '—' : String(summary?.highRiskCount ?? 0), change: td.statCards.highRiskChange,        positive: false, icon: AlertTriangle },
     ];
+
+    const barData = summary?.monthlyRegistrations ?? [];
+    const recentApplications = summary?.recentApplications ?? [];
 
     const today = new Date().toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',

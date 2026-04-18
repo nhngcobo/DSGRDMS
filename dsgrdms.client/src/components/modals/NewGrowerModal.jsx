@@ -57,10 +57,19 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
         return null;
     }
 
-    function validatePhone(value) {
-        if (!value.trim()) return null;
-        if (!/^\+?[0-9\s\-()+]{1,15}$/.test(value.trim())) return tv.phoneFormat;
-        return null;
+    function handlePhoneChange(e) {
+        const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
+        const full = digits ? '+27' + digits : '';
+        setForm(f => ({ ...f, phone: full }));
+        setErrors(prev => {
+            const error = digits.length > 0 && digits.length < 9 ? tv.phoneFormat : null;
+            if (!error) {
+                const next = { ...prev };
+                delete next.phone;
+                return next;
+            }
+            return { ...prev, phone: error };
+        });
     }
 
     function validate(data) {
@@ -72,8 +81,8 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
         if (!data.idNumber.trim())   errs.idNumber = tv.required;
         else if (!/^\d{13}$/.test(data.idNumber.trim())) errs.idNumber = tv.idNumberFormat;
 
-        if (!data.phone.trim())      errs.phone = tv.required;
-        else if (!/^\+?[0-9\s\-()+]{7,15}$/.test(data.phone.trim())) errs.phone = tv.phoneFormat;
+        if (!data.phone)             errs.phone = tv.required;
+        else if (!/^\+27\d{9}$/.test(data.phone)) errs.phone = tv.phoneFormat;
 
         if (!data.email.trim())      errs.email = tv.required;
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())) errs.email = tv.emailFormat;
@@ -172,7 +181,17 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
                                 </div>
                                 <div className="form-group">
                                     <label>{tf.phone}</label>
-                                    <input className={errors.phone ? 'input-error' : ''} placeholder={tf.phonePlaceholder} value={form.phone} onChange={setWithLiveValidation('phone', validatePhone)} />
+                                    <div className={`phone-input-wrapper${errors.phone ? ' input-error' : ''}`}>
+                                        <span className="phone-prefix">+27</span>
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            maxLength={9}
+                                            placeholder="812345678"
+                                            value={form.phone.replace(/^\+27/, '')}
+                                            onChange={handlePhoneChange}
+                                        />
+                                    </div>
                                     {errors.phone && <span className="field-error">{errors.phone}</span>}
                                 </div>
                             </div>

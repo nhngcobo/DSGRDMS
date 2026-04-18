@@ -161,7 +161,7 @@
       "validation": {
         "required":          "This field is required",
         "idNumberFormat":    "Must be a 13-digit SA ID number",
-        "phoneFormat":       "Enter a valid phone number",
+        "phoneFormat":       "Enter all 9 digits after +27",
         "emailFormat":       "Enter a valid email address",
         "plantationSizeMin": "Must be greater than 0",
         "gpsLatRange":       "Latitude must be between -90 and 90",
