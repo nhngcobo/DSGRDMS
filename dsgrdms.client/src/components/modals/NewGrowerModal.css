@@ -213,3 +213,9 @@
     font-size: 0.73rem;
     color: #ef4444;
 }
+
+.modal-api-error {
+    font-size: 0.8rem;
+    color: #ef4444;
+    flex: 1;
+}

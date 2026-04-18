@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useT } from '../../hooks/useT';
+import { registerGrower } from '../../services/growersApi';
 import './NewGrowerModal.css';
 
 const EMPTY = {
@@ -15,6 +16,8 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
     const tf = tm.fields;
     const [form, setForm] = useState(EMPTY);
     const [errors, setErrors] = useState({});
+    const [submitting, setSubmitting] = useState(false);
+    const [apiError, setApiError] = useState(null);
 
     function set(field) {
         return e => {
@@ -94,20 +97,38 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
         return errs;
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
         const errs = validate(form);
         if (Object.keys(errs).length > 0) {
             setErrors(errs);
             return;
         }
-        onSubmit?.(form);
-        onClose();
+        setSubmitting(true);
+        setApiError(null);
+        try {
+            await registerGrower(form);
+            onSubmit?.();
+            onClose();
+        } catch (err) {
+            setApiError(err.message);
+        } finally {
+            setSubmitting(false);
+        }
     }
 
-    function handleSaveDraft() {
-        onSubmit?.({ ...form, draft: true });
-        onClose();
+    async function handleSaveDraft() {
+        setSubmitting(true);
+        setApiError(null);
+        try {
+            await registerGrower({ ...form, draft: true });
+            onSubmit?.();
+            onClose();
+        } catch (err) {
+            setApiError(err.message);
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     return (
@@ -220,9 +241,10 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
 
                 {/* Footer */}
                 <div className="modal-footer">
-                    <button type="button" className="btn-cancel" onClick={onClose}>{tm.cancel}</button>
-                    <button type="button" className="btn-draft" onClick={handleSaveDraft}>{tm.saveAsDraft}</button>
-                    <button type="submit" form="grower-form" className="btn-submit">{tm.submitReview}</button>
+                    {apiError && <span className="modal-api-error">{apiError}</span>}
+                    <button type="button" className="btn-cancel" onClick={onClose} disabled={submitting}>{tm.cancel}</button>
+                    <button type="button" className="btn-draft" onClick={handleSaveDraft} disabled={submitting}>{submitting ? '…' : tm.saveAsDraft}</button>
+                    <button type="submit" form="grower-form" className="btn-submit" disabled={submitting}>{submitting ? '…' : tm.submitReview}</button>
                 </div>
             </div>
         </div>

@@ -28,7 +28,10 @@ export default function Sidebar() {
 
     return (
         <aside className="sidebar">
-            <div className="sidebar-brand">{t.app.brand}</div>
+            <div className="sidebar-brand">
+                <img src="/logo.png" alt="Glad Business Development Consultancy" className="sidebar-logo" />
+                <span className="sidebar-brand-name">DSGRDMS</span>
+            </div>
 
             <nav className="sidebar-nav">
                 {navItems.map(({ to, label, icon: Icon }) => (

@@ -1,16 +1,9 @@
-﻿                            import { useState } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { Eye, Plus, Search } from 'lucide-react';
 import NewGrowerModal from '../components/modals/NewGrowerModal';
 import { useT } from '../hooks/useT';
+import { fetchGrowers } from '../services/growersApi';
 import './Growers.css';
-
-const MOCK_GROWERS = [
-    { id: 'G001', name: 'James Mwangi',  email: 'james.mwangi@email.com',  location: 'Kiambu County',   farmSize: '2.5 ha', status: 'verified', compliance: 92,  risk: 'low' },
-    { id: 'G002', name: 'Mary Wanjiku',  email: 'mary.wanjiku@email.com',   location: "Murang'a County", farmSize: '1.8 ha', status: 'pending',  compliance: null, risk: 'medium' },
-    { id: 'G003', name: 'Peter Kamau',   email: 'peter.kamau@email.com',    location: 'Nyeri County',    farmSize: '3.2 ha', status: 'verified', compliance: 87,  risk: 'low' },
-    { id: 'G004', name: 'Grace Akinyi',  email: 'grace.akinyi@email.com',   location: 'Kisumu County',   farmSize: '1.2 ha', status: 'returned', compliance: null, risk: 'high' },
-    { id: 'G005', name: 'Robert Omondi', email: 'robert.omondi@email.com',  location: 'Siaya County',    farmSize: '0.8 ha', status: 'rejected', compliance: null, risk: 'high' },
-];
 
 export default function Growers() {
     const t = useT();
@@ -18,10 +11,28 @@ export default function Growers() {
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState(tg.filters.all);
     const [showModal, setShowModal] = useState(false);
+    const [growers, setGrowers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [apiError, setApiError] = useState(null);
 
     const STATUS_FILTERS = [tg.filters.all, tg.filters.pending, tg.filters.verified];
 
-    const visible = MOCK_GROWERS.filter(g => {
+    const loadGrowers = useCallback(async () => {
+        setLoading(true);
+        setApiError(null);
+        try {
+            const data = await fetchGrowers();
+            setGrowers(data);
+        } catch (err) {
+            setApiError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => { loadGrowers(); }, [loadGrowers]);
+
+    const visible = growers.filter(g => {
         const matchesFilter =
             filter === tg.filters.all ||
             g.status === filter.toLowerCase();
@@ -29,8 +40,7 @@ export default function Growers() {
         const matchesSearch =
             !q ||
             g.name.toLowerCase().includes(q) ||
-            g.id.toLowerCase().includes(q) ||
-            g.location.toLowerCase().includes(q);
+            g.id.toLowerCase().includes(q);
         return matchesFilter && matchesSearch;
     });
 
@@ -72,61 +82,69 @@ export default function Growers() {
                     </div>
                 </div>
 
+                {/* States */}
+                {loading && <div className="growers-state">Loading growers…</div>}
+                {apiError && <div className="growers-state growers-error">{apiError}</div>}
+
                 {/* Table */}
-                <table className="growers-table">
-                    <thead>
-                        <tr>
-                            <th>{tg.table.id}</th>
-                            <th>{tg.table.name}</th>
-                            <th>{tg.table.location}</th>
-                            <th>{tg.table.farmSize}</th>
-                            <th>{tg.table.status}</th>
-                            <th>{tg.table.complianceScore}</th>
-                            <th>{tg.table.riskLevel}</th>
-                            <th>{tg.table.actions}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {visible.map(g => (
-                            <tr key={g.id}>
-                                <td className="grower-id">{g.id}</td>
-                                <td>
-                                    <div className="grower-name">{g.name}</div>
-                                    <div className="grower-email">{g.email}</div>
-                                </td>
-                                <td>{g.location}</td>
-                                <td>{g.farmSize}</td>
-                                <td><span className={`badge badge-status-${g.status}`}>{g.status}</span></td>
-                                <td>
-                                    {g.compliance !== null ? (
-                                        <div className="compliance-cell">
-                                            <div className="compliance-bar">
-                                                <div
-                                                    className="compliance-fill"
-                                                    style={{ width: `${g.compliance}%` }}
-                                                />
-                                            </div>
-                                            <span>{g.compliance}%</span>
-                                        </div>
-                                    ) : (
-                                        <span className="na">{tg.table.na}</span>
-                                    )}
-                                </td>
-                                <td><span className={`badge badge-risk-${g.risk}`}>{g.risk}</span></td>
-                                <td>
-                                    <button className="btn-view">
-                                        <Eye size={14} />
-                                        {tg.table.view}
-                                    </button>
-                                </td>
+                {!loading && !apiError && (
+                    <table className="growers-table">
+                        <thead>
+                            <tr>
+                                <th>{tg.table.id}</th>
+                                <th>{tg.table.name}</th>
+                                <th>{tg.table.farmSize}</th>
+                                <th>{tg.table.status}</th>
+                                <th>{tg.table.complianceScore}</th>
+                                <th>{tg.table.riskLevel}</th>
+                                <th>{tg.table.actions}</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {visible.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="growers-state">{tg.emptyState ?? 'No growers found.'}</td>
+                                </tr>
+                            ) : visible.map(g => (
+                                <tr key={g.id}>
+                                    <td className="grower-id">{g.id}</td>
+                                    <td>
+                                        <div className="grower-name">{g.name}</div>
+                                        <div className="grower-email">{g.email}</div>
+                                    </td>
+                                    <td>{g.farmSize ?? <span className="na">{tg.table.na}</span>}</td>
+                                    <td><span className={`badge badge-status-${g.status}`}>{g.status}</span></td>
+                                    <td>
+                                        {g.compliance !== null && g.compliance !== undefined ? (
+                                            <div className="compliance-cell">
+                                                <div className="compliance-bar">
+                                                    <div className="compliance-fill" style={{ width: `${g.compliance}%` }} />
+                                                </div>
+                                                <span>{g.compliance}%</span>
+                                            </div>
+                                        ) : (
+                                            <span className="na">{tg.table.na}</span>
+                                        )}
+                                    </td>
+                                    <td><span className={`badge badge-risk-${g.risk}`}>{g.risk}</span></td>
+                                    <td>
+                                        <button className="btn-view">
+                                            <Eye size={14} />
+                                            {tg.table.view}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
 
             {showModal && (
-                <NewGrowerModal onClose={() => setShowModal(false)} />
+                <NewGrowerModal
+                    onClose={() => setShowModal(false)}
+                    onSubmit={() => loadGrowers()}
+                />
             )}
         </div>
     );

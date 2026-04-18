@@ -12,12 +12,26 @@
 }
 
 .sidebar-brand {
-    padding: 1.25rem 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 350;
-    color: #111827;
-    letter-spacing: 0.5px;
+    padding: 1.25rem 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
     border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar-logo {
+    width: 72px;
+    height: auto;
+    object-fit: contain;
+}
+
+.sidebar-brand-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #374151;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
 .sidebar-nav {
@@ -54,6 +68,7 @@
 .sidebar-link.active {
     background: #e5e7eb;
     color: #111827;
+    font-weight: 600;
 }
 
 .sidebar-footer {
