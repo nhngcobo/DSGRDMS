@@ -6,7 +6,9 @@ namespace DSGRDMS.Server.Services;
 
 public class GrowerService(IGrowerRepository repo, IComplianceRepository complianceRepo) : IGrowerService
 {
-    private static readonly int TotalDocTypes = DocumentTypes.All.Count;
+    private static readonly int RequiredDocCount = DocumentTypes.All.Count(d => d.IsRequired);
+    private static readonly IReadOnlySet<int> RequiredDocIds =
+        DocumentTypes.All.Where(d => d.IsRequired).Select(d => d.Id).ToHashSet();
 
     public async Task<IEnumerable<GrowerResponse>> GetAllAsync()
     {
@@ -20,8 +22,8 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         return growers.Select(g =>
         {
             var docs         = allDocs.TryGetValue(g.GrowerId, out var d) ? d : [];
-            var approvedCount = docs.Count(d => d.Status == "approved");
-            var score        = (int)Math.Round((double)approvedCount / TotalDocTypes * 100);
+            var approvedCount = docs.Count(d => d.Status == "approved" && RequiredDocIds.Contains(d.DocumentTypeId));
+            var score        = (int)Math.Round((double)approvedCount / RequiredDocCount * 100);
             return ToResponse(g, score);
         });
     }
@@ -32,8 +34,8 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         if (grower is null) return null;
 
         var docs          = await complianceRepo.GetByGrowerIdAsync(growerId);
-        var approvedCount = docs.Count(d => d.Status == "approved");
-        var score         = (int)Math.Round((double)approvedCount / TotalDocTypes * 100);
+        var approvedCount = docs.Count(d => d.Status == "approved" && RequiredDocIds.Contains(d.DocumentTypeId));
+        var score         = (int)Math.Round((double)approvedCount / RequiredDocCount * 100);
         return ToResponse(grower, score);
     }
 
@@ -84,8 +86,8 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         if (updated is null) return null;
 
         var docs          = await complianceRepo.GetByGrowerIdAsync(growerId);
-        var approvedCount = docs.Count(d => d.Status == "approved");
-        var score         = (int)Math.Round((double)approvedCount / TotalDocTypes * 100);
+        var approvedCount = docs.Count(d => d.Status == "approved" && RequiredDocIds.Contains(d.DocumentTypeId));
+        var score         = (int)Math.Round((double)approvedCount / RequiredDocCount * 100);
         return ToResponse(updated, score);
     }
 

@@ -6,13 +6,21 @@ public static class DocumentTypes
 
     public static readonly IReadOnlyList<DocType> All =
     [
-        new(1, "Proof of Land Ownership / Lease Agreement", true,  "Legal"),
-        new(2, "Environmental Impact Assessment (EIA)",      true,  "Environmental"),
-        new(3, "Water Use License",                          true,  "Legal"),
-        new(4, "FSC / PEFC Certification",                   false, "Certification"),
-        new(5, "Community Development Plan",                 false, "Operational"),
-        new(6, "Fire Management Plan",                       true,  "Operational"),
-        new(7, "Invasive Species Management Plan",           true,  "Environmental"),
-        new(8, "Pest & Disease Management Plan",             false, "Certification"),
+        // Registration requirements (required)
+        new(1,  "Plantation Declaration",                          true,  "Operational"),
+        new(2,  "Permit to Occupy / KHONZA Letter / Annexure A",  true,  "Legal"),
+        new(3,  "Water Use License",                               true,  "Environmental"),
+        new(4,  "FSC / PEFC Certification",                        true,  "Certification"),
+        // Verification / intake documents (required)
+        new(5,  "ID Document",                                     true,  "Legal"),
+        new(6,  "CIPC Documents",                                  true,  "Legal"),
+        new(7,  "Bank Account Details",                            true,  "Operational"),
+        new(8,  "Grower Intake Form",                              true,  "Operational"),
+        // Supplementary documents (optional)
+        new(9,  "Proof of Land Ownership / Lease Agreement",      false, "Legal"),
+        new(10, "Environmental Impact Assessment (EIA)",           false, "Environmental"),
+        new(11, "Community Development Plan",                      false, "Operational"),
+        new(12, "Fire Management Plan",                            false, "Operational"),
+        new(13, "Invasive Species Management Plan",                false, "Environmental"),
     ];
 }

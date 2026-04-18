@@ -48,9 +48,11 @@ public class ComplianceService(
     {
         var growers = (await growerRepo.GetAllAsync()).ToList();
         var growerCount = growers.Count;
-        var totalDocTypes = DocumentTypes.All.Count;
+        var requiredDocIds  = DocumentTypes.All.Where(d => d.IsRequired).Select(d => d.Id).ToHashSet();
+        var requiredDocCount = requiredDocIds.Count;
 
         var emptyCategories = DocumentTypes.All
+            .Where(dt => dt.IsRequired)
             .GroupBy(dt => dt.Category)
             .OrderBy(g => g.Key)
             .Select(g => new CategoryScoreDto { Category = g.Key, Score = 0 })
@@ -69,7 +71,7 @@ public class ComplianceService(
             .Select(g =>
             {
                 var docs = docsByGrower.TryGetValue(g.GrowerId, out var d) ? d : [];
-                return (int)Math.Round((double)docs.Count(x => x.Status == "approved") / totalDocTypes * 100);
+                return (int)Math.Round((double)docs.Count(x => x.Status == "approved" && requiredDocIds.Contains(x.DocumentTypeId)) / requiredDocCount * 100);
             })
             .ToList();
 
@@ -79,6 +81,7 @@ public class ComplianceService(
 
         // Category-level scores: (approved across all growers for that category) / (growers × docs in category)
         var categoryScores = DocumentTypes.All
+            .Where(dt => dt.IsRequired)
             .GroupBy(dt => dt.Category)
             .Select(catGroup =>
             {
