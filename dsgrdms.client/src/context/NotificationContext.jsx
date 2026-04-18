@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { X, AlertCircle, CheckCircle } from 'lucide-react';
 import './Notification.css';
 
@@ -12,6 +12,10 @@ export function NotificationProvider({ children }) {
 
     // Success toasts
     const [toasts, setToasts] = useState([]);
+
+    // Confirm dialog
+    const [confirmDialog, setConfirmDialog] = useState(null);
+    const confirmResolveRef = useRef(null);
 
     const dismissToast = useCallback((id) => {
         setToasts(prev => prev.filter(t => t.id !== id));
@@ -27,8 +31,22 @@ export function NotificationProvider({ children }) {
         setTimeout(() => dismissToast(id), 4000);
     }, [dismissToast]);
 
+    // Returns a Promise<boolean> — true = confirmed, false = cancelled
+    const showConfirm = useCallback((message, { confirmLabel = 'Confirm', danger = false } = {}) => {
+        return new Promise((resolve) => {
+            confirmResolveRef.current = resolve;
+            setConfirmDialog({ message, confirmLabel, danger });
+        });
+    }, []);
+
+    function handleConfirmAnswer(answer) {
+        confirmResolveRef.current?.(answer);
+        confirmResolveRef.current = null;
+        setConfirmDialog(null);
+    }
+
     return (
-        <NotificationContext.Provider value={{ showError, showSuccess }}>
+        <NotificationContext.Provider value={{ showError, showSuccess, showConfirm }}>
             {children}
 
             {/* Error modal */}
@@ -43,6 +61,26 @@ export function NotificationProvider({ children }) {
                         <button className="err-modal-btn" onClick={() => setErrorModal(null)}>
                             OK
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Confirm dialog */}
+            {confirmDialog && (
+                <div className="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+                    <div className="confirm-modal">
+                        <p id="confirm-title" className="confirm-msg">{confirmDialog.message}</p>
+                        <div className="confirm-footer">
+                            <button className="btn-cancel" onClick={() => handleConfirmAnswer(false)}>
+                                Cancel
+                            </button>
+                            <button
+                                className={'confirm-ok' + (confirmDialog.danger ? ' confirm-ok-danger' : '')}
+                                onClick={() => handleConfirmAnswer(true)}
+                            >
+                                {confirmDialog.confirmLabel}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

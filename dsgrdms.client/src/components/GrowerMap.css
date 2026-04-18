@@ -1,0 +1,47 @@
+.gd-map-card {
+    padding: 1rem 1rem 0.75rem;
+}
+
+.gd-map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.65rem;
+}
+
+.gd-open-maps-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    color: #1d4ed8;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.gd-open-maps-btn:hover {
+    color: #1e40af;
+    text-decoration: underline;
+}
+
+.gd-map-container {
+    height: 260px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.gd-map-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+.gd-map-coords {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-align: right;
+    margin: 0.4rem 0 0;
+    font-variant-numeric: tabular-nums;
+}

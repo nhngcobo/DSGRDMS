@@ -10,4 +10,5 @@ public interface IGrowerRepository
     Task<string> GenerateGrowerIdAsync();
     Task<Grower> AddAsync(Grower grower);
     Task UpdateStatusAsync(string growerId, string status);
+    Task<Grower?> UpdateAsync(string growerId, Action<Grower> apply);
 }

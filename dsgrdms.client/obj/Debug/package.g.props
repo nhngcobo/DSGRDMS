@@ -9,9 +9,11 @@
     <PackageJsonScriptsBuild Condition="$(PackageJsonScriptsBuild) == ''">vite build</PackageJsonScriptsBuild>
     <PackageJsonScriptsLint Condition="$(PackageJsonScriptsLint) == ''">eslint .</PackageJsonScriptsLint>
     <PackageJsonScriptsPreview Condition="$(PackageJsonScriptsPreview) == ''">vite preview</PackageJsonScriptsPreview>
+    <PackageJsonDependenciesLeaflet Condition="$(PackageJsonDependenciesLeaflet) == ''">^1.9.4</PackageJsonDependenciesLeaflet>
     <PackageJsonDependenciesLucideReact Condition="$(PackageJsonDependenciesLucideReact) == ''">^1.8.0</PackageJsonDependenciesLucideReact>
     <PackageJsonDependenciesReact Condition="$(PackageJsonDependenciesReact) == ''">^19.2.4</PackageJsonDependenciesReact>
     <PackageJsonDependenciesReactDom Condition="$(PackageJsonDependenciesReactDom) == ''">^19.2.4</PackageJsonDependenciesReactDom>
+    <PackageJsonDependenciesReactLeaflet Condition="$(PackageJsonDependenciesReactLeaflet) == ''">^5.0.0</PackageJsonDependenciesReactLeaflet>
     <PackageJsonDependenciesReactRouterDom Condition="$(PackageJsonDependenciesReactRouterDom) == ''">^7.14.0</PackageJsonDependenciesReactRouterDom>
     <PackageJsonDependenciesRecharts Condition="$(PackageJsonDependenciesRecharts) == ''">^3.8.1</PackageJsonDependenciesRecharts>
     <PackageJsonDevdependenciesEslintJs Condition="$(PackageJsonDevdependenciesEslintJs) == ''">^9.39.4</PackageJsonDevdependenciesEslintJs>

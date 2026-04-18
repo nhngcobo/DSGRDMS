@@ -48,3 +48,22 @@ export async function registerGrower(formData) {
     });
     return handleResponse(res);
 }
+
+export async function updateGrower(growerId, formData) {
+    const res = await fetch(`${BASE}/${encodeURIComponent(growerId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            phone:             formData.phone,
+            email:             formData.email || null,
+            businessName:      formData.businessName || null,
+            businessRegNumber: formData.businessRegNumber || null,
+            landTenure:        formData.landTenure || null,
+            treeSpecies:       formData.treeSpecies || null,
+            plantationSize:    formData.plantationSize ? parseFloat(formData.plantationSize) : null,
+            gpsLat:            formData.gpsLat ? parseFloat(formData.gpsLat) : null,
+            gpsLng:            formData.gpsLng ? parseFloat(formData.gpsLng) : null,
+        }),
+    });
+    return handleResponse(res);
+}

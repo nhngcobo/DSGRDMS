@@ -8,13 +8,18 @@ import './ReviewDocumentModal.css';
 export default function ReviewDocumentModal({ doc, onClose, onReview }) {
     const t = useT();
     const tm = t.modals.reviewDocument;
-    const { showError } = useNotification();
+    const { showError, showConfirm } = useNotification();
     const [reason, setReason] = useState('');
     const [reasonError, setReasonError] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
     async function handleReject() {
         if (!reason.trim()) { setReasonError(tm.rejectionRequired); return; }
+        const confirmed = await showConfirm(
+            `Reject "${doc.documentName}"? This action cannot be undone.`,
+            { confirmLabel: 'Reject', danger: true }
+        );
+        if (!confirmed) return;
         setSubmitting(true);
         try {
             await onReview('rejected', reason.trim());
@@ -26,6 +31,11 @@ export default function ReviewDocumentModal({ doc, onClose, onReview }) {
     }
 
     async function handleApprove() {
+        const confirmed = await showConfirm(
+            `Approve "${doc.documentName}"?`,
+            { confirmLabel: 'Approve' }
+        );
+        if (!confirmed) return;
         setSubmitting(true);
         try {
             await onReview('approved');

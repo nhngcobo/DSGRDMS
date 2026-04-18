@@ -44,6 +44,32 @@
     gap: 1rem;
 }
 
+.gd-title-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-left: auto;
+}
+
+.gd-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
+    color: #374151;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.gd-edit-btn:hover {
+    border-color: #111827;
+    background: #f9fafb;
+}
+
 .gd-title-row h1 {
     font-size: 1.4rem;
     font-weight: 700;

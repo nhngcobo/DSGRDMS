@@ -19,6 +19,19 @@ public class RegisterGrowerRequest
     public bool Draft { get; set; }
 }
 
+public class UpdateGrowerRequest
+{
+    [Required] public string Phone { get; set; } = string.Empty;
+    [EmailAddress] public string? Email { get; set; }
+    public string? BusinessName { get; set; }
+    public string? BusinessRegNumber { get; set; }
+    public string? LandTenure { get; set; }
+    public string? TreeSpecies { get; set; }
+    [Range(0.01, double.MaxValue)] public decimal? PlantationSize { get; set; }
+    [Range(-90, 90)]   public double? GpsLat { get; set; }
+    [Range(-180, 180)] public double? GpsLng { get; set; }
+}
+
 public class GrowerResponse
 {
     public string Id { get; set; } = string.Empty;          // GrowerId (G001)

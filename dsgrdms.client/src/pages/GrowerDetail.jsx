@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, FileX, User, Building2, Leaf, MapPin, FileCheck } from 'lucide-react';
+import { ArrowLeft, FileX, User, Building2, Leaf, MapPin, FileCheck, Pencil } from 'lucide-react';
 import { fetchGrowerById } from '../services/growersApi';
 import { fetchComplianceSummary } from '../services/complianceApi';
+import EditGrowerModal from '../components/modals/EditGrowerModal';
+import GrowerMap from '../components/GrowerMap';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
 import './GrowerDetail.css';
@@ -30,6 +32,7 @@ export default function GrowerDetail() {
     const [grower, setGrower]   = useState(null);
     const [summary, setSummary] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [editOpen, setEditOpen] = useState(false);
 
     useEffect(() => {
         async function load() {
@@ -83,12 +86,17 @@ export default function GrowerDetail() {
                     <ArrowLeft size={16} /> Back to Growers
                 </button>
                 <div className="gd-title-row">
-                    <div>
-                        <h1>{grower.name}</h1>
-                        <span className="gd-id">{grower.id}</span>
+                        <div>
+                            <h1>{grower.name}</h1>
+                            <span className="gd-id">{grower.id}</span>
+                        </div>
+                        <div className="gd-title-actions">
+                            <span className={`gd-status-badge badge-status-${grower.status}`}>{grower.status}</span>
+                            <button className="gd-edit-btn" onClick={() => setEditOpen(true)} title="Edit grower">
+                                <Pencil size={14} /> Edit
+                            </button>
+                        </div>
                     </div>
-                    <span className={`gd-status-badge badge-status-${grower.status}`}>{grower.status}</span>
-                </div>
             </div>
 
             <div className="gd-body">
@@ -197,8 +205,25 @@ export default function GrowerDetail() {
                             </table>
                         )}
                     </div>
+
+                    {/* Map */}
+                    {grower.gpsLat != null && grower.gpsLng != null && (
+                        <GrowerMap
+                            lat={grower.gpsLat}
+                            lng={grower.gpsLng}
+                            growerName={grower.name}
+                        />
+                    )}
                 </div>
             </div>
+
+            {editOpen && (
+                <EditGrowerModal
+                    grower={grower}
+                    onClose={() => setEditOpen(false)}
+                    onSaved={(updated) => setGrower(updated)}
+                />
+            )}
         </div>
     );
 }

@@ -42,4 +42,13 @@ public class GrowerRepository(AppDbContext db) : IGrowerRepository
             await db.SaveChangesAsync();
         }
     }
+
+    public async Task<Grower?> UpdateAsync(string growerId, Action<Grower> apply)
+    {
+        var grower = await db.Growers.FirstOrDefaultAsync(g => g.GrowerId == growerId);
+        if (grower is null) return null;
+        apply(grower);
+        await db.SaveChangesAsync();
+        return grower;
+    }
 }

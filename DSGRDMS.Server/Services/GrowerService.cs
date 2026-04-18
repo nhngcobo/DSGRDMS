@@ -48,6 +48,23 @@ public class GrowerService(IGrowerRepository repo) : IGrowerService
         return (ToResponse(saved), null);
     }
 
+    public async Task<GrowerResponse?> UpdateAsync(string growerId, UpdateGrowerRequest req)
+    {
+        var updated = await repo.UpdateAsync(growerId, g =>
+        {
+            g.Phone             = req.Phone.Trim();
+            g.Email             = req.Email?.Trim();
+            g.BusinessName      = req.BusinessName?.Trim();
+            g.BusinessRegNumber = req.BusinessRegNumber?.Trim();
+            g.LandTenure        = req.LandTenure;
+            g.TreeSpecies       = req.TreeSpecies;
+            g.PlantationSize    = req.PlantationSize;
+            g.GpsLat            = req.GpsLat;
+            g.GpsLng            = req.GpsLng;
+        });
+        return updated is null ? null : ToResponse(updated);
+    }
+
     // ── mapping ──────────────────────────────────────────────────────────────
 
     private static GrowerResponse ToResponse(Grower g) => new()

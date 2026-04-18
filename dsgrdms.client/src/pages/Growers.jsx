@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
-import { Eye, Plus, Search } from 'lucide-react';
+import { Eye, Plus, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import NewGrowerModal from '../components/modals/NewGrowerModal';
 import { useT } from '../hooks/useT';
@@ -7,6 +7,8 @@ import { fetchGrowers } from '../services/growersApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
 import './Growers.css';
+
+const PAGE_SIZE = 10;
 
 export default function Growers() {
     const t = useT();
@@ -18,6 +20,10 @@ export default function Growers() {
     const [showModal, setShowModal] = useState(false);
     const [growers, setGrowers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+
+    // Reset to page 1 whenever search or filter changes
+    useEffect(() => { setPage(1); }, [search, filter]);
 
     const STATUS_FILTERS = [tg.filters.all, tg.filters.pending, tg.filters.verified];
 
@@ -46,6 +52,9 @@ export default function Growers() {
             g.id.toLowerCase().includes(q);
         return matchesFilter && matchesSearch;
     });
+
+    const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+    const paged = visible.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     return (
         <div className="growers-page">
@@ -107,7 +116,7 @@ export default function Growers() {
                                 <tr>
                                     <td colSpan={7} className="growers-state">{tg.emptyState ?? 'No growers found.'}</td>
                                 </tr>
-                            ) : visible.map(g => (
+                            ) : paged.map(g => (
                                 <tr key={g.id}>
                                     <td className="grower-id">{g.id}</td>
                                     <td>
@@ -139,6 +148,42 @@ export default function Growers() {
                             ))}
                         </tbody>
                     </table>
+                )}
+
+                {/* Pagination */}
+                {!loading && totalPages > 1 && (
+                    <div className="growers-pagination">
+                        <span className="pagination-info">
+                            {((page - 1) * PAGE_SIZE) + 1}–{Math.min(page * PAGE_SIZE, visible.length)} of {visible.length}
+                        </span>
+                        <div className="pagination-controls">
+                            <button
+                                className="pagination-btn"
+                                onClick={() => setPage(p => p - 1)}
+                                disabled={page === 1}
+                                aria-label="Previous page"
+                            >
+                                <ChevronLeft size={15} />
+                            </button>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                                <button
+                                    key={n}
+                                    className={'pagination-btn pagination-page' + (n === page ? ' active' : '')}
+                                    onClick={() => setPage(n)}
+                                >
+                                    {n}
+                                </button>
+                            ))}
+                            <button
+                                className="pagination-btn"
+                                onClick={() => setPage(p => p + 1)}
+                                disabled={page === totalPages}
+                                aria-label="Next page"
+                            >
+                                <ChevronRight size={15} />
+                            </button>
+                        </div>
+                    </div>
                 )}
             </div>
 

@@ -1,0 +1,117 @@
+.edit-modal {
+    background: #fff;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.edit-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    flex-shrink: 0;
+}
+
+.edit-modal-header h2 {
+    font-size: 1rem;
+    color: #111827;
+    margin: 0 0 0.15rem;
+}
+
+.edit-modal-header p {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin: 0;
+}
+
+.edit-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Fieldsets */
+.edit-section {
+    border: 1px solid #f3f4f6;
+    border-radius: 10px;
+    padding: 0.9rem 1rem 1rem;
+    margin: 0;
+}
+
+.edit-section legend {
+    font-size: 0.75rem;
+    color: #6b7280;
+    padding: 0 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.edit-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 0.65rem;
+}
+
+.edit-row:first-of-type {
+    margin-top: 0.65rem;
+}
+
+.edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.edit-field label {
+    font-size: 0.78rem;
+    color: #374151;
+}
+
+.edit-field input,
+.edit-field select {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.875rem;
+    color: #111827;
+    outline: none;
+    transition: border-color 0.15s;
+    background: #fff;
+}
+
+.edit-field input:focus,
+.edit-field select:focus {
+    border-color: #111827;
+}
+
+.edit-field.has-error input,
+.edit-field.has-error select {
+    border-color: #ef4444;
+}
+
+.edit-error {
+    font-size: 0.75rem;
+    color: #ef4444;
+}
+
+/* Footer */
+.edit-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #f3f4f6;
+    flex-shrink: 0;
+}

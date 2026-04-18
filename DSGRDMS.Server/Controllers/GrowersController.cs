@@ -39,5 +39,17 @@ public class GrowersController(IGrowerService growerService) : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { growerId = result!.Id }, result);
     }
+
+    // PUT api/growers/{growerId}
+    [HttpPut("{growerId}")]
+    public async Task<IActionResult> Update(string growerId, [FromBody] UpdateGrowerRequest req)
+    {
+        if (!ModelState.IsValid)
+            return ValidationProblem(ModelState);
+
+        var result = await growerService.UpdateAsync(growerId, req);
+        if (result is null) return NotFound();
+        return Ok(result);
+    }
 }
 

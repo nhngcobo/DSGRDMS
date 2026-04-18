@@ -10,6 +10,57 @@
     animation: notif-in 0.18s ease;
 }
 
+/* ── Confirm dialog ──────────────────────────────────── */
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    animation: notif-in 0.15s ease;
+}
+
+.confirm-modal {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem 1.25rem;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
+}
+
+.confirm-msg {
+    font-size: 0.9rem;
+    color: #111827;
+    line-height: 1.55;
+    margin: 0 0 1.25rem;
+}
+
+.confirm-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+}
+
+.confirm-ok {
+    background: #111827;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.45rem 1.25rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.confirm-ok:hover { background: #1f2937; }
+
+.confirm-ok-danger { background: #ef4444; }
+.confirm-ok-danger:hover { background: #dc2626; }
+}
+
 .err-modal {
     background: #fff;
     border-radius: 14px;
