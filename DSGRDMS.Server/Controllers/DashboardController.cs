@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DSGRDMS.Server.Data;
 using DSGRDMS.Server.DTOs;
+using DSGRDMS.Server.Models;
+using DSGRDMS.Server.Services;
 
 namespace DSGRDMS.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DashboardController(AppDbContext db) : ControllerBase
+public class DashboardController(AppDbContext db, IGrowerService growerService) : ControllerBase
 {
     // GET api/dashboard/summary
     [HttpGet("summary")]
@@ -16,7 +18,10 @@ public class DashboardController(AppDbContext db) : ControllerBase
         var totalGrowers  = await db.Growers.CountAsync();
         var pendingCount  = await db.Growers.CountAsync(g => g.Status == "pending");
         var verifiedCount = await db.Growers.CountAsync(g => g.Status == "verified");
-        var highRiskCount = 0; // Risk not yet persisted; placeholder for future feature
+
+        // Derive high-risk count from real compliance scores
+        var allGrowers    = await growerService.GetAllAsync();
+        var highRiskCount = allGrowers.Count(g => g.Risk == "high");
 
         // Last 6 calendar months (oldest → newest)
         var firstOfWindow = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(-5);

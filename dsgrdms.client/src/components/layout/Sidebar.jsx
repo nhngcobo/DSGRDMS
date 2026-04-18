@@ -3,6 +3,7 @@ import {
     LayoutDashboard,
     Users,
     ShieldCheck,
+    ClipboardList,
     Settings,
     LogOut,
 } from 'lucide-react';
@@ -15,7 +16,8 @@ export default function Sidebar() {
     const navItems = [
         { to: '/',           label: t.nav.dashboard,  icon: LayoutDashboard },
         { to: '/growers',    label: t.nav.growers,    icon: Users },
-        { to: '/compliance', label: t.nav.compliance, icon: ShieldCheck },
+        { to: '/compliance',   label: t.nav.compliance,  icon: ShieldCheck },
+        { to: '/field-visits', label: t.nav.fieldVisits, icon: ClipboardList },
     ];
 
     return (

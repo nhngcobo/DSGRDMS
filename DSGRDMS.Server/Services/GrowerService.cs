@@ -4,18 +4,37 @@ using DSGRDMS.Server.Repositories;
 
 namespace DSGRDMS.Server.Services;
 
-public class GrowerService(IGrowerRepository repo) : IGrowerService
+public class GrowerService(IGrowerRepository repo, IComplianceRepository complianceRepo) : IGrowerService
 {
+    private static readonly int TotalDocTypes = DocumentTypes.All.Count;
+
     public async Task<IEnumerable<GrowerResponse>> GetAllAsync()
     {
         var growers = await repo.GetAllAsync();
-        return growers.Select(ToResponse);
+
+        // Bulk load all compliance docs — one DB round-trip for the whole list
+        var allDocs = (await complianceRepo.GetAllAsync())
+            .GroupBy(d => d.GrowerId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        return growers.Select(g =>
+        {
+            var docs         = allDocs.TryGetValue(g.GrowerId, out var d) ? d : [];
+            var approvedCount = docs.Count(d => d.Status == "approved");
+            var score        = (int)Math.Round((double)approvedCount / TotalDocTypes * 100);
+            return ToResponse(g, score);
+        });
     }
 
     public async Task<GrowerResponse?> GetByIdAsync(string growerId)
     {
         var grower = await repo.GetByGrowerIdAsync(growerId);
-        return grower is null ? null : ToResponse(grower);
+        if (grower is null) return null;
+
+        var docs          = await complianceRepo.GetByGrowerIdAsync(growerId);
+        var approvedCount = docs.Count(d => d.Status == "approved");
+        var score         = (int)Math.Round((double)approvedCount / TotalDocTypes * 100);
+        return ToResponse(grower, score);
     }
 
     public async Task<(GrowerResponse? Result, string? ConflictMessage)> RegisterAsync(RegisterGrowerRequest req)
@@ -45,7 +64,7 @@ public class GrowerService(IGrowerRepository repo) : IGrowerService
         };
 
         var saved = await repo.AddAsync(grower);
-        return (ToResponse(saved), null);
+        return (ToResponse(saved, 0), null);
     }
 
     public async Task<GrowerResponse?> UpdateAsync(string growerId, UpdateGrowerRequest req)
@@ -62,12 +81,24 @@ public class GrowerService(IGrowerRepository repo) : IGrowerService
             g.GpsLat            = req.GpsLat;
             g.GpsLng            = req.GpsLng;
         });
-        return updated is null ? null : ToResponse(updated);
+        if (updated is null) return null;
+
+        var docs          = await complianceRepo.GetByGrowerIdAsync(growerId);
+        var approvedCount = docs.Count(d => d.Status == "approved");
+        var score         = (int)Math.Round((double)approvedCount / TotalDocTypes * 100);
+        return ToResponse(updated, score);
     }
 
     // ── mapping ──────────────────────────────────────────────────────────────
 
-    private static GrowerResponse ToResponse(Grower g) => new()
+    private static string DeriveRisk(int score) => score switch
+    {
+        < 40 => "high",
+        < 70 => "medium",
+        _    => "low",
+    };
+
+    private static GrowerResponse ToResponse(Grower g, int score) => new()
     {
         Id                = g.GrowerId,
         Name              = $"{g.FirstName} {g.LastName}",
@@ -81,8 +112,8 @@ public class GrowerService(IGrowerRepository repo) : IGrowerService
         GpsLat            = g.GpsLat,
         GpsLng            = g.GpsLng,
         Status            = g.Status,
-        Compliance        = null,
-        Risk              = "low",
+        Compliance        = score,
+        Risk              = DeriveRisk(score),
         IsDraft           = g.IsDraft,
         RegisteredAt      = g.RegisteredAt,
     };

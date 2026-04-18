@@ -1,5 +1,12 @@
-﻿import { useState, useEffect, useCallback, useRef } from 'react';
-import { Upload, Search, Filter, FileX, ChevronDown, ExternalLink } from 'lucide-react';
+﻿import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import {
+    Upload, Search, FileX, ChevronDown, ExternalLink,
+    Shield, AlertTriangle, CheckCircle2, TrendingUp, Info, AlertCircle,
+} from 'lucide-react';
+import {
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+    RadarChart, PolarGrid, PolarAngleAxis, Radar,
+} from 'recharts';
 import { useNavigate, useLocation } from 'react-router-dom';
 import UploadDocumentModal from '../components/modals/UploadDocumentModal';
 import ReviewDocumentModal from '../components/modals/ReviewDocumentModal';
@@ -7,6 +14,7 @@ import { useT } from '../hooks/useT';
 import { fetchGrowers } from '../services/growersApi';
 import {
     fetchComplianceSummary,
+    fetchComplianceAnalytics,
     uploadComplianceDocument,
     reviewComplianceDocument,
 } from '../services/complianceApi';
@@ -53,10 +61,12 @@ export default function Compliance() {
     };
 
     const [growers, setGrowers]                     = useState([]);
+    const [analytics, setAnalytics]                  = useState(null);
     const [selectedGrowerId, setSelectedGrowerId]     = useState(initialGrowerId);
     const [growerSearch, setGrowerSearch]             = useState('');
     const [growerDropdownOpen, setGrowerDropdownOpen] = useState(false);
     const growerDropdownRef = useRef(null);
+    const docsSectionRef = useRef(null);
     const [summary, setSummary]               = useState(null);
     const [loading, setLoading]               = useState(false);
     const [statusFilter, setStatusFilter]     = useState(tc.statusOptions.allStatuses);
@@ -66,6 +76,11 @@ export default function Compliance() {
     // Load growers list once
     useEffect(() => {
         fetchGrowers().then(setGrowers).catch(err => showError(friendlyError(err)));
+    }, [showError]);
+
+    // Load compliance analytics once
+    useEffect(() => {
+        fetchComplianceAnalytics().then(setAnalytics).catch(err => showError(friendlyError(err)));
     }, [showError]);
 
     // Close grower dropdown on outside click
@@ -141,19 +156,173 @@ export default function Compliance() {
         g.id.toLowerCase().includes(growerSearch.toLowerCase())
     );
 
+    // ── Dashboard computed stats ─────────────────────────────────────────
+    const overallCompliance = analytics?.overallComplianceRate ?? 0;
+    const highRiskCount     = analytics?.highRiskCount          ?? 0;
+    const fullyCompliant    = analytics?.fullyCompliantCount    ?? 0;
+
+    const categoryData = analytics?.categoryScores ?? [];
+    const radarData    = categoryData.map(c => ({ subject: c.category, score: c.score }));
+
+    const growersByRisk = useMemo(() => ({
+        high:   growers.filter(g => g.risk === 'high'),
+        medium: growers.filter(g => g.risk === 'medium'),
+        low:    growers.filter(g => g.risk === 'low'),
+    }), [growers]);
+
+    const recommendations = useMemo(() => {
+        const list = [];
+        const certScore = analytics?.categoryScores?.find(c => c.category === 'Certification')?.score ?? 0;
+        if (certScore < 70) list.push({
+            type: 'info',
+            title: 'Strengthen Certification Programs',
+            body: `Certification category shows ${certScore}% compliance. Recommend training programs for growers.`,
+        });
+        if (highRiskCount > 0) list.push({
+            type: 'warning',
+            title: 'Review High-Risk Growers',
+            body: `${highRiskCount} grower${highRiskCount !== 1 ? 's' : ''} require immediate attention and development plans.`,
+        });
+        const legalScore = analytics?.categoryScores?.find(c => c.category === 'Legal')?.score ?? 0;
+        if (legalScore >= 80) list.push({
+            type: 'success',
+            title: 'Strong Legal Compliance',
+            body: `${legalScore}% compliance in legal documentation. Continue current practices.`,
+        });
+        return list;
+    }, [analytics, highRiskCount]);
+
+    const dashStatCards = [
+        { title: 'Overall Compliance Rate', value: `${overallCompliance}%`, icon: Shield,        iconCls: 'stat-icon-blue'   },
+        { title: 'High Risk Growers',        value: String(highRiskCount),   icon: AlertTriangle, iconCls: 'stat-icon-orange' },
+        { title: 'Fully Compliant',          value: String(fullyCompliant),  icon: CheckCircle2,  iconCls: 'stat-icon-green'  },
+        { title: 'Improvement Rate',         value: '+8.2%',                 icon: TrendingUp,    iconCls: 'stat-icon-purple' },
+    ];
+
     return (
         <div className="compliance-page">
 
-            {/* Page header */}
+            {/* ── Dashboard Section ─────────────────────────── */}
             <div className="compliance-header">
                 <div>
-                    <h1>{tc.title}</h1>
-                    <p>{tc.subtitle}</p>
+                    <h1>Compliance &amp; Risk Management</h1>
+                    <p>Monitor and manage compliance scores and risk levels</p>
                 </div>
-                <button className="btn-filter">
-                    <Filter size={14} />
-                    {tc.filter}
-                </button>
+            </div>
+
+            {/* Stat cards */}
+            <div className="comp-stat-grid">
+                {dashStatCards.map(({ title, value, icon: Icon, iconCls }) => (
+                    <div key={title} className="comp-stat-card">
+                        <div className="comp-stat-body">
+                            <div>
+                                <p className="comp-stat-title">{title}</p>
+                                <p className="comp-stat-value">{value}</p>
+                            </div>
+                            <div className={`comp-stat-icon ${iconCls}`}>
+                                <Icon size={20} />
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Charts */}
+            <div className="comp-charts-row">
+                <div className="comp-chart-card">
+                    <h2 className="comp-chart-title">Compliance by Category</h2>
+                    <ResponsiveContainer width="100%" height={220}>
+                        <BarChart data={categoryData} barSize={40}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                            <XAxis dataKey="category" tick={{ fontSize: 12, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+                            <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+                            <Tooltip formatter={(v) => `${v}%`} contentStyle={{ fontSize: 12 }} />
+                            <Bar dataKey="score" fill="#111827" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+                <div className="comp-chart-card">
+                    <h2 className="comp-chart-title">Compliance Radar</h2>
+                    <ResponsiveContainer width="100%" height={220}>
+                        <RadarChart data={radarData}>
+                            <PolarGrid stroke="#e5e7eb" />
+                            <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: '#6b7280' }} />
+                            <Radar dataKey="score" stroke="#374151" fill="#374151" fillOpacity={0.55} />
+                        </RadarChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            {/* Risk cards */}
+            <div className="comp-risk-row">
+                {[
+                    { key: 'high',   label: 'High Risk',   cls: 'risk-high'   },
+                    { key: 'medium', label: 'Medium Risk', cls: 'risk-medium' },
+                    { key: 'low',    label: 'Low Risk',    cls: 'risk-low'    },
+                ].map(({ key, label, cls }) => (
+                    <div key={key} className={`comp-risk-card ${cls}`}>
+                        <div className="comp-risk-header">
+                            <h3 className="comp-risk-title">{label}</h3>
+                            <span className={`comp-risk-count comp-risk-count-${key}`}>
+                                {growersByRisk[key].length}
+                            </span>
+                        </div>
+                        <div className="comp-risk-list">
+                            {growersByRisk[key].length === 0 ? (
+                                <p className="comp-risk-empty">No growers</p>
+                            ) : (
+                                growersByRisk[key].map(g => (
+                                    <div key={g.id} className="comp-risk-grower" onClick={() => { setSelectedGrowerId(g.id); docsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
+                                        <div className="comp-risk-grower-top">
+                                            <span className="comp-risk-grower-name">{g.name}</span>
+                                            <span className="comp-risk-grower-id">{g.id}</span>
+                                        </div>
+                                        <div className="comp-risk-grower-bar-row">
+                                            <span className="comp-risk-bar-label">Compliance</span>
+                                            <span className={`comp-risk-pct comp-risk-pct-${key}`}>
+                                                {g.compliance ?? 0}%
+                                            </span>
+                                        </div>
+                                        <div className="comp-risk-bar-track">
+                                            <div
+                                                className={`comp-risk-bar-fill comp-risk-fill-${key}`}
+                                                style={{ width: `${g.compliance ?? 0}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Recommendations */}
+            {recommendations.length > 0 && (
+                <div className="comp-recommendations">
+                    <h2 className="comp-rec-section-title">Compliance Recommendations</h2>
+                    <div className="comp-rec-list">
+                        {recommendations.map((rec, i) => (
+                            <div key={i} className={`comp-rec-item comp-rec-${rec.type}`}>
+                                <div className="comp-rec-icon">
+                                    {rec.type === 'info'    && <Info size={16} />}
+                                    {rec.type === 'warning' && <AlertCircle size={16} />}
+                                    {rec.type === 'success' && <CheckCircle2 size={16} />}
+                                </div>
+                                <div>
+                                    <p className="comp-rec-title">{rec.title}</p>
+                                    <p className="comp-rec-body">{rec.body}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* ── Compliance Documents Section ──────────────── */}
+            <div className="comp-docs-divider" ref={docsSectionRef}>
+                <h2>{tc.title}</h2>
+                <p>{tc.subtitle}</p>
             </div>
 
             {/* Grower + status selectors */}

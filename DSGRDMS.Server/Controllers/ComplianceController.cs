@@ -8,6 +8,14 @@ namespace DSGRDMS.Server.Controllers;
 [Route("api/[controller]")]
 public class ComplianceController(IComplianceService complianceService) : ControllerBase
 {
+    // GET api/compliance/analytics
+    [HttpGet("analytics")]
+    public async Task<IActionResult> GetAnalytics()
+    {
+        var analytics = await complianceService.GetAnalyticsAsync();
+        return Ok(analytics);
+    }
+
     // GET api/compliance/{growerId}
     [HttpGet("{growerId}")]
     public async Task<IActionResult> GetSummary(string growerId)

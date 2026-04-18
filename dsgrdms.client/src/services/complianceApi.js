@@ -8,6 +8,11 @@ async function handleResponse(res) {
     return res.json();
 }
 
+export async function fetchComplianceAnalytics() {
+    const res = await fetch(`${BASE}/analytics`);
+    return handleResponse(res);
+}
+
 export async function fetchComplianceSummary(growerId) {
     const res = await fetch(`${BASE}/${growerId}`);
     return handleResponse(res);

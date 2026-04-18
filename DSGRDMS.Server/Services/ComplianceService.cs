@@ -42,7 +42,63 @@ public class ComplianceService(
             Documents    = documents,
         };
     }
+    // ── ANALYTICS ──────────────────────────────────────────────────────────────
 
+    public async Task<ComplianceAnalyticsResponse> GetAnalyticsAsync()
+    {
+        var growers = (await growerRepo.GetAllAsync()).ToList();
+        var growerCount = growers.Count;
+        var totalDocTypes = DocumentTypes.All.Count;
+
+        var emptyCategories = DocumentTypes.All
+            .GroupBy(dt => dt.Category)
+            .OrderBy(g => g.Key)
+            .Select(g => new CategoryScoreDto { Category = g.Key, Score = 0 })
+            .ToList();
+
+        if (growerCount == 0)
+            return new ComplianceAnalyticsResponse { CategoryScores = emptyCategories };
+
+        var allDocs = (await complianceRepo.GetAllAsync()).ToList();
+        var docsByGrower = allDocs
+            .GroupBy(d => d.GrowerId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        // Per-grower compliance scores (0–100)
+        var growerScores = growers
+            .Select(g =>
+            {
+                var docs = docsByGrower.TryGetValue(g.GrowerId, out var d) ? d : [];
+                return (int)Math.Round((double)docs.Count(x => x.Status == "approved") / totalDocTypes * 100);
+            })
+            .ToList();
+
+        var overallCompliance  = (int)Math.Round(growerScores.Average());
+        var highRiskCount      = growerScores.Count(s => s < 40);
+        var fullyCompliantCount = growerScores.Count(s => s >= 90);
+
+        // Category-level scores: (approved across all growers for that category) / (growers × docs in category)
+        var categoryScores = DocumentTypes.All
+            .GroupBy(dt => dt.Category)
+            .Select(catGroup =>
+            {
+                var docIds        = catGroup.Select(dt => dt.Id).ToHashSet();
+                var totalPossible = growerCount * catGroup.Count();
+                var totalApproved = allDocs.Count(d => docIds.Contains(d.DocumentTypeId) && d.Status == "approved");
+                var score         = (int)Math.Round((double)totalApproved / totalPossible * 100);
+                return new CategoryScoreDto { Category = catGroup.Key, Score = score };
+            })
+            .OrderBy(c => c.Category)
+            .ToList();
+
+        return new ComplianceAnalyticsResponse
+        {
+            OverallComplianceRate  = overallCompliance,
+            HighRiskCount          = highRiskCount,
+            FullyCompliantCount    = fullyCompliantCount,
+            CategoryScores         = categoryScores,
+        };
+    }
     // ── UPLOAD ───────────────────────────────────────────────────────────────
 
     public async Task<(ComplianceDocumentDto? Result, string? Error)> UploadAsync(

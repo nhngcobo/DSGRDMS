@@ -29,3 +29,17 @@ public class ReviewDocumentRequest
     public string Action { get; set; } = string.Empty; // "approved" | "rejected"
     public string? Reason { get; set; }
 }
+
+public class ComplianceAnalyticsResponse
+{
+    public int OverallComplianceRate { get; set; }
+    public int HighRiskCount { get; set; }
+    public int FullyCompliantCount { get; set; }
+    public List<CategoryScoreDto> CategoryScores { get; set; } = [];
+}
+
+public class CategoryScoreDto
+{
+    public string Category { get; set; } = string.Empty;
+    public int Score { get; set; }
+}

@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import Growers from './pages/Growers';
 import GrowerDetail from './pages/GrowerDetail';
 import Compliance from './pages/Compliance';
+import FieldVisits from './pages/FieldVisits';
 import Settings from './pages/Settings';
 import './App.css';
 
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/growers"         element={<Growers />} />
                     <Route path="/growers/:id"     element={<GrowerDetail />} />
                     <Route path="/compliance"    element={<Compliance />} />
+                    <Route path="/field-visits"  element={<FieldVisits />} />
                     <Route path="/settings"      element={<Settings />} />
                 </Routes>
             </main>

@@ -6,6 +6,9 @@ namespace DSGRDMS.Server.Repositories;
 
 public class ComplianceRepository(AppDbContext db) : IComplianceRepository
 {
+    public async Task<IEnumerable<ComplianceDocument>> GetAllAsync() =>
+        await db.ComplianceDocuments.ToListAsync();
+
     public async Task<IEnumerable<ComplianceDocument>> GetByGrowerIdAsync(string growerId) =>
         await db.ComplianceDocuments.Where(d => d.GrowerId == growerId).ToListAsync();
 
