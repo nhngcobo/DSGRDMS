@@ -6,6 +6,8 @@ import {
 import { Users, Clock, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { useT } from '../hooks/useT';
 import { fetchDashboardSummary } from '../services/dashboardApi';
+import { useNotification } from '../context/NotificationContext';
+import { friendlyError } from '../utils/apiErrors';
 import './Dashboard.css';
 
 function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, name, value }) {
@@ -23,6 +25,7 @@ function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, name, valu
 export default function Dashboard() {
     const t = useT();
     const td = t.dashboard;
+    const { showError } = useNotification();
 
     const [summary, setSummary] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -30,9 +33,9 @@ export default function Dashboard() {
     useEffect(() => {
         fetchDashboardSummary()
             .then(data => setSummary(data))
-            .catch(() => {})
+            .catch(err => showError(friendlyError(err)))
             .finally(() => setLoading(false));
-    }, []);
+    }, [showError]);
 
     const pieData = [
         { name: td.pieLabels.lowRisk,    value: 64, color: '#22c55e' },

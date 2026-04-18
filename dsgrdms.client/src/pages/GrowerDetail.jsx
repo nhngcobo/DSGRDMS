@@ -3,6 +3,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, FileX, User, Building2, Leaf, MapPin, FileCheck } from 'lucide-react';
 import { fetchGrowerById } from '../services/growersApi';
 import { fetchComplianceSummary } from '../services/complianceApi';
+import { useNotification } from '../context/NotificationContext';
+import { friendlyError } from '../utils/apiErrors';
 import './GrowerDetail.css';
 
 const STATUS_META = {
@@ -23,16 +25,15 @@ export default function GrowerDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { hash } = useLocation();
+    const { showError } = useNotification();
 
     const [grower, setGrower]   = useState(null);
     const [summary, setSummary] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError]     = useState(null);
 
     useEffect(() => {
         async function load() {
             setLoading(true);
-            setError(null);
             try {
                 const [g, s] = await Promise.all([
                     fetchGrowerById(id),
@@ -41,13 +42,14 @@ export default function GrowerDetail() {
                 setGrower(g);
                 setSummary(s);
             } catch (err) {
-                setError(err.message);
+                showError(friendlyError(err));
+                navigate('/growers');
             } finally {
                 setLoading(false);
             }
         }
         load();
-    }, [id]);
+    }, [id, showError, navigate]);
 
     useEffect(() => {
         if (!loading && hash === '#compliance') {
@@ -56,7 +58,6 @@ export default function GrowerDetail() {
     }, [loading, hash]);
 
     if (loading) return <div className="gd-page"><div className="gd-state">Loading…</div></div>;
-    if (error)   return <div className="gd-page"><div className="gd-state gd-error">{error}</div></div>;
     if (!grower) return null;
 
     const checklist     = summary?.documents ?? [];

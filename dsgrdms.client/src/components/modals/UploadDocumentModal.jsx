@@ -1,36 +1,35 @@
 import { useState, useRef } from 'react';
 import { X, Upload } from 'lucide-react';
 import { useT } from '../../hooks/useT';
+import { useNotification } from '../../context/NotificationContext';
+import { friendlyError } from '../../utils/apiErrors';
 import './UploadDocumentModal.css';
 
 export default function UploadDocumentModal({ doc, onClose, onSubmit }) {
     const t = useT();
     const tm = t.modals.uploadDocument;
+    const { showError } = useNotification();
     const [file, setFile] = useState(null);
     const [submitting, setSubmitting] = useState(false);
-    const [apiError, setApiError] = useState(null);
     const inputRef = useRef();
 
     function handleFile(e) {
         setFile(e.target.files[0] ?? null);
-        setApiError(null);
     }
 
     function handleDrop(e) {
         e.preventDefault();
         setFile(e.dataTransfer.files[0] ?? null);
-        setApiError(null);
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
         if (!file) return;
         setSubmitting(true);
-        setApiError(null);
         try {
             await onSubmit(file);
         } catch (err) {
-            setApiError(err.message);
+            showError(friendlyError(err));
         } finally {
             setSubmitting(false);
         }
@@ -80,7 +79,6 @@ export default function UploadDocumentModal({ doc, onClose, onSubmit }) {
                     </div>
 
                     <div className="upload-modal-footer">
-                        {apiError && <span className="upload-api-error">{apiError}</span>}
                         <button type="button" className="btn-cancel" onClick={onClose} disabled={submitting}>{tm.cancel}</button>
                         <button type="submit" className="btn-submit" disabled={!file || submitting}>
                             <Upload size={14} />

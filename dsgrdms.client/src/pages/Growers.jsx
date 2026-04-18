@@ -4,33 +4,34 @@ import { useNavigate } from 'react-router-dom';
 import NewGrowerModal from '../components/modals/NewGrowerModal';
 import { useT } from '../hooks/useT';
 import { fetchGrowers } from '../services/growersApi';
+import { useNotification } from '../context/NotificationContext';
+import { friendlyError } from '../utils/apiErrors';
 import './Growers.css';
 
 export default function Growers() {
     const t = useT();
     const tg = t.growers;
     const navigate = useNavigate();
+    const { showError } = useNotification();
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState(tg.filters.all);
     const [showModal, setShowModal] = useState(false);
     const [growers, setGrowers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [apiError, setApiError] = useState(null);
 
     const STATUS_FILTERS = [tg.filters.all, tg.filters.pending, tg.filters.verified];
 
     const loadGrowers = useCallback(async () => {
         setLoading(true);
-        setApiError(null);
         try {
             const data = await fetchGrowers();
             setGrowers(data);
         } catch (err) {
-            setApiError(err.message);
+            showError(friendlyError(err));
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [showError]);
 
     useEffect(() => { loadGrowers(); }, [loadGrowers]);
 
@@ -86,10 +87,9 @@ export default function Growers() {
 
                 {/* States */}
                 {loading && <div className="growers-state">Loading growers…</div>}
-                {apiError && <div className="growers-state growers-error">{apiError}</div>}
 
                 {/* Table */}
-                {!loading && !apiError && (
+                {!loading && (
                     <table className="growers-table">
                         <thead>
                             <tr>

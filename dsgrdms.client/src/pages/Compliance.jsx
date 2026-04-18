@@ -10,6 +10,8 @@ import {
     uploadComplianceDocument,
     reviewComplianceDocument,
 } from '../services/complianceApi';
+import { useNotification } from '../context/NotificationContext';
+import { friendlyError } from '../utils/apiErrors';
 import './Compliance.css';
 
 const STATUS_META = {
@@ -25,6 +27,7 @@ export default function Compliance() {
     const navigate = useNavigate();
     const { search } = useLocation();
     const initialGrowerId = new URLSearchParams(search).get('grower') ?? '';
+    const { showError } = useNotification();
 
     const STATUS_OPTIONS = [
         tc.statusOptions.allStatuses,
@@ -62,8 +65,8 @@ export default function Compliance() {
 
     // Load growers list once
     useEffect(() => {
-        fetchGrowers().then(setGrowers).catch(() => {});
-    }, []);
+        fetchGrowers().then(setGrowers).catch(err => showError(friendlyError(err)));
+    }, [showError]);
 
     // Close grower dropdown on outside click
     useEffect(() => {
@@ -83,27 +86,36 @@ export default function Compliance() {
         try {
             const data = await fetchComplianceSummary(growerId);
             setSummary(data);
-        } catch {
+        } catch (err) {
+            showError(friendlyError(err));
             setSummary(null);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [showError]);
 
     useEffect(() => { loadSummary(selectedGrowerId); }, [selectedGrowerId, loadSummary]);
 
     // Upload handler — called by UploadDocumentModal with the File object
     async function handleUpload(file) {
-        await uploadComplianceDocument(selectedGrowerId, uploadDoc.docTypeId, file);
-        setUploadDoc(null);
-        await loadSummary(selectedGrowerId);
+        try {
+            await uploadComplianceDocument(selectedGrowerId, uploadDoc.docTypeId, file);
+            setUploadDoc(null);
+            await loadSummary(selectedGrowerId);
+        } catch (err) {
+            showError(friendlyError(err));
+        }
     }
 
     // Review handler — called by ReviewDocumentModal with (action, reason)
     async function handleReview(action, reason) {
-        await reviewComplianceDocument(selectedGrowerId, reviewDoc.docTypeId, action, reason);
-        setReviewDoc(null);
-        await loadSummary(selectedGrowerId);
+        try {
+            await reviewComplianceDocument(selectedGrowerId, reviewDoc.docTypeId, action, reason);
+            setReviewDoc(null);
+            await loadSummary(selectedGrowerId);
+        } catch (err) {
+            showError(friendlyError(err));
+        }
     }
 
     const checklist = summary?.documents ?? [];

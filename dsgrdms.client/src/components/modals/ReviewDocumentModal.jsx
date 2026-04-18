@@ -1,24 +1,25 @@
 import { useState } from 'react';
 import { X, XCircle, CheckCircle, FileDown, ExternalLink } from 'lucide-react';
 import { useT } from '../../hooks/useT';
+import { useNotification } from '../../context/NotificationContext';
+import { friendlyError } from '../../utils/apiErrors';
 import './ReviewDocumentModal.css';
 
 export default function ReviewDocumentModal({ doc, onClose, onReview }) {
     const t = useT();
     const tm = t.modals.reviewDocument;
+    const { showError } = useNotification();
     const [reason, setReason] = useState('');
     const [reasonError, setReasonError] = useState('');
     const [submitting, setSubmitting] = useState(false);
-    const [apiError, setApiError] = useState(null);
 
     async function handleReject() {
         if (!reason.trim()) { setReasonError(tm.rejectionRequired); return; }
         setSubmitting(true);
-        setApiError(null);
         try {
             await onReview('rejected', reason.trim());
         } catch (err) {
-            setApiError(err.message);
+            showError(friendlyError(err));
         } finally {
             setSubmitting(false);
         }
@@ -26,11 +27,10 @@ export default function ReviewDocumentModal({ doc, onClose, onReview }) {
 
     async function handleApprove() {
         setSubmitting(true);
-        setApiError(null);
         try {
             await onReview('approved');
         } catch (err) {
-            setApiError(err.message);
+            showError(friendlyError(err));
         } finally {
             setSubmitting(false);
         }
@@ -90,7 +90,6 @@ export default function ReviewDocumentModal({ doc, onClose, onReview }) {
 
                 {/* Footer */}
                 <div className="review-modal-footer">
-                    {apiError && <span className="review-api-error">{apiError}</span>}
                     <button type="button" className="btn-cancel" onClick={onClose} disabled={submitting}>{tm.cancel}</button>
                     <button type="button" className="btn-reject" onClick={handleReject} disabled={submitting}>
                         <XCircle size={15} />

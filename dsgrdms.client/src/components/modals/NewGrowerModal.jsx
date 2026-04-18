@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import { registerGrower } from '../../services/growersApi';
+import { useNotification } from '../../context/NotificationContext';
+import { friendlyError } from '../../utils/apiErrors';
 import './NewGrowerModal.css';
 
 const EMPTY = {
@@ -14,10 +16,10 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
     const t = useT();
     const tm = t.modals.newGrower;
     const tf = tm.fields;
+    const { showError } = useNotification();
     const [form, setForm] = useState(EMPTY);
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
-    const [apiError, setApiError] = useState(null);
 
     function set(field) {
         return e => {
@@ -114,13 +116,12 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
             return;
         }
         setSubmitting(true);
-        setApiError(null);
         try {
             await registerGrower(form);
             onSubmit?.();
             onClose();
         } catch (err) {
-            setApiError(err.message);
+            showError(friendlyError(err));
         } finally {
             setSubmitting(false);
         }
@@ -128,13 +129,12 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
 
     async function handleSaveDraft() {
         setSubmitting(true);
-        setApiError(null);
         try {
             await registerGrower({ ...form, draft: true });
             onSubmit?.();
             onClose();
         } catch (err) {
-            setApiError(err.message);
+            showError(friendlyError(err));
         } finally {
             setSubmitting(false);
         }
@@ -260,7 +260,6 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
 
                 {/* Footer */}
                 <div className="modal-footer">
-                    {apiError && <span className="modal-api-error">{apiError}</span>}
                     <button type="button" className="btn-cancel" onClick={onClose} disabled={submitting}>{tm.cancel}</button>
                     <button type="button" className="btn-draft" onClick={handleSaveDraft} disabled={submitting}>{submitting ? '…' : tm.saveAsDraft}</button>
                     <button type="submit" form="grower-form" className="btn-submit" disabled={submitting}>{submitting ? '…' : tm.submitReview}</button>
