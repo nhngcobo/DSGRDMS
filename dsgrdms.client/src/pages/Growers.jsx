@@ -117,7 +117,7 @@ export default function Growers() {
                                     <td colSpan={7} className="growers-state">{tg.emptyState ?? 'No growers found.'}</td>
                                 </tr>
                             ) : paged.map(g => (
-                                <tr key={g.id}>
+                                <tr key={g.id} className="grower-row" onClick={() => navigate(`/growers/${g.id}`)}>
                                     <td className="grower-id">{g.id}</td>
                                     <td>
                                         <div className="grower-name">{g.name}</div>
@@ -139,7 +139,7 @@ export default function Growers() {
                                     </td>
                                     <td><span className={`badge badge-risk-${g.risk}`}>{g.risk}</span></td>
                                     <td>
-                                        <button className="btn-view" onClick={() => navigate(`/growers/${g.id}`)}>                                            
+                                        <button className="btn-view" onClick={e => { e.stopPropagation(); navigate(`/growers/${g.id}`); }}>
                                             <Eye size={14} />
                                             {tg.table.view}
                                         </button>

@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import './GrowerMap.css';
 
 export default function GrowerMap({ lat, lng, growerName }) {
-    const embedSrc  = `https://maps.google.com/maps?q=${lat},${lng}&z=14&output=embed`;
+    const [loaded, setLoaded] = useState(false);
+    const embedSrc  = `https://maps.google.com/maps?q=${lat},${lng}&z=14&t=k&output=embed`;
     const mapsUrl   = `https://www.google.com/maps?q=${lat},${lng}`;
 
     return (
@@ -21,12 +23,20 @@ export default function GrowerMap({ lat, lng, growerName }) {
                 </a>
             </div>
             <div className="gd-map-container">
+                {!loaded && (
+                    <div className="gd-map-skeleton">
+                        <div className="gd-map-spinner" />
+                        <span className="gd-map-loading-text">Loading map…</span>
+                    </div>
+                )}
                 <iframe
                     title={`Map – ${growerName}`}
                     src={embedSrc}
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
+                    onLoad={() => setLoaded(true)}
+                    style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.4s ease' }}
                 />
             </div>
             <p className="gd-map-coords">

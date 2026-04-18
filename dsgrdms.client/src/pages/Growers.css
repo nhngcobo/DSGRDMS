@@ -167,6 +167,10 @@
     background: #fafafa;
 }
 
+.grower-row {
+    cursor: pointer;
+}
+
 .grower-id {
     font-weight: 500;
     color: #111827 !important;
