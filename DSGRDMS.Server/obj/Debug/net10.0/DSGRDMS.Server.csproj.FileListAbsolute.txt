@@ -160,3 +160,4 @@ C:\Users\nhngcobo\OneDrive - Deloitte (O365D)\Documents\DSGRDMS\DSGRDMS\DSGRDMS.
 C:\Users\nhngcobo\OneDrive - Deloitte (O365D)\Documents\DSGRDMS\DSGRDMS\DSGRDMS.Server\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\nhngcobo\OneDrive - Deloitte (O365D)\Documents\DSGRDMS\DSGRDMS\DSGRDMS.Server\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\nhngcobo\OneDrive - Deloitte (O365D)\Documents\DSGRDMS\DSGRDMS\DSGRDMS.Server\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\nhngcobo\OneDrive - Deloitte (O365D)\Documents\DSGRDMS\DSGRDMS\DSGRDMS.Server\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

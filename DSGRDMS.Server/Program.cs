@@ -1,5 +1,10 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using DSGRDMS.Server.Data;
+using DSGRDMS.Server.Helpers;
+using DSGRDMS.Server.Models;
 using DSGRDMS.Server.Repositories;
 using DSGRDMS.Server.Services;
 
@@ -18,6 +23,26 @@ builder.Services.AddScoped<IGrowerRepository, GrowerRepository>();
 builder.Services.AddScoped<IGrowerService, GrowerService>();
 builder.Services.AddScoped<IComplianceRepository, ComplianceRepository>();
 builder.Services.AddScoped<IComplianceService, ComplianceService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// JWT Authentication
+var jwtKey = builder.Configuration["Jwt:Key"]!;
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opts =>
+    {
+        opts.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer           = true,
+            ValidateAudience         = true,
+            ValidateLifetime         = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer              = builder.Configuration["Jwt:Issuer"],
+            ValidAudience            = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            RoleClaimType            = "role",
+            NameClaimType            = "name",
+        };
+    });
 
 builder.Services.AddCors(options =>
 {
@@ -46,6 +71,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("FrontendDev");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
@@ -55,6 +81,17 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+
+    // Seed demo users if the table is empty
+    if (!db.Users.Any())
+    {
+        db.Users.AddRange(
+            new User { Email = "admin@demo.com",   PasswordHash = PasswordHelper.Hash("Admin123!"),   Role = "admin",        FullName = "System Admin"   },
+            new User { Email = "officer@demo.com", PasswordHash = PasswordHelper.Hash("Officer123!"), Role = "field_officer", FullName = "James Dlamini" },
+            new User { Email = "grower@demo.com",  PasswordHash = PasswordHelper.Hash("Grower123!"),  Role = "grower",       FullName = "Demo Grower"    }
+        );
+        db.SaveChanges();
+    }
 }
 
 app.MapFallbackToFile("/index.html");

@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
     Users,
@@ -9,12 +9,13 @@ import {
     FileText,
 } from 'lucide-react';
 import { useT } from '../../hooks/useT';
-import { useRole, ROLES } from '../../context/RoleContext';
+import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
 
 export default function Sidebar() {
     const t = useT();
-    const { role, setRole } = useRole();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     const adminNav = [
         { to: '/',             label: t.nav.dashboard,   icon: LayoutDashboard },
@@ -32,12 +33,23 @@ export default function Sidebar() {
     ];
 
     const navItems =
-        role === 'admin'        ? adminNav
-      : role === 'field_officer' ? fieldOfficerNav
+        user?.role === 'admin'        ? adminNav
+      : user?.role === 'field_officer' ? fieldOfficerNav
       : growerNav;
 
-    const currentRoleLabel = ROLES.find(r => r.key === role)?.label ?? role;
-    const currentInitials  = ROLES.find(r => r.key === role)?.initials ?? '?';
+    const roleLabel =
+        user?.role === 'admin'        ? 'Admin'
+      : user?.role === 'field_officer' ? 'Field Officer'
+      : 'Grower';
+
+    const initials = user?.name
+        ? user.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
+        : '?';
+
+    function handleLogout() {
+        logout();
+        navigate('/');
+    }
 
     return (
         <aside className="sidebar">
@@ -63,25 +75,11 @@ export default function Sidebar() {
             </nav>
 
             <div className="sidebar-footer">
-                {/* Role switcher */}
-                <div className="sidebar-role-switcher">
-                    <label className="sidebar-role-label">Demo Role</label>
-                    <select
-                        className="sidebar-role-select"
-                        value={role}
-                        onChange={e => setRole(e.target.value)}
-                    >
-                        {ROLES.map(r => (
-                            <option key={r.key} value={r.key}>{r.label}</option>
-                        ))}
-                    </select>
-                </div>
-
                 <div className="sidebar-user">
-                    <div className="sidebar-avatar">{currentInitials}</div>
+                    <div className="sidebar-avatar">{initials}</div>
                     <div className="sidebar-user-info">
-                        <span className="sidebar-user-name">{t.user.name}</span>
-                        <span className="sidebar-user-role">{currentRoleLabel}</span>
+                        <span className="sidebar-user-name">{user?.name ?? '—'}</span>
+                        <span className="sidebar-user-role">{roleLabel}</span>
                     </div>
                 </div>
                 <div className="sidebar-footer-links">
@@ -94,7 +92,7 @@ export default function Sidebar() {
                         <Settings size={18} />
                         <span>{t.nav.settings}</span>
                     </NavLink>
-                    <button className="sidebar-link sidebar-logout">
+                    <button className="sidebar-link sidebar-logout" onClick={handleLogout}>
                         <LogOut size={18} />
                         <span>{t.nav.logout}</span>
                     </button>

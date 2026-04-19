@@ -7,6 +7,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<Grower> Growers { get; set; }
     public DbSet<ComplianceDocument> ComplianceDocuments { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +24,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasKey(d => d.Id);
             e.HasIndex(d => new { d.GrowerId, d.DocumentTypeId }).IsUnique();
+        });
+
+        modelBuilder.Entity<User>(e =>
+        {
+            e.HasKey(u => u.Id);
+            e.HasIndex(u => u.Email).IsUnique();
         });
     }
 }

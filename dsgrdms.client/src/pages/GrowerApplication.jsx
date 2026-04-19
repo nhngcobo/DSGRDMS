@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { CheckCircle2, Upload, FileCheck, AlertCircle, RotateCcw } from 'lucide-react';
 import { registerGrower } from '../services/growersApi';
 import { fetchComplianceSummary, uploadComplianceDocument } from '../services/complianceApi';
-import { useRole } from '../context/RoleContext';
+import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
 import './GrowerApplication.css';
@@ -36,10 +36,11 @@ const STATUS_BADGE = {
 };
 
 export default function GrowerApplication() {
-    const { growerAppId, setGrowerAppId, clearGrowerApp } = useRole();
+    const { user, linkGrower } = useAuth();
+    const growerAppId = user?.growerId ?? null;
     const { showError, showSuccess } = useNotification();
 
-    const [step, setStep]               = useState(growerAppId ? 2 : 1);
+    const [step, setStep]               = useState(user?.growerId ? 2 : 1);
     const [form, setForm]               = useState(EMPTY_FORM);
     const [errors, setErrors]           = useState({});
     const [submitting, setSubmitting]   = useState(false);
@@ -93,7 +94,7 @@ export default function GrowerApplication() {
                 gpsLat: form.gpsLat !== '' ? parseFloat(form.gpsLat) : null,
                 gpsLng: form.gpsLng !== '' ? parseFloat(form.gpsLng) : null,
             });
-            setGrowerAppId(grower.id);
+            await linkGrower(grower.id); // links account + refreshes JWT with growerId
             await loadSummary(grower.id);
             setStep(2);
         } catch (err) {

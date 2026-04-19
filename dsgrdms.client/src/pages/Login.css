@@ -1,0 +1,174 @@
+.login-page {
+    min-height: 100vh;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.login-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem 2rem 2rem;
+}
+
+/* ── Brand ──────────────────────────────────── */
+.login-brand {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-logo {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 0.75rem;
+}
+
+.login-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.3rem;
+    letter-spacing: -0.02em;
+}
+
+.login-subtitle {
+    font-size: 0.82rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* ── Form ───────────────────────────────────── */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.login-field label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.login-input {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #111827;
+    background: #f9fafb;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.login-input:focus {
+    border-color: #111827;
+    background: #fff;
+}
+
+.login-field.has-error .login-input {
+    border-color: #ef4444;
+}
+
+.login-error {
+    font-size: 0.75rem;
+    color: #ef4444;
+}
+
+/* ── Password toggle ────────────────────────── */
+.login-password-wrap {
+    position: relative;
+}
+
+.login-password-wrap .login-input {
+    padding-right: 2.5rem;
+}
+
+.login-eye {
+    position: absolute;
+    right: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.login-eye:hover { color: #374151; }
+
+/* ── Submit button ──────────────────────────── */
+.login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.65rem;
+    background: #111827;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.25rem;
+    transition: background 0.15s;
+}
+
+.login-btn:hover:not(:disabled) { background: #1f2937; }
+.login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Demo hint ──────────────────────────────── */
+.login-demo-hint {
+    margin-top: 1.75rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.login-demo-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 0.6rem;
+}
+
+.login-demo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+}
+
+.login-demo-table td {
+    padding: 0.2rem 0.4rem;
+    color: #475569;
+    vertical-align: middle;
+}
+
+.login-demo-table td:first-child {
+    font-weight: 600;
+    color: #334155;
+    white-space: nowrap;
+    width: 30%;
+}

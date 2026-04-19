@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/layout/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Growers from './pages/Growers';
@@ -7,21 +7,42 @@ import Compliance from './pages/Compliance';
 import FieldVisits from './pages/FieldVisits';
 import GrowerApplication from './pages/GrowerApplication';
 import Settings from './pages/Settings';
+import Login from './pages/Login';
+import { useAuth } from './context/AuthContext';
 import './App.css';
 
 function App() {
+    const { user } = useAuth();
+
+    if (!user) {
+        return <Login />;
+    }
+
     return (
         <div className="app-layout">
             <Sidebar />
             <main className="app-main">
                 <Routes>
-                    <Route path="/"             element={<Dashboard />} />
-                    <Route path="/growers"         element={<Growers />} />
-                    <Route path="/growers/:id"     element={<GrowerDetail />} />
-                    <Route path="/compliance"    element={<Compliance />} />
-                    <Route path="/field-visits"  element={<FieldVisits />} />
-                    <Route path="/my-application" element={<GrowerApplication />} />
-                    <Route path="/settings"      element={<Settings />} />
+                    {/* Admin & Field Officer routes */}
+                    {(user.role === 'admin' || user.role === 'field_officer') && <>
+                        <Route path="/"             element={<Dashboard />} />
+                        <Route path="/growers"      element={<Growers />} />
+                        <Route path="/growers/:id"  element={<GrowerDetail />} />
+                        <Route path="/compliance"   element={<Compliance />} />
+                        <Route path="/field-visits" element={<FieldVisits />} />
+                        <Route path="/settings"     element={<Settings />} />
+                    </>}
+
+                    {/* Grower routes */}
+                    {user.role === 'grower' && <>
+                        <Route path="/my-application" element={<GrowerApplication />} />
+                        <Route path="/settings"       element={<Settings />} />
+                    </>}
+
+                    {/* Catch-all redirect to home */}
+                    <Route path="*" element={
+                        <Navigate to={user.role === 'grower' ? '/my-application' : '/'} replace />
+                    } />
                 </Routes>
             </main>
         </div>
