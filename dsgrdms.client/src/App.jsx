@@ -8,7 +8,7 @@ import FieldVisits from './pages/FieldVisits';
 import GrowerApplication from './pages/GrowerApplication';
 import Settings from './pages/Settings';
 import Messages from './pages/Messages';
-import Login from './pages/Login';
+import LandingPage from './pages/LandingPage';
 import { useAuth } from './context/AuthContext';
 import './App.css';
 
@@ -16,7 +16,7 @@ function App() {
     const { user } = useAuth();
 
     if (!user) {
-        return <Login />;
+        return <LandingPage />;
     }
 
     return (
