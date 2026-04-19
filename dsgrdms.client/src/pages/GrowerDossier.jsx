@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Download, Calendar, MapPin, FileText, BarChart3, Droplet, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MapPin, FileText, BarChart3, Droplet, Clock, Search } from 'lucide-react';
 import './GrowerDossier.css';
 
 const mockComplianceDocs = [
@@ -18,13 +19,27 @@ const mockVisits = [
 
 export default function GrowerDossier() {
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
 
     return (
         <div className="grower-dossier">
+            {/* Search Bar */}
+            <div className="dossier-search">
+                <Search size={18} className="search-icon" />
+                <input
+                    type="text"
+                    placeholder="Search registry, parcels, or reports..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                />
+            </div>
+
             {/* Header */}
             <section className="dossier-header">
                 <div className="header-content">
-                    <img src={user?.avatar || 'https://via.placeholder.com/128'} alt="Grower" className="grower-avatar" />
+                    <img src="/person1.png" alt="Grower" className="grower-avatar" />
                     <div className="header-info">
                         <h1>{user?.fullName || 'Grower Profile'}</h1>
                         <div className="header-meta">
@@ -35,16 +50,6 @@ export default function GrowerDossier() {
                             </span>
                         </div>
                     </div>
-                </div>
-                <div className="header-actions">
-                    <button className="btn btn-secondary">
-                        <Download size={16} />
-                        Export Dossier
-                    </button>
-                    <button className="btn btn-primary">
-                        <Calendar size={16} />
-                        Schedule Visit
-                    </button>
                 </div>
             </section>
 
@@ -58,7 +63,7 @@ export default function GrowerDossier() {
                     <div className="card-body">
                         <div className="record-group">
                             <label>Full Legal Name</label>
-                            <p>{user?.fullName}</p>
+                            <p>Nhlanhla Fortune Ngcobo</p>
                         </div>
                         <div className="record-group">
                             <label>Contact Details</label>
@@ -149,6 +154,7 @@ export default function GrowerDossier() {
                             </div>
                         ))}
                     </div>
+                    <button className="btn-view-all" onClick={() => navigate('/compliance')}>View All Documents</button>
                 </div>
 
                 {/* Visit Chronology */}
@@ -168,7 +174,7 @@ export default function GrowerDossier() {
                             </div>
                         ))}
                     </div>
-                    <button className="btn-view-all">View Complete Timeline</button>
+                    <button className="btn-view-all" onClick={() => navigate('/field-visits')}>View Complete Timeline</button>
                 </div>
             </div>
         </div>

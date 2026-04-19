@@ -5,6 +5,7 @@ import Growers from './pages/Growers';
 import GrowerDetail from './pages/GrowerDetail';
 import Compliance from './pages/Compliance';
 import FieldVisits from './pages/FieldVisits';
+import FieldVisitTimeline from './pages/FieldVisitTimeline';
 import Settings from './pages/Settings';
 import Messages from './pages/Messages';
 import LandingPage from './pages/LandingPage';
@@ -38,10 +39,8 @@ function App() {
                     {/* Grower routes */}
                     {user.role === 'grower' && <>
                         <Route path="/" element={<GrowerDossier />} />
-                        <Route path="/growers" element={<Growers />} />
-                        <Route path="/growers/:id" element={<GrowerDetail />} />
                         <Route path="/compliance" element={<Compliance />} />
-                        <Route path="/field-visits" element={<FieldVisits />} />
+                        <Route path="/field-visits" element={<FieldVisitTimeline />} />
                         <Route path="/messages" element={<Messages />} />
                         <Route path="/settings" element={<Settings />} />
                     </>}
