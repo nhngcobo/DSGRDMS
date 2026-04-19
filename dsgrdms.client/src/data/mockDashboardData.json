@@ -1,0 +1,23 @@
+{
+  "totalGrowers": 247,
+  "pendingCount": 18,
+  "verifiedCount": 212,
+  "highRiskCount": 9,
+  "monthlyRegistrations": [
+    { "month": "Sep", "registrations": 18 },
+    { "month": "Oct", "registrations": 24 },
+    { "month": "Nov", "registrations": 31 },
+    { "month": "Dec", "registrations": 22 },
+    { "month": "Jan", "registrations": 28 },
+    { "month": "Feb", "registrations": 35 },
+    { "month": "Mar", "registrations": 42 },
+    { "month": "Apr", "registrations": 29 }
+  ],
+  "recentApplications": [
+    { "id": "2891", "name": "Themba Dlamini", "status": "pending" },
+    { "id": "2890", "name": "Zanele Mkhize", "status": "in-review" },
+    { "id": "2889", "name": "Sipho Nkosi", "status": "approved" },
+    { "id": "2888", "name": "Nomsa Khumalo", "status": "pending" },
+    { "id": "2887", "name": "Thabo Mokoena", "status": "in-review" }
+  ]
+}

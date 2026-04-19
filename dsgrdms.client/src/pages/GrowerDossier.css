@@ -127,15 +127,14 @@
 
 .status-badge {
     display: inline-block;
-    padding: 0.375rem 0.75rem;
-    background: var(--color-primary-container);
-    color: var(--color-on-primary-container);
+    padding: 0.375rem 0.85rem;
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-radius: 9999px;
+    border-radius: 20px;
     font-family: 'Open Sans', sans-serif;
+    border: 1px solid transparent;
 }
 
 .location {
@@ -456,14 +455,24 @@
     margin: 0;
 }
 
-.status-badge.compliant {
-    background: var(--color-primary-container);
-    color: var(--color-on-primary-container);
+.status-badge.compliant,
+.status-badge.approved {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.25);
 }
 
 .status-badge.pending {
-    background: var(--color-tertiary-container);
-    color: var(--color-on-tertiary-container);
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+    border-color: rgba(245, 158, 11, 0.25);
+}
+
+.status-badge.rejected,
+.status-badge.failed {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+    border-color: rgba(239, 68, 68, 0.25);
 }
 
 /* ═══════════════════════════════════════════════════

@@ -6,6 +6,7 @@ import { useT } from '../hooks/useT';
 import { fetchGrowers } from '../services/growersApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
+import mockGrowersData from '../data/mockGrowersData.json';
 import './Growers.css';
 
 const PAGE_SIZE = 10;
@@ -31,9 +32,16 @@ export default function Growers() {
         setLoading(true);
         try {
             const data = await fetchGrowers();
-            setGrowers(data);
+            // Use mock data if API returns empty or invalid data
+            if (!data || data.length === 0) {
+                setGrowers(mockGrowersData);
+            } else {
+                setGrowers(data);
+            }
         } catch (err) {
             showError(friendlyError(err));
+            // Use mock data as fallback
+            setGrowers(mockGrowersData);
         } finally {
             setLoading(false);
         }
