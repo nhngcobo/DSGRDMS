@@ -5,10 +5,10 @@ import Growers from './pages/Growers';
 import GrowerDetail from './pages/GrowerDetail';
 import Compliance from './pages/Compliance';
 import FieldVisits from './pages/FieldVisits';
-import GrowerApplication from './pages/GrowerApplication';
 import Settings from './pages/Settings';
 import Messages from './pages/Messages';
 import LandingPage from './pages/LandingPage';
+import GrowerDossier from './pages/GrowerDossier';
 import { useAuth } from './context/AuthContext';
 import './App.css';
 
@@ -37,14 +37,18 @@ function App() {
 
                     {/* Grower routes */}
                     {user.role === 'grower' && <>
-                        <Route path="/my-application" element={<GrowerApplication />} />
-                        <Route path="/messages"        element={<Messages />} />
-                        <Route path="/settings"        element={<Settings />} />
+                        <Route path="/" element={<GrowerDossier />} />
+                        <Route path="/growers" element={<Growers />} />
+                        <Route path="/growers/:id" element={<GrowerDetail />} />
+                        <Route path="/compliance" element={<Compliance />} />
+                        <Route path="/field-visits" element={<FieldVisits />} />
+                        <Route path="/messages" element={<Messages />} />
+                        <Route path="/settings" element={<Settings />} />
                     </>}
 
                     {/* Catch-all redirect to home */}
                     <Route path="*" element={
-                        <Navigate to={user.role === 'grower' ? '/my-application' : '/'} replace />
+                        <Navigate to="/" replace />
                     } />
                 </Routes>
             </main>

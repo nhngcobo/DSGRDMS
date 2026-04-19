@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\nhngcobo\\OneDrive - Deloitte (O365D)\\Documents\\DSGRDMS\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj": {}
+    "C:\\Users\\Nhlanhla Fortune\\source\\repos\\GrowerSystem\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\nhngcobo\\OneDrive - Deloitte (O365D)\\Documents\\DSGRDMS\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj": {
+    "C:\\Users\\Nhlanhla Fortune\\source\\repos\\GrowerSystem\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\nhngcobo\\OneDrive - Deloitte (O365D)\\Documents\\DSGRDMS\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj",
+        "projectUniqueName": "C:\\Users\\Nhlanhla Fortune\\source\\repos\\GrowerSystem\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj",
         "projectName": "DSGRDMS.Server",
-        "projectPath": "C:\\Users\\nhngcobo\\OneDrive - Deloitte (O365D)\\Documents\\DSGRDMS\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj",
-        "packagesPath": "C:\\Users\\nhngcobo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\nhngcobo\\OneDrive - Deloitte (O365D)\\Documents\\DSGRDMS\\DSGRDMS\\DSGRDMS.Server\\obj\\",
+        "projectPath": "C:\\Users\\Nhlanhla Fortune\\source\\repos\\GrowerSystem\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj",
+        "packagesPath": "C:\\Users\\Nhlanhla Fortune\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Nhlanhla Fortune\\source\\repos\\GrowerSystem\\DSGRDMS\\DSGRDMS.Server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\nhngcobo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Nhlanhla Fortune\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -66,17 +66,21 @@
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[10.0.6, )"
+              "version": "[9.0.6, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[10.0.6, )"
+              "version": "[9.0.6, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[10.0.6, )"
+              "version": "[9.0.6, )"
+            },
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             }
           },
           "imports": [
