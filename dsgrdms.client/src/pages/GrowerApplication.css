@@ -1,0 +1,311 @@
+.grower-app-page {
+    padding: 1.5rem 2rem;
+    max-width: 860px;
+}
+
+/* ── Header ── */
+.grower-app-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.grower-app-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.2rem;
+}
+.grower-app-header p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+.grower-app-reset {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 0.78rem;
+    color: #6b7280;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.grower-app-reset:hover { background: #f3f4f6; }
+
+/* ── Status banner ── */
+.grower-status-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+}
+.grower-status-pending  { background: #fef9c3; color: #854d0e; border: 1px solid #fde68a; }
+.grower-status-verified { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.grower-status-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+/* ── Stepper ── */
+.grower-app-steps {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.grower-step-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+.grower-step-wrapper:last-child { flex: 0; }
+.grower-step-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #9ca3af;
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s, color 0.2s;
+}
+.grower-step-dot.active { background: #111827; color: #fff; }
+.grower-step-dot.done   { background: #22c55e; color: #fff; }
+.grower-step-label {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    white-space: nowrap;
+}
+.grower-step-label.active { color: #111827; font-weight: 600; }
+.grower-step-line {
+    flex: 1;
+    height: 2px;
+    background: #e5e7eb;
+    margin: 0 10px;
+    min-width: 30px;
+}
+.grower-step-line.done { background: #22c55e; }
+
+/* ── Card ── */
+.grower-app-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1.75rem;
+}
+.grower-card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.3rem;
+}
+.grower-card-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+}
+
+/* ── Form grid ── */
+.grower-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+.grower-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.grower-field label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #374151;
+}
+.grower-field input,
+.grower-field select {
+    padding: 0.44rem 0.65rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: #111827;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+}
+.grower-field input:focus,
+.grower-field select:focus { border-color: #374151; }
+.grower-field.has-error input,
+.grower-field.has-error select { border-color: #ef4444; }
+.field-error { font-size: 0.72rem; color: #dc2626; }
+
+/* ── Action row ── */
+.grower-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
+    margin-top: 0.25rem;
+}
+.grower-btn-primary {
+    padding: 0.48rem 1.25rem;
+    background: #111827;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.grower-btn-primary:hover:not(:disabled) { background: #1f2937; }
+.grower-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.grower-btn-secondary {
+    padding: 0.48rem 1.1rem;
+    background: #fff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+.grower-btn-secondary:hover { background: #f3f4f6; }
+
+/* ── Document rows ── */
+.grower-doc-group { margin-bottom: 1.5rem; }
+.grower-doc-group:last-of-type { margin-bottom: 0.5rem; }
+.grower-doc-group-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 0.65rem;
+}
+.grower-doc-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.45rem;
+    background: #fff;
+    transition: border-color 0.15s;
+}
+.grower-doc-approved  { border-left: 3px solid #22c55e; }
+.grower-doc-pending_review { border-left: 3px solid #f59e0b; }
+.grower-doc-rejected  { border-left: 3px solid #ef4444; }
+
+.grower-doc-info { display: flex; align-items: center; gap: 0.75rem; flex: 1; }
+.grower-doc-name { font-size: 0.875rem; color: #111827; }
+.grower-doc-status {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+.doc-badge-approved     { background: #dcfce7; color: #166534; }
+.doc-badge-pending      { background: #fef9c3; color: #854d0e; }
+.doc-badge-not-uploaded { background: #f3f4f6; color: #6b7280; }
+.doc-badge-rejected     { background: #fee2e2; color: #991b1b; }
+
+.grower-doc-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    background: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #374151;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+.grower-doc-upload-btn:hover:not(.disabled) { background: #e5e7eb; }
+.grower-doc-upload-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Agreement ── */
+.grower-agreement-terms {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.6;
+}
+.grower-terms-heading { margin: 0 0 0.5rem; font-weight: 500; }
+.grower-agreement-terms ul { margin: 0; padding-left: 1.2rem; }
+.grower-agreement-terms li { margin-bottom: 0.3rem; }
+
+.grower-agreement-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+    cursor: pointer;
+}
+.grower-agreement-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #111827;
+}
+.grower-agreement-checkbox span { font-size: 0.875rem; color: #374151; line-height: 1.5; }
+
+.grower-agreement-upload { margin-bottom: 1rem; }
+.grower-upload-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+.grower-file-input-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0.5rem 1rem;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #6b7280;
+    cursor: pointer;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: border-color 0.15s, background 0.15s;
+}
+.grower-file-input-label:hover { border-color: #9ca3af; background: #f9fafb; }
+
+.grower-agreement-submitted {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    margin-bottom: 0.75rem;
+}

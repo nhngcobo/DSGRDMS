@@ -22,5 +22,7 @@ public static class DocumentTypes
         new(11, "Community Development Plan",                      false, "Operational"),
         new(12, "Fire Management Plan",                            false, "Operational"),
         new(13, "Invasive Species Management Plan",                false, "Environmental"),
+        // Agreement (final step — required but not counted in compliance score)
+        new(14, "Signed Grower Agreement",                         false, "Legal"),
     ];
 }

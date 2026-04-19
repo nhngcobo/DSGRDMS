@@ -1,0 +1,341 @@
+/* ── Overlay ────────────────────────────────── */
+.lv-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+/* ── Modal ──────────────────────────────────── */
+.lv-modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Header ─────────────────────────────────── */
+.lv-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.lv-header h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.2rem;
+}
+
+.lv-header p {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.lv-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 0.2rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
+.lv-close:hover { color: #374151; }
+
+/* ── Body / Form ────────────────────────────── */
+.lv-body {
+    padding: 1.25rem 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ── Field ──────────────────────────────────── */
+.lv-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.lv-field label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.lv-required::after {
+    content: ' *';
+    color: #ef4444;
+}
+
+.lv-input,
+.lv-textarea {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #111827;
+    background: #f9fafb;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.lv-input:focus,
+.lv-textarea:focus {
+    border-color: #111827;
+    background: #fff;
+}
+
+.lv-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Error state */
+.lv-field.has-error .lv-input,
+.lv-field.has-error .lv-textarea {
+    border-color: #ef4444;
+}
+
+.lv-error {
+    font-size: 0.75rem;
+    color: #ef4444;
+}
+
+/* ── Grower Dropdown ────────────────────────── */
+.lv-grower-dropdown {
+    position: relative;
+}
+
+.lv-grower-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0;
+}
+
+.lv-grower-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: #374151;
+}
+
+.lv-grower-item:hover { background: #f3f4f6; }
+
+.lv-grower-id {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.lv-grower-empty {
+    padding: 0.6rem 0.85rem;
+    font-size: 0.82rem;
+    color: #9ca3af;
+    list-style: none;
+}
+
+/* ── Photo Upload ───────────────────────────── */
+.lv-photo-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    border: 1.5px dashed #d1d5db;
+    border-radius: 8px;
+    background: #f9fafb;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #6b7280;
+    padding: 1rem;
+    transition: border-color 0.15s, background 0.15s;
+    text-align: center;
+}
+
+.lv-photo-upload:hover {
+    border-color: #9ca3af;
+    background: #f3f4f6;
+}
+
+.lv-file-hidden {
+    display: none;
+}
+
+.lv-photo-preview {
+    max-height: 120px;
+    max-width: 100%;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+/* ── Footer ─────────────────────────────────── */
+.lv-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.lv-btn-cancel {
+    padding: 0.55rem 1.1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.lv-btn-cancel:hover { background: #f9fafb; }
+
+.lv-btn-save {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.2rem;
+    background: #111827;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.lv-btn-save:hover { background: #1f2937; }
+
+/* ── FieldVisits page additions ─────────────── */
+.fv-new-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    background: #111827;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.fv-new-btn:hover { background: #1f2937; }
+
+.fv-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.fv-empty-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.fv-empty-heading {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 0.4rem;
+}
+
+.fv-empty-body {
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+/* Visit cards */
+.fv-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+}
+
+.fv-grower-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.15rem;
+}
+
+.fv-visit-date {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.fv-observations,
+.fv-activities,
+.fv-condition {
+    font-size: 0.82rem;
+    color: #374151;
+    margin: 0.3rem 0 0;
+}
+
+.fv-photo {
+    width: 100%;
+    max-height: 140px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-top: 0.6rem;
+}
+
+.fv-status-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    white-space: nowrap;
+}
+
+.fv-status-pending     { background: #fef9c3; color: #854d0e; }
+.fv-status-in-progress { background: #dbeafe; color: #1d4ed8; }
+.fv-status-completed   { background: #dcfce7; color: #166534; }

@@ -1,66 +1,50 @@
 import { useState } from 'react';
-import { MapPin, Clock, Wifi } from 'lucide-react';
+import { Plus, ClipboardList } from 'lucide-react';
+import LogVisitModal from '../components/modals/LogVisitModal';
 import './FieldVisits.css';
 
-const SAMPLE_VISITS = [
-    {
-        id: 1,
-        grower: 'Mary Wanjiku',
-        type: 'field verification',
-        location: "Murang'a County",
-        due: '2026-04-15',
-        status: 'pending',
-        priority: 'high',
-    },
-    {
-        id: 2,
-        grower: 'Grace Akinyi',
-        type: 'document review',
-        location: 'Location TBD',
-        due: '2026-04-14',
-        status: 'in progress',
-        priority: 'medium',
-    },
-    {
-        id: 3,
-        grower: 'James Mwangi',
-        type: 'approval',
-        location: 'Location TBD',
-        due: '2026-01-28',
-        status: 'completed',
-        priority: 'low',
-    },
+const STATUS_TABS = [
+    { label: 'All',         filter: null          },
+    { label: 'Pending',     filter: 'pending'     },
+    { label: 'In Progress', filter: 'in_progress' },
+    { label: 'Completed',   filter: 'completed'   },
 ];
 
-const TABS = [
-    { label: 'All Visits', filter: null },
-    { label: 'Pending',    filter: 'pending' },
-    { label: 'In Progress', filter: 'in progress' },
-    { label: 'Completed',  filter: 'completed' },
-];
+const STATUS_META = {
+    pending:     { cls: 'fv-status-pending',     label: 'Pending'      },
+    in_progress: { cls: 'fv-status-in-progress', label: 'In Progress'  },
+    completed:   { cls: 'fv-status-completed',   label: 'Completed'    },
+};
 
 export default function FieldVisits() {
+    const [visits, setVisits]       = useState([]);
+    const [showModal, setShowModal] = useState(false);
     const [activeTab, setActiveTab] = useState(null);
 
     const visible = activeTab
-        ? SAMPLE_VISITS.filter(v => v.status === activeTab)
-        : SAMPLE_VISITS;
+        ? visits.filter(v => v.status === activeTab)
+        : visits;
+
+    function handleSave(visit) {
+        setVisits(prev => [{ ...visit, id: Date.now(), status: 'pending' }, ...prev]);
+        setShowModal(false);
+    }
 
     return (
         <div className="fv-page">
             <div className="fv-header">
                 <div>
                     <h1 className="fv-title">Field Visits</h1>
-                    <p className="fv-subtitle">Manage field verification visits</p>
+                    <p className="fv-subtitle">Log and manage field verification visits</p>
                 </div>
-                <div className="fv-online-badge">
-                    <Wifi size={14} className="fv-online-icon" />
-                    <span>Online</span>
-                </div>
+                <button className="fv-new-btn" onClick={() => setShowModal(true)}>
+                    <Plus size={15} />
+                    New Field Visit
+                </button>
             </div>
 
             <div className="fv-tabs">
-                {TABS.map(tab => (
+                {STATUS_TABS.map(tab => (
                     <button
                         key={tab.label}
                         className={`fv-tab${activeTab === tab.filter ? ' active' : ''}`}
@@ -72,43 +56,51 @@ export default function FieldVisits() {
             </div>
 
             {visible.length === 0 ? (
-                <p className="fv-empty">No visits found.</p>
+                <div className="fv-empty-state">
+                    <div className="fv-empty-icon">
+                        <ClipboardList size={36} strokeWidth={1.2} />
+                    </div>
+                    <p className="fv-empty-heading">No field visits yet</p>
+                    <span className="fv-empty-body">
+                        Click <strong>New Field Visit</strong> to log your first visit.
+                    </span>
+                </div>
             ) : (
                 <div className="fv-grid">
-                    {visible.map(visit => (
-                        <div key={visit.id} className="fv-card">
-                            <div className="fv-card-top">
-                                <div>
-                                    <h3 className="fv-grower-name">{visit.grower}</h3>
-                                    <p className="fv-visit-type">{visit.type}</p>
+                    {visible.map(visit => {
+                        const meta = STATUS_META[visit.status] ?? STATUS_META.pending;
+                        return (
+                            <div key={visit.id} className="fv-card">
+                                <div className="fv-card-top">
+                                    <div>
+                                        <h3 className="fv-grower-name">{visit.growerName}</h3>
+                                        <p className="fv-visit-date">{new Date(visit.visitDate).toLocaleDateString()}</p>
+                                    </div>
+                                    <span className={`fv-status-badge ${meta.cls}`}>{meta.label}</span>
                                 </div>
-                                <span className={`fv-priority fv-priority-${visit.priority}`}>
-                                    {visit.priority}
-                                </span>
-                            </div>
-
-                            <div className="fv-meta">
-                                <span className="fv-meta-item">
-                                    <MapPin size={13} />
-                                    {visit.location}
-                                </span>
-                                <span className="fv-meta-item">
-                                    <Clock size={13} />
-                                    Due: {visit.due}
-                                </span>
-                            </div>
-
-                            <div className="fv-card-bottom">
-                                <span className={`fv-status fv-status-${visit.status.replace(' ', '-')}`}>
-                                    {visit.status}
-                                </span>
-                                {visit.status !== 'completed' && (
-                                    <button className="fv-start-btn">Start Visit</button>
+                                {visit.observations && (
+                                    <p className="fv-observations">{visit.observations}</p>
+                                )}
+                                {visit.activities && (
+                                    <p className="fv-activities"><strong>Activities:</strong> {visit.activities}</p>
+                                )}
+                                {visit.condition && (
+                                    <p className="fv-condition"><strong>Condition:</strong> {visit.condition}</p>
+                                )}
+                                {visit.photoUrl && (
+                                    <img src={visit.photoUrl} alt="Visit" className="fv-photo" />
                                 )}
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
+            )}
+
+            {showModal && (
+                <LogVisitModal
+                    onClose={() => setShowModal(false)}
+                    onSave={handleSave}
+                />
             )}
         </div>
     );
