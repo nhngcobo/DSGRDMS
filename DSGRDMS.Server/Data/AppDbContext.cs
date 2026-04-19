@@ -8,6 +8,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Grower> Growers { get; set; }
     public DbSet<ComplianceDocument> ComplianceDocuments { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,6 +31,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasKey(u => u.Id);
             e.HasIndex(u => u.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<Message>(e =>
+        {
+            e.HasKey(m => m.Id);
+            e.HasIndex(m => m.GrowerId);
+            e.HasIndex(m => m.SenderUserId);
         });
     }
 }

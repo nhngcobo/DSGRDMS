@@ -7,29 +7,44 @@ import {
     Settings,
     LogOut,
     FileText,
+    MessageSquare,
 } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import { useAuth } from '../../context/AuthContext';
+import { useEffect, useState } from 'react';
+import { fetchUnreadCount } from '../../services/messagesApi';
 import './Sidebar.css';
 
 export default function Sidebar() {
     const t = useT();
-    const { user, logout } = useAuth();
+    const { user, token, logout } = useAuth();
     const navigate = useNavigate();
+    const [unread, setUnread] = useState(0);
+
+    // Fetch unread count for growers
+    useEffect(() => {
+        if (user?.role !== 'grower' || !token) return;
+        fetchUnreadCount(token)
+            .then(data => setUnread(data.count ?? 0))
+            .catch(() => {});
+    }, [user, token]);
 
     const adminNav = [
         { to: '/',             label: t.nav.dashboard,   icon: LayoutDashboard },
         { to: '/growers',      label: t.nav.growers,     icon: Users           },
         { to: '/compliance',   label: t.nav.compliance,  icon: ShieldCheck     },
         { to: '/field-visits', label: t.nav.fieldVisits, icon: ClipboardList   },
+        { to: '/messages',     label: 'Messages',        icon: MessageSquare   },
     ];
     const fieldOfficerNav = [
         { to: '/growers',      label: t.nav.growers,     icon: Users         },
         { to: '/field-visits', label: t.nav.fieldVisits, icon: ClipboardList },
         { to: '/compliance',   label: t.nav.compliance,  icon: ShieldCheck   },
+        { to: '/messages',     label: 'Messages',        icon: MessageSquare },
     ];
     const growerNav = [
-        { to: '/my-application', label: 'My Application', icon: FileText },
+        { to: '/my-application', label: 'My Application', icon: FileText       },
+        { to: '/messages',       label: 'Messages',        icon: MessageSquare, badge: unread > 0 ? unread : null },
     ];
 
     const navItems =
@@ -59,7 +74,7 @@ export default function Sidebar() {
             </div>
 
             <nav className="sidebar-nav">
-                {navItems.map(({ to, label, icon: Icon }) => (
+                {navItems.map(({ to, label, icon: Icon, badge }) => (
                     <NavLink
                         key={to}
                         to={to}
@@ -70,6 +85,7 @@ export default function Sidebar() {
                     >
                         <Icon size={18} />
                         <span>{label}</span>
+                        {badge && <span className="sidebar-badge">{badge > 99 ? '99+' : badge}</span>}
                     </NavLink>
                 ))}
             </nav>

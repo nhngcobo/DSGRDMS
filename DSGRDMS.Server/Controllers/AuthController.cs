@@ -24,7 +24,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     [Authorize]
     public async Task<IActionResult> LinkGrower(string growerId)
     {
-        var userIdClaim = User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 

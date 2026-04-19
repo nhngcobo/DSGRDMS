@@ -7,6 +7,7 @@ import Compliance from './pages/Compliance';
 import FieldVisits from './pages/FieldVisits';
 import GrowerApplication from './pages/GrowerApplication';
 import Settings from './pages/Settings';
+import Messages from './pages/Messages';
 import Login from './pages/Login';
 import { useAuth } from './context/AuthContext';
 import './App.css';
@@ -30,13 +31,15 @@ function App() {
                         <Route path="/growers/:id"  element={<GrowerDetail />} />
                         <Route path="/compliance"   element={<Compliance />} />
                         <Route path="/field-visits" element={<FieldVisits />} />
+                        <Route path="/messages"     element={<Messages />} />
                         <Route path="/settings"     element={<Settings />} />
                     </>}
 
                     {/* Grower routes */}
                     {user.role === 'grower' && <>
                         <Route path="/my-application" element={<GrowerApplication />} />
-                        <Route path="/settings"       element={<Settings />} />
+                        <Route path="/messages"        element={<Messages />} />
+                        <Route path="/settings"        element={<Settings />} />
                     </>}
 
                     {/* Catch-all redirect to home */}
