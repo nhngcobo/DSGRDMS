@@ -10,7 +10,9 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import UploadDocumentModal from '../components/modals/UploadDocumentModal';
 import ReviewDocumentModal from '../components/modals/ReviewDocumentModal';
+import ComplianceDocuments from '../components/ComplianceDocuments';
 import { useT } from '../hooks/useT';
+import { useAuth } from '../context/AuthContext';
 import { fetchGrowers } from '../services/growersApi';
 import {
     fetchComplianceSummary,
@@ -36,6 +38,12 @@ export default function Compliance() {
     const { search } = useLocation();
     const initialGrowerId = new URLSearchParams(search).get('grower') ?? '';
     const { showError } = useNotification();
+    const { user } = useAuth();
+
+    // If user is a grower, show the registration workflow instead
+    if (user?.role === 'grower') {
+        return <ComplianceDocuments />;
+    }
 
     const STATUS_OPTIONS = [
         tc.statusOptions.allStatuses,

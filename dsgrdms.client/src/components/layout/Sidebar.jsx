@@ -9,6 +9,7 @@ import {
     FileText,
     MessageSquare,
     Sprout,
+    Calendar,
 } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import { useAuth } from '../../context/AuthContext';
@@ -31,7 +32,7 @@ export default function Sidebar() {
     }, [user, token]);
 
     const adminNav = [
-        { to: '/',             label: 'Ecosystem Overview', icon: Sprout },
+        { to: '/',             label: 'Grower Overview', icon: Sprout },
         { to: '/growers',      label: 'Grower Registry',    icon: Users },
         { to: '/compliance',   label: 'Compliance Hub',     icon: ShieldCheck },
         { to: '/field-visits', label: 'Field Visit Coordination', icon: ClipboardList },
@@ -44,10 +45,9 @@ export default function Sidebar() {
         { to: '/messages',     label: 'Messaging',          icon: MessageSquare },
     ];
     const growerNav = [
-        { to: '/',             label: 'Ecosystem Overview', icon: Sprout },
-        { to: '/growers',      label: 'Grower Registry',    icon: Users },
-        { to: '/compliance',   label: 'Compliance Hub',     icon: ShieldCheck },
-        { to: '/field-visits', label: 'Field Visit Coordination', icon: ClipboardList },
+        { to: '/',             label: 'Grower Overview', icon: Sprout },
+        { to: '/compliance',   label: 'Compliance Documents',     icon: ShieldCheck },
+        { to: '/field-visits', label: 'Visit Timeline',     icon: Calendar },
         { to: '/messages',     label: 'Messaging',          icon: MessageSquare },
     ];
 
@@ -77,11 +77,10 @@ export default function Sidebar() {
             <div className="sidebar-header">
                 <div className="sidebar-brand">
                     <div className="sidebar-logo-wrapper">
-                        <Sprout size={24} className="sidebar-logo-icon" />
+                        <img src="/logov2.png" alt="GrowHub Logo" className="sidebar-logo-icon" />
                     </div>
                     <div className="sidebar-brand-text">
-                        <div className="sidebar-brand-name">DSGRDMS</div>
-                        <div className="sidebar-brand-tagline">Agronomist Ledger</div>
+                        <div className="sidebar-brand-name">GrowHub Plantation</div>
                     </div>
                 </div>
             </div>
@@ -120,11 +119,10 @@ export default function Sidebar() {
                         <span className="sidebar-user-name">{user?.name || user?.fullName || '—'}</span>
                         <span className="sidebar-user-role">{roleLabel}</span>
                     </div>
+                    <button className="sidebar-logout" onClick={handleLogout}>
+                        <LogOut size={18} />
+                    </button>
                 </div>
-                <button className="sidebar-logout" onClick={handleLogout}>
-                    <LogOut size={18} />
-                    <span>Logout</span>
-                </button>
             </div>
         </aside>
     );

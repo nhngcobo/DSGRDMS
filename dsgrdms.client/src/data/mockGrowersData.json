@@ -1,0 +1,227 @@
+[
+  {
+    "id": "GR2024-001",
+    "name": "Themba Dlamini",
+    "email": "themba.dlamini@farmmail.co.za",
+    "farmSize": "45.2 ha",
+    "status": "verified",
+    "compliance": 94,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-002",
+    "name": "Zanele Mkhize",
+    "email": "zanele.mkhize@agrilink.co.za",
+    "farmSize": "32.8 ha",
+    "status": "verified",
+    "compliance": 88,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-003",
+    "name": "Sipho Nkosi",
+    "email": "sipho.nkosi@farmnet.co.za",
+    "farmSize": "67.5 ha",
+    "status": "pending",
+    "compliance": null,
+    "risk": "medium"
+  },
+  {
+    "id": "GR2024-004",
+    "name": "Nomsa Khumalo",
+    "email": "nomsa.khumalo@grownet.co.za",
+    "farmSize": "28.3 ha",
+    "status": "verified",
+    "compliance": 92,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-005",
+    "name": "Thabo Mokoena",
+    "email": "thabo.mokoena@farmlink.co.za",
+    "farmSize": "51.7 ha",
+    "status": "verified",
+    "compliance": 76,
+    "risk": "medium"
+  },
+  {
+    "id": "GR2024-006",
+    "name": "Lindiwe Ndlovu",
+    "email": "lindiwe.ndlovu@agrimail.co.za",
+    "farmSize": "39.4 ha",
+    "status": "pending",
+    "compliance": null,
+    "risk": "medium"
+  },
+  {
+    "id": "GR2024-007",
+    "name": "Bongani Zulu",
+    "email": "bongani.zulu@cropnet.co.za",
+    "farmSize": "73.2 ha",
+    "status": "verified",
+    "compliance": 85,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-008",
+    "name": "Precious Sithole",
+    "email": "precious.sithole@farmmail.co.za",
+    "farmSize": "42.1 ha",
+    "status": "verified",
+    "compliance": 58,
+    "risk": "high"
+  },
+  {
+    "id": "GR2024-009",
+    "name": "Mandla Buthelezi",
+    "email": "mandla.buthelezi@agrilink.co.za",
+    "farmSize": "35.6 ha",
+    "status": "returned",
+    "compliance": 48,
+    "risk": "high"
+  },
+  {
+    "id": "GR2024-010",
+    "name": "Nokuthula Shabalala",
+    "email": "nokuthula.shabalala@grownet.co.za",
+    "farmSize": "29.8 ha",
+    "status": "verified",
+    "compliance": 91,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-011",
+    "name": "Sbu Mthembu",
+    "email": "sbu.mthembu@farmnet.co.za",
+    "farmSize": "56.3 ha",
+    "status": "pending",
+    "compliance": null,
+    "risk": "medium"
+  },
+  {
+    "id": "GR2024-012",
+    "name": "Thandi Radebe",
+    "email": "thandi.radebe@cropmail.co.za",
+    "farmSize": "44.7 ha",
+    "status": "verified",
+    "compliance": 89,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-013",
+    "name": "Dumisani Msomi",
+    "email": "dumisani.msomi@agrimail.co.za",
+    "farmSize": "38.2 ha",
+    "status": "verified",
+    "compliance": 82,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-014",
+    "name": "Busisiwe Cele",
+    "email": "busisiwe.cele@farmlink.co.za",
+    "farmSize": "62.9 ha",
+    "status": "verified",
+    "compliance": 64,
+    "risk": "medium"
+  },
+  {
+    "id": "GR2024-015",
+    "name": "Mpho Mahlangu",
+    "email": "mpho.mahlangu@grownet.co.za",
+    "farmSize": "47.5 ha",
+    "status": "pending",
+    "compliance": null,
+    "risk": "medium"
+  },
+  {
+    "id": "GR2024-016",
+    "name": "Ntombi Ngcobo",
+    "email": "ntombi.ngcobo@farmmail.co.za",
+    "farmSize": "33.1 ha",
+    "status": "verified",
+    "compliance": 95,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-017",
+    "name": "Sanele Khoza",
+    "email": "sanele.khoza@agrilink.co.za",
+    "farmSize": "54.8 ha",
+    "status": "verified",
+    "compliance": 78,
+    "risk": "medium"
+  },
+  {
+    "id": "GR2024-018",
+    "name": "Zodwa Gumede",
+    "email": "zodwa.gumede@cropnet.co.za",
+    "farmSize": "41.3 ha",
+    "status": "rejected",
+    "compliance": 42,
+    "risk": "high"
+  },
+  {
+    "id": "GR2024-019",
+    "name": "Vusi Madonsela",
+    "email": "vusi.madonsela@farmnet.co.za",
+    "farmSize": "69.7 ha",
+    "status": "verified",
+    "compliance": 87,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-020",
+    "name": "Nandi Myeni",
+    "email": "nandi.myeni@agrimail.co.za",
+    "farmSize": "36.4 ha",
+    "status": "verified",
+    "compliance": 90,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-021",
+    "name": "Jabu Nhlapo",
+    "email": "jabu.nhlapo@grownet.co.za",
+    "farmSize": "58.1 ha",
+    "status": "pending",
+    "compliance": null,
+    "risk": "medium"
+  },
+  {
+    "id": "GR2024-022",
+    "name": "Pinky Sithole",
+    "email": "pinky.sithole@farmlink.co.za",
+    "farmSize": "43.6 ha",
+    "status": "verified",
+    "compliance": 81,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-023",
+    "name": "Zweli Dube",
+    "email": "zweli.dube@cropmail.co.za",
+    "farmSize": "52.4 ha",
+    "status": "verified",
+    "compliance": 72,
+    "risk": "medium"
+  },
+  {
+    "id": "GR2024-024",
+    "name": "Nonhlanhla Hlongwane",
+    "email": "nonhlanhla.hlongwane@farmmail.co.za",
+    "farmSize": "31.9 ha",
+    "status": "verified",
+    "compliance": 93,
+    "risk": "low"
+  },
+  {
+    "id": "GR2024-025",
+    "name": "Mduduzi Khumalo",
+    "email": "mduduzi.khumalo@agrilink.co.za",
+    "farmSize": "65.2 ha",
+    "status": "verified",
+    "compliance": 55,
+    "risk": "high"
+  }
+]
