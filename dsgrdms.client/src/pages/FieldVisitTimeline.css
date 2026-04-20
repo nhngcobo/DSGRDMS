@@ -1,10 +1,10 @@
-/* Atmospheric Precision - Field Visit Timeline */
+/* Field Visit Timeline - Atmospheric Precision Design */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
 
 .field-visit-timeline {
-    padding: 2rem 3rem;
-    max-width: 1400px;
-    margin: 0 auto;
+    padding: 3rem;
+    background: #faf9f9;
+    min-height: 100vh;
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -13,14 +13,15 @@
 }
 
 .timeline-header h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 300;
     color: #426468;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.01em;
 }
 
 .timeline-subtitle {
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     font-weight: 300;
     color: #6b7280;
     margin: 0;
@@ -31,49 +32,175 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
 }
 
 .stat-box {
-    background: #faf9f9;
-    padding: 1.5rem;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    border-left: 4px solid #426468;
+    background: #fff;
+    padding: 1.75rem;
+    border-radius: 12px;
+    border: 1px solid rgba(66, 100, 104, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .stat-box .stat-value {
-    font-size: 2rem;
-    font-weight: 300;
-    color: #426468;
+    font-size: 2.25rem;
+    font-weight: 400;
+    color: #111827;
+    display: block;
+    margin-bottom: 0.5rem;
 }
 
 .stat-box .stat-label {
-    font-size: 0.875rem;
-    font-weight: 300;
+    font-size: 0.75rem;
+    font-weight: 400;
     color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: #426468;
+    margin: 0 0 1.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Upcoming Inspections Section */
+.upcoming-inspections-section {
+    margin-bottom: 3rem;
+}
+
+.upcoming-inspections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.upcoming-inspection-card {
+    background: #ffffff;
+    padding: 1.75rem;
+    border-radius: 12px;
+    border: 1px solid rgba(66, 100, 104, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.upcoming-inspection-card:hover {
+    border-color: rgba(66, 100, 104, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.priority-badge {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    border: 1.5px solid;
+}
+
+.priority-badge.high {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #b91c1c !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+.priority-badge.medium {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #b45309 !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+.priority-badge.low {
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #047857 !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+.inspection-date-time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.inspection-date-time svg {
+    width: 16px;
+    height: 16px;
+    color: #426468;
+}
+
+.inspection-title {
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+.inspection-officer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #374151;
+    margin-bottom: 0.875rem;
+}
+
+.inspection-officer svg {
+    width: 16px;
+    height: 16px;
+    color: #426468;
+}
+
+.officer-role {
+    font-weight: 300;
+    color: #6b7280;
+}
+
+.inspection-location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.inspection-location svg {
+    width: 16px;
+    height: 16px;
+    color: #426468;
+}
+
+.inspection-purpose {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: #6b7280;
+    line-height: 1.5;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(66, 100, 104, 0.1);
 }
 
 /* Visual Timeline Graph */
 .timeline-graph-section {
     background: #ffffff;
     padding: 2rem;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    border: 1px solid rgba(66, 100, 104, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     margin-bottom: 3rem;
-}
-
-.timeline-graph-section h3 {
-    font-size: 1.125rem;
-    font-weight: 300;
-    color: #426468;
-    margin: 0 0 2rem 0;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
 .timeline-graph {
@@ -196,13 +323,15 @@
     position: relative;
     margin-bottom: 2rem;
     background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    border: 1px solid rgba(66, 100, 104, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     transition: all 0.3s ease;
 }
 
 .timeline-visit-card.expanded {
     box-shadow: 0 4px 12px rgba(66, 100, 104, 0.1);
+    border-color: rgba(66, 100, 104, 0.25);
 }
 
 .visit-timeline-marker {
@@ -305,7 +434,7 @@
 /* Visit Card Body (Expanded) */
 .visit-card-body {
     padding: 0 1.5rem 1.5rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid rgba(66, 100, 104, 0.1);
     margin-top: 1rem;
     animation: slideDown 0.3s ease;
 }
@@ -372,31 +501,31 @@
 }
 
 .status-badge {
-    padding: 0.375rem 1rem;
+    padding: 0.375rem 0.875rem;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border: 1px solid transparent;
+    border: 1.5px solid;
 }
 
 .status-badge.completed {
-    background: rgba(16, 185, 129, 0.12);
-    color: #059669;
-    border-color: rgba(16, 185, 129, 0.25);
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #047857 !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
 }
 
 .status-badge.pending {
-    background: rgba(245, 158, 11, 0.12);
-    color: #d97706;
-    border-color: rgba(245, 158, 11, 0.25);
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #b45309 !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
 }
 
 .status-badge.scheduled {
-    background: rgba(59, 130, 246, 0.12);
-    color: #2563eb;
-    border-color: rgba(59, 130, 246, 0.25);
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #1d4ed8 !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
 }
 
 /* Responsive */
@@ -407,6 +536,11 @@
 
     .timeline-stats {
         grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .upcoming-inspections-grid {
+        grid-template-columns: 1fr;
         gap: 1rem;
     }
 
@@ -452,5 +586,9 @@
 
     .visit-title {
         font-size: 1.125rem;
+    }
+
+    .inspection-title {
+        font-size: 1rem;
     }
 }

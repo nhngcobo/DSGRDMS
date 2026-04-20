@@ -1,69 +1,143 @@
 import { useState } from 'react';
-import { Calendar, Clock, User, MapPin, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, User, MapPin, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import './FieldVisitTimeline.css';
 
-const mockFieldVisits = [
+const mockUpcomingInspections = [
     {
         id: 1,
-        date: 'August 14, 2023',
-        time: '09:30 AM',
-        title: 'Post-Harvest Soil Audit',
+        date: 'April 28, 2026',
+        time: '10:00 AM',
+        title: 'Spring Growth Assessment',
         officer: { name: 'Marcus Thorne', role: 'Senior Field Officer' },
-        location: 'Plot B, Northern Section',
-        status: 'completed',
-        findings: 'Observed excellent recovery of nitrogen levels after hazelnut harvest. Soil samples taken from 6 locations across the plot showed pH levels ranging from 8.2-8.6.',
-        recommendations: 'Recommended minor lime amendment for Plot B to optimize nutrient uptake. Consider cover crops in rotation zones.',
-        documents: ['Soil Analysis Report', 'Site Photography', 'Compliance Certificate'],
+        location: 'All Production Areas',
+        status: 'scheduled',
+        priority: 'high',
+        purpose: 'Evaluate spring growth patterns and identify any early-season pest or disease issues.',
     },
     {
         id: 2,
-        date: 'May 02, 2023',
-        time: '10:00 AM',
-        title: 'Biannual Certification Review',
-        officer: { name: 'Sarah Chen', role: 'Certification Specialist' },
-        location: 'Main Office & All Parcels',
-        status: 'completed',
-        findings: 'Full dossier inspection for USDA renewal. All documentation found in order. Parcel boundaries verified via drone telemetry. Water usage logs reviewed and approved.',
-        recommendations: 'Continue current management practices. Next review scheduled for November 2023.',
-        documents: ['USDA Renewal Certificate', 'Drone Survey Data', 'Water Usage Report'],
-    },
-    {
-        id: 3,
-        date: 'January 20, 2023',
-        time: '02:15 PM',
-        title: 'Emergency Frost Damage Assessment',
-        officer: { name: 'James Mitchell', role: 'Agricultural Inspector' },
-        location: 'Northern Corridor',
-        status: 'completed',
-        findings: 'Brief site visit following record low temperatures. Damage localized to young saplings in the northern corridor. Approximately 12% of young trees showed frost damage.',
-        recommendations: 'Implement frost protection systems for vulnerable areas. Consider windbreak plantings on northern perimeter.',
-        documents: ['Damage Assessment Report', 'Insurance Documentation'],
-    },
-    {
-        id: 4,
-        date: 'November 18, 2022',
-        time: '11:00 AM',
-        title: 'Pre-Harvest Inspection',
-        officer: { name: 'Marcus Thorne', role: 'Senior Field Officer' },
-        location: 'All Production Areas',
-        status: 'completed',
-        findings: 'Pre-harvest quality assessment conducted. Nut quality graded as premium. Equipment maintenance verified. Harvest timing approved.',
-        recommendations: 'Proceed with harvest operations. Maintain moisture monitoring during storage.',
-        documents: ['Quality Assessment', 'Equipment Inspection Log'],
-    },
-    {
-        id: 5,
-        date: 'August 30, 2022',
-        time: '08:45 AM',
+        date: 'May 15, 2026',
+        time: '09:30 AM',
         title: 'Irrigation System Evaluation',
         officer: { name: 'Elena Rodriguez', role: 'Water Management Specialist' },
         location: 'All Irrigation Zones',
-        status: 'completed',
-        findings: 'Comprehensive evaluation of spring-fed irrigation system. Flow rates measured at 98% efficiency. Detection of minor leak in Zone 3.',
-        recommendations: 'Repair identified leak in Zone 3. Schedule routine maintenance for fall season.',
-        documents: ['Irrigation Audit Report', 'Flow Rate Analysis', 'Maintenance Schedule'],
+        status: 'scheduled',
+        priority: 'medium',
+        purpose: 'Annual inspection of irrigation infrastructure and water usage efficiency.',
+    },
+    {
+        id: 3,
+        date: 'June 10, 2026',
+        time: '02:00 PM',
+        title: 'Mid-Season Compliance Review',
+        officer: { name: 'Sarah Chen', role: 'Certification Specialist' },
+        location: 'Main Office & Selected Parcels',
+        status: 'scheduled',
+        priority: 'high',
+        purpose: 'Review compliance documentation and conduct spot checks on farming practices.',
     },
 ];
+
+// Generate mock field visits (120+ visits across 12 months)
+function generateMockFieldVisits() {
+    const officers = [
+        { name: 'Sarah Chen', initials: 'SC' },
+        { name: 'Marcus Thorne', initials: 'MT' },
+        { name: 'Elena Rodriguez', initials: 'ER' },
+        { name: 'James Mbeki', initials: 'JM' },
+        { name: 'Aisha Ndlovu', initials: 'AN' },
+        { name: 'David van der Merwe', initials: 'DM' },
+    ];
+
+    const visitTypes = [
+        'Routine Inspection',
+        'Compliance Verification',
+        'Pest Management Check',
+        'Irrigation Assessment',
+        'Soil Quality Review',
+        'Harvest Oversight',
+        'Equipment Inspection',
+        'Weather Damage Assessment',
+        'Certification Audit',
+        'Training Session',
+        'Quality Control',
+        'Safety Inspection',
+    ];
+
+    const locations = [
+        'North Fields, Parcels 1-5',
+        'South Fields, Parcels 10-15',
+        'East Fields, All Parcels',
+        'West Fields, Parcels 20-25',
+        'Central Zone, Parcels 6-9',
+        'Greenhouse Complex A',
+        'Greenhouse Complex B',
+        'Irrigation Zones 1-3',
+        'Storage Facilities',
+        'Processing Area',
+        'Main Office & Adjacent Fields',
+        'Organic Section, Parcels 30-35',
+    ];
+
+    const findings = [
+        'All crops showing healthy development. Irrigation systems functioning properly.',
+        'Excellent compliance with organic farming standards. Record-keeping is exemplary.',
+        'Minor pest activity observed. Recommended organic treatment applied.',
+        'Soil analysis shows good nutrient levels. Cover crops establishing well.',
+        'Equipment maintenance records reviewed and found satisfactory.',
+        'All safety protocols being followed correctly. No violations noted.',
+        'Harvest quality meets certification standards. Proper handling procedures observed.',
+        'Irrigation efficiency at optimal levels. Water conservation measures effective.',
+        'Crop rotation schedule on track. Field preparation progressing as planned.',
+        'Documentation complete and properly organized. Digital records up to date.',
+    ];
+
+    const recommendations = [
+        'Continue current pest management protocol. Schedule follow-up in 2 weeks.',
+        'Maintain current practices. Consider implementing additional buffer zones.',
+        'Begin planning for next planting cycle. Review seed selection.',
+        'Monitor weather conditions. Adjust irrigation schedule as needed.',
+        'Schedule equipment maintenance before peak season.',
+        'Update safety training for seasonal workers.',
+        'Implement recommended soil amendments before next planting.',
+        'Continue regular monitoring of pest traps.',
+    ];
+
+    const visits = [];
+    const now = new Date(2026, 3, 20); // April 20, 2026
+    let visitId = 1;
+
+    // Generate visits for the past 12 months (average 10 per month = 120 total)
+    for (let monthOffset = 0; monthOffset < 12; monthOffset++) {
+        const visitsThisMonth = Math.floor(Math.random() * 6) + 8; // 8-13 visits per month
+        
+        for (let i = 0; i < visitsThisMonth; i++) {
+            const visitDate = new Date(now.getFullYear(), now.getMonth() - monthOffset, Math.floor(Math.random() * 28) + 1);
+            const hour = Math.floor(Math.random() * 8) + 8; // 8 AM to 4 PM
+            const minute = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
+            
+            visits.push({
+                id: visitId++,
+                date: visitDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`,
+                title: visitTypes[Math.floor(Math.random() * visitTypes.length)],
+                officer: officers[Math.floor(Math.random() * officers.length)],
+                location: locations[Math.floor(Math.random() * locations.length)],
+                status: 'completed',
+                findings: findings[Math.floor(Math.random() * findings.length)],
+                recommendations: recommendations[Math.floor(Math.random() * recommendations.length)],
+                documents: Math.random() > 0.5 
+                    ? ['Inspection Report.pdf', 'Photo Documentation.zip']
+                    : ['Inspection Report.pdf'],
+            });
+        }
+    }
+
+    // Sort by date (newest first)
+    return visits.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+const mockFieldVisits = generateMockFieldVisits();
 
 export default function FieldVisitTimeline() {
     const [expandedVisit, setExpandedVisit] = useState(null);
@@ -113,22 +187,50 @@ export default function FieldVisitTimeline() {
                     <span className="stat-label">Total Visits</span>
                 </div>
                 <div className="stat-box">
-                    <span className="stat-value">3</span>
-                    <span className="stat-label">Officers</span>
+                    <span className="stat-value">6</span>
+                    <span className="stat-label">Active Officers</span>
+                </div>
+                <div className="stat-box">
+                    <span className="stat-value">{mockUpcomingInspections.length}</span>
+                    <span className="stat-label">Upcoming Visits</span>
                 </div>
                 <div className="stat-box">
                     <span className="stat-value">100%</span>
                     <span className="stat-label">Compliance Rate</span>
                 </div>
-                <div className="stat-box">
-                    <span className="stat-value">12 mo</span>
-                    <span className="stat-label">Last Visit</span>
+            </div>
+
+            {/* Upcoming Inspections Section */}
+            <div className="upcoming-inspections-section">
+                <h2 className="section-title">Upcoming Field Inspections</h2>
+                <div className="upcoming-inspections-grid">
+                    {mockUpcomingInspections.map((inspection) => (
+                        <div key={inspection.id} className="upcoming-inspection-card">
+                            <span className={`priority-badge ${inspection.priority}`}>
+                                {inspection.priority}
+                            </span>
+                            <div className="inspection-date-time">
+                                <Calendar size={16} />
+                                <span>{inspection.date} • {inspection.time}</span>
+                            </div>
+                            <h3 className="inspection-title">{inspection.title}</h3>
+                            <div className="inspection-officer">
+                                <User size={16} />
+                                <span>{inspection.officer.name} <span className="officer-role">• {inspection.officer.role}</span></span>
+                            </div>
+                            <div className="inspection-location">
+                                <MapPin size={16} />
+                                <span>{inspection.location}</span>
+                            </div>
+                            <p className="inspection-purpose">{inspection.purpose}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
 
             {/* Visual Timeline Graph */}
             <div className="timeline-graph-section">
-                <h3>12-Month Visit Activity</h3>
+                <h2 className="section-title">12-Month Visit History</h2>
                 <div className="timeline-graph">
                     <div className="timeline-line"></div>
                     {timelineMonths.map((monthData, index) => {
@@ -152,6 +254,8 @@ export default function FieldVisitTimeline() {
                 </div>
             </div>
 
+            {/* Past Visits Timeline */}
+            <h2 className="section-title">Past Field Visits</h2>
             <div className="timeline-container">
                 {mockFieldVisits.map((visit) => (
                     <div key={visit.id} className={`timeline-visit-card ${expandedVisit === visit.id ? 'expanded' : ''}`}>
