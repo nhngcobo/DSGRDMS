@@ -45,11 +45,13 @@ public class GrowersController(IGrowerService growerService) : ControllerBase
     public async Task<IActionResult> Update(string growerId, [FromBody] UpdateGrowerRequest req)
     {
         if (!ModelState.IsValid)
-            return ValidationProblem(ModelState);
+            return BadRequest(ApiResponse<GrowerResponse>.Fail("Invalid request data", ModelState));
 
         var result = await growerService.UpdateAsync(growerId, req);
-        if (result is null) return NotFound();
-        return Ok(result);
+        if (result is null)
+            return NotFound(ApiResponse<GrowerResponse>.Fail($"Grower with ID '{growerId}' not found"));
+
+        return Ok(ApiResponse<GrowerResponse>.Ok(result, "Grower updated successfully"));
     }
 }
 

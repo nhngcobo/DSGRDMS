@@ -21,7 +21,7 @@ public class RegisterGrowerRequest
 
 public class UpdateGrowerRequest
 {
-    [Required] public string Phone { get; set; } = string.Empty;
+    public string? Phone { get; set; }
     [EmailAddress] public string? Email { get; set; }
     public string? BusinessName { get; set; }
     public string? BusinessRegNumber { get; set; }
@@ -30,6 +30,7 @@ public class UpdateGrowerRequest
     [Range(0.01, double.MaxValue)] public decimal? PlantationSize { get; set; }
     [Range(-90, 90)]   public double? GpsLat { get; set; }
     [Range(-180, 180)] public double? GpsLng { get; set; }
+    public string? Status { get; set; }
 }
 
 public class GrowerResponse

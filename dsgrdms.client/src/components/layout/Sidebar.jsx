@@ -34,12 +34,14 @@ export default function Sidebar() {
     const adminNav = [
         { to: '/',             label: 'Grower Overview', icon: Sprout },
         { to: '/growers',      label: 'Grower Registry',    icon: Users },
+        { to: '/applications', label: 'Applications',       icon: FileText },
         { to: '/compliance',   label: 'Compliance Hub',     icon: ShieldCheck },
         { to: '/field-visits', label: 'Field Visit Coordination', icon: ClipboardList },
         { to: '/messages',     label: 'Messaging',          icon: MessageSquare },
     ];
     const fieldOfficerNav = [
         { to: '/growers',      label: 'Grower Registry',    icon: Users },
+        { to: '/applications', label: 'Applications',       icon: FileText },
         { to: '/field-visits', label: 'Field Visit Coordination', icon: ClipboardList },
         { to: '/compliance',   label: 'Compliance Hub',     icon: ShieldCheck },
         { to: '/messages',     label: 'Messaging',          icon: MessageSquare },

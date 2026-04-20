@@ -260,7 +260,8 @@
 }
 
 /* Status Badges */
-.badge-status-verified { 
+.badge-status-verified,
+.badge-status-approved { 
     background: rgba(16, 185, 129, 0.15) !important;
     color: #047857 !important;
     border-color: rgba(16, 185, 129, 0.4) !important;
@@ -270,6 +271,12 @@
     background: rgba(245, 158, 11, 0.15) !important;
     color: #b45309 !important;
     border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+.badge-status-in-review {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #1e40af !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
 }
 
 .badge-status-returned { 

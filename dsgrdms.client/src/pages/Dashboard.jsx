@@ -8,7 +8,6 @@ import { useT } from '../hooks/useT';
 import { fetchDashboardSummary } from '../services/dashboardApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
-import mockDashboardData from '../data/mockDashboardData.json';
 import './Dashboard.css';
 
 function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, name, value }) {
@@ -43,18 +42,10 @@ export default function Dashboard() {
 
     useEffect(() => {
         fetchDashboardSummary()
-            .then(data => {
-                // Use mock data if API returns invalid data
-                if (!data || data.totalGrowers === 0) {
-                    setSummary(mockDashboardData);
-                } else {
-                    setSummary(data);
-                }
-            })
+            .then(data => setSummary(data))
             .catch(err => {
                 showError(friendlyError(err));
-                // Use mock data as fallback
-                setSummary(mockDashboardData);
+                setSummary(null);
             })
             .finally(() => setLoading(false));
     }, [showError]);

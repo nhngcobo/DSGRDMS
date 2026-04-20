@@ -54,7 +54,7 @@ export async function updateGrower(growerId, formData) {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            phone:             formData.phone,
+            phone:             formData.phone || null,
             email:             formData.email || null,
             businessName:      formData.businessName || null,
             businessRegNumber: formData.businessRegNumber || null,
@@ -63,7 +63,10 @@ export async function updateGrower(growerId, formData) {
             plantationSize:    formData.plantationSize ? parseFloat(formData.plantationSize) : null,
             gpsLat:            formData.gpsLat ? parseFloat(formData.gpsLat) : null,
             gpsLng:            formData.gpsLng ? parseFloat(formData.gpsLng) : null,
+            status:            formData.status || null,
         }),
     });
-    return handleResponse(res);
+    const result = await handleResponse(res);
+    // Unwrap the new API response format if it exists
+    return result?.data || result;
 }

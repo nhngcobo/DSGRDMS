@@ -3,6 +3,7 @@ import Sidebar from './components/layout/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Growers from './pages/Growers';
 import GrowerDetail from './pages/GrowerDetail';
+import Applications from './pages/Applications';
 import Compliance from './pages/Compliance';
 import FieldVisits from './pages/FieldVisits';
 import FieldVisitTimeline from './pages/FieldVisitTimeline';
@@ -30,6 +31,7 @@ function App() {
                         <Route path="/"             element={<Dashboard />} />
                         <Route path="/growers"      element={<Growers />} />
                         <Route path="/growers/:id"  element={<GrowerDetail />} />
+                        <Route path="/applications" element={<Applications />} />
                         <Route path="/compliance"   element={<Compliance />} />
                         <Route path="/field-visits" element={<FieldVisits />} />
                         <Route path="/messages"     element={<Messages />} />

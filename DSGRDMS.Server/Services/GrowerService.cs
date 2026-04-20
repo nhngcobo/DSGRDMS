@@ -71,17 +71,33 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
 
     public async Task<GrowerResponse?> UpdateAsync(string growerId, UpdateGrowerRequest req)
     {
+        Console.WriteLine($"[UpdateAsync] GrowerId: {growerId}, Status from request: '{req.Status}'");
+        
         var updated = await repo.UpdateAsync(growerId, g =>
         {
-            g.Phone             = req.Phone.Trim();
-            g.Email             = req.Email?.Trim();
-            g.BusinessName      = req.BusinessName?.Trim();
-            g.BusinessRegNumber = req.BusinessRegNumber?.Trim();
-            g.LandTenure        = req.LandTenure;
-            g.TreeSpecies       = req.TreeSpecies;
-            g.PlantationSize    = req.PlantationSize;
-            g.GpsLat            = req.GpsLat;
-            g.GpsLng            = req.GpsLng;
+            if (!string.IsNullOrWhiteSpace(req.Phone))
+                g.Phone             = req.Phone.Trim();
+            if (req.Email != null)
+                g.Email             = req.Email.Trim();
+            if (req.BusinessName != null)
+                g.BusinessName      = req.BusinessName.Trim();
+            if (req.BusinessRegNumber != null)
+                g.BusinessRegNumber = req.BusinessRegNumber.Trim();
+            if (req.LandTenure != null)
+                g.LandTenure        = req.LandTenure;
+            if (req.TreeSpecies != null)
+                g.TreeSpecies       = req.TreeSpecies;
+            if (req.PlantationSize.HasValue)
+                g.PlantationSize    = req.PlantationSize;
+            if (req.GpsLat.HasValue)
+                g.GpsLat            = req.GpsLat;
+            if (req.GpsLng.HasValue)
+                g.GpsLng            = req.GpsLng;
+            if (!string.IsNullOrWhiteSpace(req.Status))
+            {
+                Console.WriteLine($"[UpdateAsync] Updating status from '{g.Status}' to '{req.Status}'");
+                g.Status            = req.Status;
+            }
         });
         if (updated is null) return null;
 

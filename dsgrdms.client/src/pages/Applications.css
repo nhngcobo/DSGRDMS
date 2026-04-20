@@ -1,0 +1,438 @@
+/* Applications - Atmospheric Precision Design */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
+
+.applications-page {
+    padding: 3rem;
+    background: #faf9f9;
+    min-height: 100vh;
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
+}
+
+.applications-state {
+    padding: 3rem;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 300;
+}
+
+/* Header */
+.applications-header {
+    margin-bottom: 2rem;
+}
+
+.applications-header h1 {
+    font-size: 1.75rem;
+    font-weight: 300;
+    color: #426468;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.01em;
+}
+
+.applications-header p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 300;
+}
+
+/* Statistics overview */
+.applications-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.applications-stats .stat-card {
+    background: #fff;
+    border: 1px solid rgba(66, 100, 104, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+}
+
+.applications-stats .stat-card:hover {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.applications-stats .stat-card.pending {
+    border-left: 3px solid #f59e0b;
+}
+
+.applications-stats .stat-card.verified {
+    border-left: 3px solid #047857;
+}
+
+.applications-stats .stat-card.rejected {
+    border-left: 3px solid #b91c1c;
+}
+
+.applications-stats .stat-label {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+}
+
+.applications-stats .stat-value {
+    font-size: 2rem;
+    font-weight: 300;
+    color: #426468;
+    letter-spacing: -0.02em;
+}
+
+/* Table card */
+.applications-table-card {
+    background: #fff;
+    border: 1px solid rgba(66, 100, 104, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Toolbar */
+.applications-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.75rem;
+    border-bottom: 1px solid rgba(66, 100, 104, 0.08);
+    gap: 1.5rem;
+}
+
+.search-box {
+    flex: 1;
+    position: relative;
+    max-width: 560px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.6rem 0.85rem 0.6rem 2.3rem;
+    border: 1px solid rgba(66, 100, 104, 0.15);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: #111827;
+    background: #fff;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.search-box input:focus {
+    border-color: #426468;
+    box-shadow: 0 0 0 3px rgba(66, 100, 104, 0.08);
+}
+
+.search-box input::placeholder {
+    color: #9ca3af;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+.filter-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(66, 100, 104, 0.15);
+    background: #fff;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 300;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: #426468;
+    color: #426468;
+    background: rgba(66, 100, 104, 0.03);
+}
+
+.filter-btn.active {
+    background: #426468;
+    color: #fff;
+    border-color: #426468;
+}
+
+/* Table */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.applications-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.applications-table thead tr {
+    border-bottom: 1px solid rgba(66, 100, 104, 0.08);
+}
+
+.applications-table th {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.applications-table tbody tr {
+    border-bottom: 1px solid rgba(66, 100, 104, 0.06);
+    transition: background 0.15s ease;
+}
+
+.application-row {
+    cursor: pointer;
+}
+
+.application-row:hover {
+    background: rgba(66, 100, 104, 0.02);
+}
+
+.applications-table td {
+    padding: 1rem 1.25rem;
+    font-size: 0.875rem;
+    color: #374151;
+    font-weight: 300;
+}
+
+.app-id {
+    font-family: 'Courier New', monospace;
+    color: #6b7280;
+    font-size: 0.8125rem;
+}
+
+.applicant-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.applicant-name {
+    font-weight: 400;
+    color: #111827;
+}
+
+.applicant-email {
+    font-size: 0.8125rem;
+    color: #6b7280;
+}
+
+.date-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #6b7280;
+}
+
+.date-icon {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.na {
+    color: #d1d5db;
+    font-style: italic;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-transform: capitalize;
+    letter-spacing: 0.01em;
+}
+
+.badge-status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-status-verified,
+.badge-status-approved {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-status-in-review {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-status-returned {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-risk-low {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-risk-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-risk-high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Action button */
+.btn-view {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: 1px solid rgba(66, 100, 104, 0.2);
+    border-radius: 6px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8125rem;
+    font-weight: 300;
+    color: #426468;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-view:hover {
+    background: #426468;
+    color: #fff;
+    border-color: #426468;
+}
+
+/* Pagination */
+.applications-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.75rem;
+    border-top: 1px solid rgba(66, 100, 104, 0.08);
+}
+
+.pagination-info {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    font-weight: 300;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pagination-page {
+    font-size: 0.8125rem;
+    color: #374151;
+    font-weight: 300;
+    min-width: 100px;
+    text-align: center;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(66, 100, 104, 0.15);
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #426468;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #426468;
+    color: #fff;
+    border-color: #426468;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .applications-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .applications-page {
+        padding: 1.5rem;
+    }
+
+    .applications-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: none;
+    }
+
+    .applications-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-group {
+        flex-wrap: wrap;
+    }
+
+    .applications-table {
+        font-size: 0.8125rem;
+    }
+
+    .applications-table th,
+    .applications-table td {
+        padding: 0.75rem 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .applications-page {
+        padding: 1rem;
+    }
+
+    .applications-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .applications-stats .stat-value {
+        font-size: 1.75rem;
+    }
+
+    .pagination-info {
+        display: none;
+    }
+}
