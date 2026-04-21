@@ -32,9 +32,8 @@ public class FieldVisitRepository(AppDbContext db) : IFieldVisitRepository
 
     public async Task<List<FieldVisit>> GetPastByGrowerAsync(string growerId)
     {
-        var now = DateTime.UtcNow;
         return await db.FieldVisits
-            .Where(v => v.GrowerId == growerId && v.ScheduledDate <= now)
+            .Where(v => v.GrowerId == growerId && v.Status == "completed")
             .OrderByDescending(v => v.ScheduledDate)
             .ToListAsync();
     }

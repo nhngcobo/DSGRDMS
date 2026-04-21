@@ -62,12 +62,28 @@
     border-left: 3px solid #f59e0b;
 }
 
+.applications-stats .stat-card.inspection {
+    border-left: 3px solid #3b82f6;
+}
+
+.applications-stats .stat-card.review {
+    border-left: 3px solid #8b5cf6;
+}
+
+.applications-stats .stat-card.approved {
+    border-left: 3px solid #047857;
+}
+
 .applications-stats .stat-card.verified {
     border-left: 3px solid #047857;
 }
 
 .applications-stats .stat-card.rejected {
     border-left: 3px solid #b91c1c;
+}
+
+.applications-stats .stat-card.info-needed {
+    border-left: 3px solid #ea580c;
 }
 
 .applications-stats .stat-label {
@@ -268,7 +284,16 @@
     color: #92400e;
 }
 
-.badge-status-verified,
+.badge-status-inspection_pending {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-status-review_pending {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
 .badge-status-approved {
     background: #d1fae5;
     color: #065f46;
@@ -284,8 +309,13 @@
     color: #1e40af;
 }
 
+.badge-status-info_requested {
+    background: #fed7aa;
+    color: #92400e;
+}
+
 .badge-status-returned {
-    background: #fef3c7;
+    background: #fed7aa;
     color: #92400e;
 }
 
@@ -302,6 +332,13 @@
 .badge-risk-high {
     background: #fee2e2;
     color: #991b1b;
+}
+
+/* Action buttons cell */
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
 }
 
 /* Action button */
@@ -324,6 +361,42 @@
     background: #426468;
     color: #fff;
     border-color: #426468;
+}
+
+/* Schedule button */
+.btn-schedule {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 6px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8125rem;
+    font-weight: 300;
+    color: #22c55e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-schedule:hover {
+    background: #22c55e;
+    color: #000;
+    border-color: #22c55e;
+}
+
+.btn-schedule:disabled {
+    opacity: 1;
+    cursor: not-allowed;
+    border-color: #d1d5db;
+    color: #9ca3af;
+    background: #f3f4f6;
+}
+
+.btn-schedule:disabled:hover {
+    background: #f3f4f6;
+    color: #9ca3af;
+    border-color: #d1d5db;
 }
 
 /* Pagination */

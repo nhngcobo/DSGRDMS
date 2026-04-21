@@ -469,7 +469,7 @@ export default function ComplianceDocuments() {
                         {growerData?.businessName && (
                             <p><strong>Business:</strong> {growerData.businessName}</p>
                         )}
-                        <p><strong>Status:</strong> <span className="status-badge approved">Verified & Compliant</span></p>
+                        <p><strong>Status:</strong> <span className="status-badge approved">Approved & Compliant</span></p>
                         <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
                     </div>
 

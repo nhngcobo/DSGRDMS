@@ -18,7 +18,7 @@ public class Grower
     public decimal? PlantationSize { get; set; }
     public double? GpsLat { get; set; }
     public double? GpsLng { get; set; }
-    public string Status { get; set; } = "pending";        // pending | in review | approved | rejected | returned
+    public string Status { get; set; } = "pending";        // pending | inspection_pending | review_pending | approved | rejected | info_requested
     public bool IsDraft { get; set; }
     public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
 }

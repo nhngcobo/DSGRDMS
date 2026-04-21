@@ -170,20 +170,6 @@ public class ComplianceService(
 
         await complianceRepo.UpdateAsync(doc);
 
-        // Auto-promote grower to "verified" when all required documents are approved
-        if (action == "approved" && grower.Status != "verified")
-        {
-            var allDocs = (await complianceRepo.GetByGrowerIdAsync(growerId))
-                .ToDictionary(d => d.DocumentTypeId);
-
-            var allRequiredApproved = DocumentTypes.All
-                .Where(dt => dt.IsRequired)
-                .All(dt => allDocs.TryGetValue(dt.Id, out var d) && d.Status == "approved");
-
-            if (allRequiredApproved)
-                await growerRepo.UpdateStatusAsync(growerId, "verified");
-        }
-
         return (ToDto(docType, doc), null);
     }
 
@@ -248,10 +234,10 @@ public class ComplianceService(
             var requiredDocIds = new[] { 1, 2, 3, 4, 5, 6, 7, 8 };
             
             // Determine grower's compliance level based on their status
-            // Approved/verified: 85-95% approved, In review: 60-80%, Pending: 30-60%
+            // Approved: 85-95% approved, In review: 60-80%, Pending: 30-60%
             double approvalRate = grower.Status.ToLower() switch
             {
-                "approved" or "verified" => 0.85 + random.NextDouble() * 0.10,
+                "approved" => 0.85 + random.NextDouble() * 0.10,
                 "in review" => 0.60 + random.NextDouble() * 0.20,
                 _ => 0.30 + random.NextDouble() * 0.30
             };

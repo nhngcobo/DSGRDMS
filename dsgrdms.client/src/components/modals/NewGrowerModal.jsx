@@ -7,7 +7,7 @@ import { friendlyError } from '../../utils/apiErrors';
 import './NewGrowerModal.css';
 
 const EMPTY = {
-    firstName: '', lastName: '', idNumber: '', phone: '', email: '',
+    firstName: '', lastName: '', idNumber: '', phone: '', email: '', confirmEmail: '',
     businessName: '', businessRegNumber: '',
     landTenure: '', treeSpecies: '', plantationSize: '', gpsLat: '', gpsLng: '',
     risk: 'low',
@@ -89,6 +89,9 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
 
         if (!data.email.trim())      errs.email = tv.required;
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())) errs.email = tv.emailFormat;
+
+        if (!data.confirmEmail.trim()) errs.confirmEmail = tv.required;
+        else if (data.email.trim() !== data.confirmEmail.trim()) errs.confirmEmail = tv.emailMismatch;
 
         if (!data.businessName.trim())   errs.businessName   = tv.required;
         if (!data.landTenure)            errs.landTenure     = tv.required;
@@ -200,6 +203,11 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
                                 <label>{tf.email}</label>
                                 <input type="email" className={errors.email ? 'input-error' : ''} placeholder={tf.emailPlaceholder} value={form.email} onChange={set('email')} />
                                 {errors.email && <span className="field-error">{errors.email}</span>}
+                            </div>
+                            <div className="form-group">
+                                <label>{tf.confirmEmail}</label>
+                                <input type="email" className={errors.confirmEmail ? 'input-error' : ''} placeholder={tf.confirmEmailPlaceholder} value={form.confirmEmail} onChange={set('confirmEmail')} />
+                                {errors.confirmEmail && <span className="field-error">{errors.confirmEmail}</span>}
                             </div>
                         </section>
 

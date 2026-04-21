@@ -1,11 +1,14 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
-import { Eye, Search, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { Eye, Search, ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useT } from '../hooks/useT';
+import { useAuth } from '../context/AuthContext';
 import { fetchGrowers } from '../services/growersApi';
+import { fieldVisitsApi } from '../services/fieldVisitsApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
 import ReviewApplicationModal from '../components/modals/ReviewApplicationModal';
+import ScheduleVisitModal from '../components/modals/ScheduleVisitModal';
 import './Applications.css';
 
 const PAGE_SIZE = 15;
@@ -13,6 +16,7 @@ const PAGE_SIZE = 15;
 export default function Applications() {
     const t = useT();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const { showError } = useNotification();
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState('All');
@@ -20,17 +24,42 @@ export default function Applications() {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [reviewingAppId, setReviewingAppId] = useState(null);
+    const [schedulingGrowerId, setSchedulingGrowerId] = useState(null);
+    const [schedulingGrower, setSchedulingGrower] = useState(null);
 
     // Reset to page 1 whenever search or filter changes
     useEffect(() => { setPage(1); }, [search, filter]);
 
-    const STATUS_FILTERS = ['All', 'Pending', 'Approved', 'Rejected'];
+    const STATUS_FILTERS = ['All', 'Pending', 'Inspection Pending', 'Review Pending', 'Approved', 'Rejected', 'Info Requested'];
+
+    // Map display filter names to actual status values
+    const getStatusValue = (filterName) => {
+        const mapping = {
+            'Pending': 'pending',
+            'Inspection Pending': 'inspection_pending',
+            'Review Pending': 'review_pending',
+            'Approved': 'approved',
+            'Rejected': 'rejected',
+            'Info Requested': 'info_requested'
+        };
+        return mapping[filterName] || filterName.toLowerCase();
+    };
 
     const loadApplications = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await fetchGrowers();
-            setApplications(data || []);
+            const [growers, visits] = await Promise.all([
+                fetchGrowers(),
+                fieldVisitsApi.getAll().catch(() => [])
+            ]);
+            
+            // Mark growers that have scheduled visits
+            const data = (growers || []).map(grower => ({
+                ...grower,
+                hasScheduledVisit: visits.some(v => v.growerId === grower.id && v.status?.toLowerCase() === 'scheduled')
+            }));
+            
+            setApplications(data);
         } catch (err) {
             showError(friendlyError(err));
             setApplications([]);
@@ -44,8 +73,7 @@ export default function Applications() {
     const visible = applications.filter(g => {
         const matchesFilter =
             filter === 'All' ||
-            (filter === 'Approved' && ['verified', 'approved'].includes(g.status.toLowerCase())) ||
-            g.status.toLowerCase() === filter.toLowerCase();
+            g.status.toLowerCase() === getStatusValue(filter);
         const q = search.toLowerCase();
         const matchesSearch =
             !q ||
@@ -62,8 +90,11 @@ export default function Applications() {
     const stats = {
         total: applications.length,
         pending: applications.filter(a => a.status.toLowerCase() === 'pending').length,
-        verified: applications.filter(a => ['verified', 'approved'].includes(a.status.toLowerCase())).length,
+        inspectionPending: applications.filter(a => a.status.toLowerCase() === 'inspection_pending').length,
+        reviewPending: applications.filter(a => a.status.toLowerCase() === 'review_pending').length,
+        approved: applications.filter(a => a.status.toLowerCase() === 'approved').length,
         rejected: applications.filter(a => a.status.toLowerCase() === 'rejected').length,
+        infoRequested: applications.filter(a => a.status.toLowerCase() === 'info_requested').length,
     };
 
     // Format date helper (mock - you can replace with actual date from API)
@@ -92,16 +123,28 @@ export default function Applications() {
                     <div className="stat-value">{stats.total}</div>
                 </div>
                 <div className="stat-card pending">
-                    <div className="stat-label">Pending Review</div>
+                    <div className="stat-label">Awaiting Field Visit</div>
                     <div className="stat-value">{stats.pending}</div>
                 </div>
-                <div className="stat-card verified">
-                    <div className="stat-label">Verified</div>
-                    <div className="stat-value">{stats.verified}</div>
+                <div className="stat-card inspection">
+                    <div className="stat-label">Under Inspection</div>
+                    <div className="stat-value">{stats.inspectionPending}</div>
+                </div>
+                <div className="stat-card review">
+                    <div className="stat-label">Awaiting Review</div>
+                    <div className="stat-value">{stats.reviewPending}</div>
+                </div>
+                <div className="stat-card approved">
+                    <div className="stat-label">Approved</div>
+                    <div className="stat-value">{stats.approved}</div>
                 </div>
                 <div className="stat-card rejected">
                     <div className="stat-label">Rejected</div>
                     <div className="stat-value">{stats.rejected}</div>
+                </div>
+                <div className="stat-card info-needed">
+                    <div className="stat-label">Info Requested</div>
+                    <div className="stat-value">{stats.infoRequested}</div>
                 </div>
             </div>
 
@@ -172,16 +215,37 @@ export default function Applications() {
                                         <td><span className={`badge badge-status-${app.status}`}>{app.status}</span></td>
                                         <td><span className={`badge badge-risk-${app.risk}`}>{app.risk}</span></td>
                                         <td>
-                                            <button 
-                                                className="btn-view" 
-                                                onClick={e => { 
-                                                    e.stopPropagation(); 
-                                                    setReviewingAppId(app.id); 
-                                                }}
-                                            >
-                                                <Eye size={14} />
-                                                Review
-                                            </button>
+                                            <div className="actions-cell">
+                                                {/* Schedule Visit button for field officers - only for pending */}
+                                                {user?.role === 'field_officer' && (
+                                                    <button 
+                                                        className="btn-schedule" 
+                                                        onClick={e => { 
+                                                            e.stopPropagation(); 
+                                                            setSchedulingGrowerId(app.id);
+                                                            setSchedulingGrower(app);
+                                                        }}
+                                                        disabled={app.status.toLowerCase() !== 'pending' || app.hasScheduledVisit}
+                                                        title={app.hasScheduledVisit ? 'A visit has already been scheduled for this grower' : (app.status.toLowerCase() === 'pending' ? 'Schedule a field visit for this grower' : 'Can only schedule visits for pending applications')}
+                                                    >
+                                                        <Clock size={14} />
+                                                        Schedule
+                                                    </button>
+                                                )}
+                                                {/* Review button for admins */}
+                                                {user?.role !== 'field_officer' && (
+                                                    <button 
+                                                        className="btn-view" 
+                                                        onClick={e => { 
+                                                            e.stopPropagation(); 
+                                                            setReviewingAppId(app.id); 
+                                                        }}
+                                                    >
+                                                        <Eye size={14} />
+                                                        Review
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -225,6 +289,23 @@ export default function Applications() {
                     onReviewed={() => {
                         loadApplications();
                         setReviewingAppId(null);
+                    }}
+                />
+            )}
+
+            {/* Schedule Visit Modal */}
+            {schedulingGrowerId && (
+                <ScheduleVisitModal
+                    applicationId={schedulingGrowerId}
+                    grower={schedulingGrower}
+                    onClose={() => {
+                        setSchedulingGrowerId(null);
+                        setSchedulingGrower(null);
+                    }}
+                    onScheduled={() => {
+                        loadApplications();
+                        setSchedulingGrowerId(null);
+                        setSchedulingGrower(null);
                     }}
                 />
             )}

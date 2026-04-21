@@ -50,10 +50,10 @@ public class AuthService(AppDbContext db, IConfiguration config) : IAuthService
 
         var claims = new List<Claim>
         {
-            new("sub",   user.Id.ToString()),
+            new("sub", user.Id.ToString()),
             new("email", user.Email),
-            new("role",  user.Role),
-            new("name",  user.FullName),
+            new("role", user.Role),
+            new("name", user.FullName),
         };
 
         if (user.GrowerId is not null)
@@ -83,11 +83,11 @@ public class AuthService(AppDbContext db, IConfiguration config) : IAuthService
         
         var claims = new List<Claim>
         {
-            new("sub",       grower.Id.ToString()),
-            new("email",     grower.Email ?? ""),
-            new("role",      "grower"),
-            new("name",      fullName),
-            new("growerId",  grower.GrowerId)
+            new("sub", grower.Id.ToString()),
+            new("email", grower.Email ?? ""),
+            new("role", "grower"),
+            new("name", fullName),
+            new("growerId", grower.GrowerId)
         };
 
         var token = new JwtSecurityToken(

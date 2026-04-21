@@ -17,11 +17,19 @@ public class DashboardController(AppDbContext db, IGrowerService growerService) 
     {
         var totalGrowers  = await db.Growers.CountAsync();
         var pendingCount  = await db.Growers.CountAsync(g => g.Status == "pending");
-        var verifiedCount = await db.Growers.CountAsync(g => g.Status == "verified");
+        var verifiedCount = await db.Growers.CountAsync(g => g.Status == "approved");
 
-        // Derive high-risk count from real compliance scores
-        var allGrowers    = await growerService.GetAllAsync();
-        var highRiskCount = allGrowers.Count(g => g.Risk == "high");
+        // Derive risk distribution from real compliance scores
+        var allGrowers     = await growerService.GetAllAsync();
+        var lowRiskCount   = allGrowers.Count(g => g.Risk == "low");
+        var mediumRiskCount = allGrowers.Count(g => g.Risk == "medium");
+        var highRiskCount  = allGrowers.Count(g => g.Risk == "high");
+        
+        // Calculate percentages
+        var totalRisked = lowRiskCount + mediumRiskCount + highRiskCount;
+        int lowRiskPercent = totalRisked > 0 ? (int)Math.Round(((double)lowRiskCount / totalRisked) * 100) : 0;
+        int mediumRiskPercent = totalRisked > 0 ? (int)Math.Round(((double)mediumRiskCount / totalRisked) * 100) : 0;
+        int highRiskPercent = totalRisked > 0 ? (int)Math.Round(((double)highRiskCount / totalRisked) * 100) : 0;
 
         // Last 6 calendar months (oldest → newest)
         var firstOfWindow = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(-5);
@@ -59,6 +67,11 @@ public class DashboardController(AppDbContext db, IGrowerService growerService) 
             PendingCount          = pendingCount,
             VerifiedCount         = verifiedCount,
             HighRiskCount         = highRiskCount,
+            LowRiskCount          = lowRiskCount,
+            MediumRiskCount       = mediumRiskCount,
+            LowRiskPercent        = lowRiskPercent,
+            MediumRiskPercent     = mediumRiskPercent,
+            HighRiskPercent       = highRiskPercent,
             MonthlyRegistrations  = monthlyRegistrations,
             RecentApplications    = recentApplications,
         });

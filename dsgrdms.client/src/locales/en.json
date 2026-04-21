@@ -37,11 +37,11 @@
     "statCards": {
       "totalGrowers":          "Total Growers",
       "pendingApplications":   "Pending Applications",
-      "verifiedGrowers":       "Verified Growers",
+      "approvedGrowers":       "Approved Growers",
       "highRisk":              "High Risk",
       "totalGrowersChange":    "+12.5% from last month",
       "pendingAppChange":      "+3 from last month",
-      "verifiedGrowersChange": "+8.2% from last month",
+      "approvedGrowersChange": "+8.2% from last month",
       "highRiskChange":        "-2 from last month"
     },
     "pieLabels": {
@@ -56,9 +56,13 @@
     "newRegistration": "New Registration",
     "searchPlaceholder": "Search by name, ID, or location...",
     "filters": {
-      "all":      "All",
-      "pending":  "Pending",
-      "verified": "Verified"
+      "all":                  "All",
+      "pending":              "Awaiting Field Visit",
+      "inspection_pending":   "Under Inspection",
+      "review_pending":       "Awaiting Review",
+      "approved":             "Approved",
+      "rejected":             "Rejected",
+      "info_requested":       "Info Requested"
     },
     "table": {
       "id":               "ID",
@@ -139,6 +143,8 @@
         "phonePlaceholder":      "+27 xx xxx xxxx",
         "email":                 "Email Address",
         "emailPlaceholder":      "grower@example.com",
+        "confirmEmail":          "Confirm Email Address",
+        "confirmEmailPlaceholder": "Re-enter email address",
         "businessName":          "Business Name",
         "businessNamePlaceholder": "Registered business name",
         "businessRegNumber":         "Business Registration Number",
@@ -164,6 +170,7 @@
         "idNumberFormat":    "Must be a 13-digit SA ID number",
         "phoneFormat":       "Enter all 9 digits after +27",
         "emailFormat":       "Enter a valid email address",
+        "emailMismatch":     "Email addresses do not match",
         "plantationSizeMin": "Must be greater than 0",
         "gpsLatRange":       "Latitude must be between -90 and 90",
         "gpsLngRange":       "Longitude must be between -180 and 180"

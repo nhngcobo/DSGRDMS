@@ -3,6 +3,7 @@ import { Eye, Search, ChevronLeft, ChevronRight, Calendar, Plus, FileText } from
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import { fieldVisitsApi } from '../services/fieldVisitsApi';
+import { fetchGrowers } from '../services/growersApi';
 import { friendlyError } from '../utils/apiErrors';
 import ScheduleVisitModal from '../components/modals/ScheduleVisitModal';
 import LogFindingsModal from '../components/modals/LogFindingsModal';
@@ -23,6 +24,7 @@ export default function FieldVisitCoordination() {
     
     const [schedulingGrowerId, setSchedulingGrowerId] = useState(null);
     const [loggingVisitId, setLoggingVisitId] = useState(null);
+    const [loggingVisitData, setLoggingVisitData] = useState(null);
     const [viewingVisitId, setViewingVisitId] = useState(null);
 
     const VISIT_STATUS_FILTERS = ['All', 'scheduled', 'in_progress', 'completed'];
@@ -33,8 +35,25 @@ export default function FieldVisitCoordination() {
     const loadVisits = useCallback(async () => {
         setLoading(true);
         try {
-            const allVisits = await fieldVisitsApi.getAll();
-            setVisits(allVisits || []);
+            const [allVisits, growers] = await Promise.all([
+                fieldVisitsApi.getAll(),
+                fetchGrowers().catch(() => [])
+            ]);
+            
+            // Create a map of growers by ID for quick lookup
+            const growerMap = {};
+            (growers || []).forEach(g => {
+                growerMap[g.id] = g;
+            });
+            
+            // Enrich visits with grower GPS data
+            const enrichedVisits = (allVisits || []).map(visit => ({
+                ...visit,
+                growerGpsLat: growerMap[visit.growerId]?.gpsLat,
+                growerGpsLng: growerMap[visit.growerId]?.gpsLng,
+            }));
+            
+            setVisits(enrichedVisits);
         } catch (err) {
             showError(friendlyError(err));
             setVisits([]);
@@ -77,8 +96,9 @@ export default function FieldVisitCoordination() {
         setSchedulingGrowerId(growerId);
     };
 
-    const handleLogFindings = (visitId) => {
+    const handleLogFindings = (visitId, visitData) => {
         setLoggingVisitId(visitId);
+        setLoggingVisitData(visitData);
     };
 
     const handleViewFindings = (visitId) => {
@@ -92,6 +112,7 @@ export default function FieldVisitCoordination() {
 
     const handleFindingsLogged = async () => {
         setLoggingVisitId(null);
+        setLoggingVisitData(null);
         await loadVisits();
     };
 
@@ -220,22 +241,33 @@ export default function FieldVisitCoordination() {
                                             )}
                                         </td>
                                         <td className="location-cell">
-                                            <span className="location-text">{visit.location || '—'}</span>
+                                            {visit.growerGpsLat && visit.growerGpsLng ? (
+                                                <div className="location-info">
+                                                    <div className="location-label">Latitude</div>
+                                                    <div className="location-value">{visit.growerGpsLat.toFixed(6)}</div>
+                                                    <div className="location-label">Longitude</div>
+                                                    <div className="location-value">{visit.growerGpsLng.toFixed(6)}</div>
+                                                </div>
+                                            ) : (
+                                                <span className="text-muted">—</span>
+                                            )}
                                         </td>
                                         <td>
                                             <div className="action-buttons">
-                                                <button
-                                                    className="btn-action btn-schedule"
-                                                    onClick={() => handleScheduleVisit(visit.growerId)}
-                                                    title="Schedule new visit"
-                                                >
-                                                    <Plus size={16} />
-                                                    Schedule
-                                                </button>
+                                                {!visit.status || visit.status?.toLowerCase() === 'pending' ? (
+                                                    <button
+                                                        className="btn-action btn-schedule"
+                                                        onClick={() => handleScheduleVisit(visit.growerId)}
+                                                        title="Schedule new visit"
+                                                    >
+                                                        <Plus size={16} />
+                                                        Schedule
+                                                    </button>
+                                                ) : null}
                                                 {visit.status?.toLowerCase() === 'scheduled' && (
                                                     <button
                                                         className="btn-action btn-log-findings"
-                                                        onClick={() => handleLogFindings(visit.id)}
+                                                        onClick={() => handleLogFindings(visit.id, visit)}
                                                         title="Log visit findings"
                                                     >
                                                         <FileText size={16} />
@@ -297,8 +329,15 @@ export default function FieldVisitCoordination() {
             {loggingVisitId && (
                 <LogFindingsModal
                     visitId={loggingVisitId}
+                    grower={{
+                        id: loggingVisitData?.growerId,
+                        name: loggingVisitData?.growerName
+                    }}
                     onSuccess={handleFindingsLogged}
-                    onClose={() => setLoggingVisitId(null)}
+                    onClose={() => {
+                        setLoggingVisitId(null);
+                        setLoggingVisitData(null);
+                    }}
                 />
             )}
 

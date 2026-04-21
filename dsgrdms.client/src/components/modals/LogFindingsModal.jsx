@@ -4,7 +4,7 @@ import { useNotification } from '../../context/NotificationContext';
 import { fieldVisitsApi } from '../../services/fieldVisitsApi';
 import './LogFindingsModal.css';
 
-export default function LogFindingsModal({ visitId, grower, onClose, onSaved }) {
+export default function LogFindingsModal({ visitId, grower, onClose, onSuccess }) {
     const { showError, showSuccess } = useNotification();
     const fileInputRef = useRef(null);
     
@@ -56,7 +56,7 @@ export default function LogFindingsModal({ visitId, grower, onClose, onSaved }) 
             });
 
             showSuccess(`Findings logged for ${grower?.name || 'grower'}`);
-            onSaved();
+            onSuccess();
             onClose();
         } catch (err) {
             setError(err.message || 'Failed to log findings');

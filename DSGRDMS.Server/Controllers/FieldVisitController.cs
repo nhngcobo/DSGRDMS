@@ -52,8 +52,8 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
     [Authorize]
     public async Task<IActionResult> ScheduleVisit([FromBody] ScheduleVisitRequest request)
     {
-        // Check role in method body using ClaimTypes.Role
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        // Check role in method body using simple "role" claim
+        var userRole = User.FindFirst("role")?.Value ?? User.FindFirst(ClaimTypes.Role)?.Value;
         
         if (userRole != "admin" && userRole != "field_officer")
         {
@@ -62,8 +62,8 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
         }
 
         // Get authenticated user's ID and name from JWT claims
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
-        var userName = User.FindFirst(ClaimTypes.Name)?.Value ?? "Field Officer";
+        var userId = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userName = User.FindFirst("name")?.Value ?? User.FindFirst(ClaimTypes.Name)?.Value ?? "Field Officer";
 
         var createRequest = new CreateFieldVisitRequest(
             GrowerId: request.GrowerId,
@@ -86,7 +86,7 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
     [Authorize]
     public async Task<IActionResult> Create([FromBody] CreateFieldVisitRequest request)
     {
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        var userRole = User.FindFirst("role")?.Value ?? User.FindFirst(ClaimTypes.Role)?.Value;
         if (userRole != "admin" && userRole != "field_officer")
         {
             return StatusCode(StatusCodes.Status403Forbidden, 
@@ -101,7 +101,7 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
     [Authorize]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateFieldVisitRequest request)
     {
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        var userRole = User.FindFirst("role")?.Value ?? User.FindFirst(ClaimTypes.Role)?.Value;
         if (userRole != "admin" && userRole != "field_officer")
         {
             return StatusCode(StatusCodes.Status403Forbidden, 
@@ -122,7 +122,7 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
         Console.WriteLine($"DEBUG LogFindings: Content-Type = {Request.ContentType}");
         Console.WriteLine($"DEBUG LogFindings: Has form? {Request.HasFormContentType}");
 
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        var userRole = User.FindFirst("role")?.Value ?? User.FindFirst(ClaimTypes.Role)?.Value;
         if (userRole != "admin" && userRole != "field_officer")
         {
             return StatusCode(StatusCodes.Status403Forbidden, 
@@ -195,7 +195,7 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
     [Authorize]
     public async Task<IActionResult> Delete(int id)
     {
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        var userRole = User.FindFirst("role")?.Value ?? User.FindFirst(ClaimTypes.Role)?.Value;
         if (userRole != "admin")
         {
             return StatusCode(StatusCodes.Status403Forbidden, 

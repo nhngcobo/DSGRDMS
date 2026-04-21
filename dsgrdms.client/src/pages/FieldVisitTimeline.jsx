@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, User, MapPin, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { fieldVisitsApi } from '../services/fieldVisitsApi';
+import { fetchGrowerById } from '../services/growersApi';
 import './FieldVisitTimeline.css';
 
 export default function FieldVisitTimeline() {
     const { user } = useAuth();
+    const [growerData, setGrowerData] = useState(null);
     const [upcomingVisits, setUpcomingVisits] = useState([]);
     const [pastVisits, setPastVisits] = useState([]);
     const [expandedVisit, setExpandedVisit] = useState(null);
@@ -22,12 +24,14 @@ export default function FieldVisitTimeline() {
         const fetchVisits = async () => {
             try {
                 setLoading(true);
-                const [upcoming, past] = await Promise.all([
+                const [upcoming, past, grower] = await Promise.all([
                     fieldVisitsApi.getUpcoming(user.growerId),
                     fieldVisitsApi.getPast(user.growerId),
+                    fetchGrowerById(user.growerId).catch(() => null)
                 ]);
                 setUpcomingVisits(Array.isArray(upcoming) ? upcoming : []);
                 setPastVisits(Array.isArray(past) ? past : []);
+                setGrowerData(grower);
                 setError(null);
             } catch (err) {
                 console.error('Failed to fetch visits:', err);
@@ -144,7 +148,11 @@ export default function FieldVisitTimeline() {
                                 </div>
                                 <div className="inspection-location">
                                     <MapPin size={16} />
-                                    <span>{inspection.location}</span>
+                                    <span>
+                                        {growerData?.gpsLat && growerData?.gpsLng
+                                            ? `${growerData.gpsLat.toFixed(6)}, ${growerData.gpsLng.toFixed(6)}`
+                                            : 'Location TBD'}
+                                    </span>
                                 </div>
                                 <p className="inspection-purpose">{inspection.visitType}</p>
                             </div>
@@ -186,10 +194,10 @@ export default function FieldVisitTimeline() {
             <div className="timeline-container">
                 {pastVisits.length > 0 ? (
                     pastVisits.map((visit) => (
-                        <div key={visit.fieldVisitId} className={`timeline-visit-card ${expandedVisit === visit.fieldVisitId ? 'expanded' : ''}`}>
+                        <div key={visit.id || visit.fieldVisitId} className={`timeline-visit-card ${expandedVisit === (visit.id || visit.fieldVisitId) ? 'expanded' : ''} ${visit.status === 'completed' ? 'completed' : ''}`}>
                             <div className="visit-timeline-marker"></div>
                             
-                            <div className="visit-card-header" onClick={() => toggleVisit(visit.fieldVisitId)}>
+                            <div className="visit-card-header" onClick={() => toggleVisit(visit.id || visit.fieldVisitId)}>
                                 <div className="visit-main-info">
                                     <div className="visit-date-section">
                                         <Calendar size={18} className="text-primary" />
@@ -205,16 +213,20 @@ export default function FieldVisitTimeline() {
                                         </div>
                                         <div className="meta-item">
                                             <MapPin size={14} />
-                                            <span>{visit.location}</span>
+                                            <span>
+                                                {growerData?.gpsLat && growerData?.gpsLng
+                                                    ? `${growerData.gpsLat.toFixed(6)}, ${growerData.gpsLng.toFixed(6)}`
+                                                    : 'Location TBD'}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="visit-expand-btn">
-                                    {expandedVisit === visit.fieldVisitId ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                    {expandedVisit === (visit.id || visit.fieldVisitId) ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                 </div>
                             </div>
 
-                            {expandedVisit === visit.fieldVisitId && (
+                            {expandedVisit === (visit.id || visit.fieldVisitId) && (
                                 <div className="visit-card-body">
                                     <div className="visit-section">
                                         <h4>Visit Type</h4>
@@ -223,7 +235,7 @@ export default function FieldVisitTimeline() {
 
                                     {visit.findings && (
                                         <div className="visit-section">
-                                            <h4>Findings</h4>
+                                            <h4>Findings & Observations</h4>
                                             <p>{visit.findings}</p>
                                         </div>
                                     )}
@@ -237,7 +249,7 @@ export default function FieldVisitTimeline() {
 
                                     <div className="visit-status">
                                         <span className={`status-badge ${visit.status}`}>
-                                            {visit.status || 'scheduled'}
+                                            {visit.status === 'completed' ? '✓ COMPLETED' : visit.status || 'scheduled'}
                                         </span>
                                     </div>
                                 </div>

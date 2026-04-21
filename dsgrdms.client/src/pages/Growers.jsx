@@ -25,7 +25,29 @@ export default function Growers() {
     // Reset to page 1 whenever search or filter changes
     useEffect(() => { setPage(1); }, [search, filter]);
 
-    const STATUS_FILTERS = [tg.filters.all, tg.filters.pending, tg.filters.verified];
+    const STATUS_FILTERS = [
+        tg.filters.all,
+        tg.filters.pending,
+        tg.filters.inspection_pending,
+        tg.filters.review_pending,
+        tg.filters.approved,
+        tg.filters.rejected,
+        tg.filters.info_requested
+    ];
+
+    // Map filter display values to actual status values
+    const getStatusValue = (filterLabel) => {
+        const statusMap = {
+            [tg.filters.all]: 'all',
+            [tg.filters.pending]: 'pending',
+            [tg.filters.inspection_pending]: 'inspection_pending',
+            [tg.filters.review_pending]: 'review_pending',
+            [tg.filters.approved]: 'approved',
+            [tg.filters.rejected]: 'rejected',
+            [tg.filters.info_requested]: 'info_requested'
+        };
+        return statusMap[filterLabel] || filterLabel.toLowerCase();
+    };
 
     const loadGrowers = useCallback(async () => {
         setLoading(true);
@@ -43,9 +65,10 @@ export default function Growers() {
     useEffect(() => { loadGrowers(); }, [loadGrowers]);
 
     const visible = growers.filter(g => {
+        const statusValue = getStatusValue(filter);
         const matchesFilter =
-            filter === tg.filters.all ||
-            g.status === filter.toLowerCase();
+            statusValue === 'all' ||
+            g.status === statusValue;
         const q = search.toLowerCase();
         const matchesSearch =
             !q ||

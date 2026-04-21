@@ -83,7 +83,9 @@ export default function GrowerDossier() {
             {/* Header */}
             <section className="dossier-header">
                 <div className="header-content">
-                    <img src="/person1.png" alt="Grower" className="grower-avatar" />
+                    <div className="grower-avatar">
+                        {fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    </div>
                     <div className="header-info">
                         <h1>{fullName}</h1>
                         {growerData.businessName && (
@@ -259,11 +261,13 @@ export default function GrowerDossier() {
                                         <div className="visit-meta">
                                             <span className="visit-officer">
                                                 <User size={14} />
-                                                {visit.officerName}
+                                                {visit.officerName || 'Assigned Officer'}
                                             </span>
                                             <span className="visit-location">
                                                 <MapPin size={14} />
-                                                {visit.location}
+                                                {growerData.gpsLat && growerData.gpsLng 
+                                                    ? `${growerData.gpsLat.toFixed(6)}, ${growerData.gpsLng.toFixed(6)}`
+                                                    : 'Location TBD'}
                                             </span>
                                         </div>
                                     </div>

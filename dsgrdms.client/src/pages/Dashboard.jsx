@@ -51,20 +51,19 @@ export default function Dashboard() {
     }, [showError]);
 
     const pieData = [
-        { name: td.pieLabels.lowRisk,    value: 64, color: '#10b981' },
-        { name: td.pieLabels.mediumRisk, value: 24, color: '#f59e0b' },
-        { name: td.pieLabels.highRisk,   value: 12, color: '#ef4444' },
+        { name: td.pieLabels.lowRisk,    value: summary?.lowRiskPercent ?? 0, color: '#10b981' },
+        { name: td.pieLabels.mediumRisk, value: summary?.mediumRiskPercent ?? 0, color: '#f59e0b' },
+        { name: td.pieLabels.highRisk,   value: summary?.highRiskPercent ?? 0, color: '#ef4444' },
     ];
 
     const pendingTasks = [
-        { label: 'Field Verification – Mary Wanjiku', due: '2026-04-15', priority: 'high' },
-        { label: 'Document Review – Grace Akinyi',    due: '2026-04-14', priority: 'medium' },
+        // Pending tasks will be loaded from API in the future
     ];
 
     const statCards = [
         { title: td.statCards.totalGrowers,        value: loading ? '—' : String(summary?.totalGrowers  ?? 0), change: td.statCards.totalGrowersChange,    positive: true,  icon: Users },
         { title: td.statCards.pendingApplications, value: loading ? '—' : String(summary?.pendingCount  ?? 0), change: td.statCards.pendingAppChange,      positive: null,  icon: Clock },
-        { title: td.statCards.verifiedGrowers,     value: loading ? '—' : String(summary?.verifiedCount ?? 0), change: td.statCards.verifiedGrowersChange, positive: true,  icon: ShieldCheck },
+        { title: td.statCards.approvedGrowers,     value: loading ? '—' : String(summary?.verifiedCount ?? 0), change: td.statCards.approvedGrowersChange, positive: true,  icon: ShieldCheck },
         { title: td.statCards.highRisk,            value: loading ? '—' : String(summary?.highRiskCount ?? 0), change: td.statCards.highRiskChange,        positive: false, icon: AlertTriangle },
     ];
 
@@ -179,15 +178,21 @@ export default function Dashboard() {
                         <a href="/field-tasks" className="view-all">{td.pendingTasks.viewAll}</a>
                     </div>
                     <div className="app-list">
-                        {pendingTasks.map(({ label, due, priority }) => (
-                            <div className="app-row" key={label}>
-                                <div>
-                                    <div className="app-name">{label}</div>
-                                    <div className="app-id">Due: {due}</div>
-                                </div>
-                                <span className={`badge badge-priority-${priority}`}>{priority}</span>
+                        {pendingTasks.length === 0 ? (
+                            <div style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>
+                                No pending tasks
                             </div>
-                        ))}
+                        ) : (
+                            pendingTasks.map(({ label, due, priority }) => (
+                                <div className="app-row" key={label}>
+                                    <div>
+                                        <div className="app-name">{label}</div>
+                                        <div className="app-id">Due: {due}</div>
+                                    </div>
+                                    <span className={`badge badge-priority-${priority}`}>{priority}</span>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>

@@ -3,9 +3,10 @@
     border-radius: 12px;
     width: 100%;
     max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 0 1px rgba(66, 100, 104, 0.1);
     display: flex;
     flex-direction: column;
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
 }
 
 /* Header */
@@ -13,26 +14,47 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 1.4rem 1.5rem 1rem;
-    border-bottom: 1px solid #f3f4f6;
+    padding: 1.75rem 1.75rem 1.25rem;
+    border-bottom: 1px solid rgba(66, 100, 104, 0.08);
 }
 
 .review-modal-header h2 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 0.2rem;
+    font-size: 1.375rem;
+    font-weight: 300;
+    color: #426468;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.01em;
 }
 
 .review-modal-header p {
-    font-size: 0.8rem;
+    font-size: 0.8125rem;
     color: #6b7280;
     margin: 0;
+    font-weight: 300;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 0.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    color: #426468;
+    background: rgba(66, 100, 104, 0.08);
 }
 
 /* Body */
 .review-modal-body {
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem 1.75rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -40,8 +62,8 @@
 
 /* Document preview tile */
 .review-doc-preview {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    background: rgba(66, 100, 104, 0.03);
+    border: 1px solid rgba(66, 100, 104, 0.12);
     border-radius: 8px;
     padding: 0.9rem 1rem;
     display: flex;
@@ -60,7 +82,7 @@
 .review-doc-name {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #111827;
+    color: #426468;
 }
 
 .badge-pending-review {
@@ -88,21 +110,22 @@
 }
 
 .review-form-group label {
-    font-size: 0.78rem;
-    color: #6b7280;
+    font-size: 0.8125rem;
+    color: #426468;
+    font-weight: 500;
 }
 
 .review-form-group textarea {
     width: 100%;
     padding: 0.65rem 0.8rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid rgba(66, 100, 104, 0.2);
     border-radius: 7px;
     font-size: 0.875rem;
-    color: #374151;
-    background: #f9fafb;
+    color: #1f2937;
+    background: rgba(66, 100, 104, 0.03);
     resize: vertical;
     outline: none;
-    font-family: inherit;
+    font-family: 'Open Sans', inherit;
     line-height: 1.5;
     transition: border-color 0.15s, background 0.15s;
 }
@@ -112,7 +135,7 @@
 }
 
 .review-form-group textarea:focus {
-    border-color: #9ca3af;
+    border-color: #426468;
     background: #fff;
 }
 
@@ -127,8 +150,8 @@
     align-items: center;
     justify-content: flex-end;
     gap: 0.5rem;
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #f3f4f6;
+    padding: 1rem 1.75rem;
+    border-top: 1px solid rgba(66, 100, 104, 0.08);
     flex-wrap: wrap;
 }
 
@@ -146,18 +169,39 @@
 }
 
 .btn-view-file {
-    color: #374151;
+    color: #426468;
     display: flex;
     align-items: center;
     transition: color 0.15s;
 }
 
 .btn-view-file:hover {
-    color: #111827;
+    color: #2d3a3d;
 }
 
-.btn-reject:disabled,
-.btn-approve:disabled {
+/* Buttons */
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(66, 100, 104, 0.2);
+    border-radius: 7px;
+    background: transparent;
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: #426468;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Open Sans', inherit;
+}
+
+.btn-cancel:hover {
+    background: rgba(66, 100, 104, 0.05);
+    border-color: #426468;
+}
+
+.btn-cancel:disabled {
     opacity: 0.45;
     cursor: not-allowed;
 }
@@ -171,14 +215,20 @@
     border-radius: 7px;
     background: #dc2626;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 300;
     color: #fff;
     cursor: pointer;
     transition: background 0.15s;
+    font-family: 'Open Sans', inherit;
 }
 
 .btn-reject:hover {
     background: #b91c1c;
+}
+
+.btn-reject:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 
 .btn-approve {
@@ -188,14 +238,20 @@
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 7px;
-    background: #111827;
+    background: #426468;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 300;
     color: #fff;
     cursor: pointer;
     transition: background 0.15s;
+    font-family: 'Open Sans', inherit;
 }
 
 .btn-approve:hover {
-    background: #1f2937;
+    background: #2d3a3d;
+}
+
+.btn-approve:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }

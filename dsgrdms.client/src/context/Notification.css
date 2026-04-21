@@ -2,7 +2,8 @@
 .err-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(66, 100, 104, 0.4);
+    backdrop-filter: blur(2px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,7 +15,8 @@
 .confirm-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(66, 100, 104, 0.4);
+    backdrop-filter: blur(2px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -25,17 +27,19 @@
 .confirm-modal {
     background: #fff;
     border-radius: 12px;
-    padding: 1.5rem 1.75rem 1.25rem;
+    padding: 1.75rem 1.75rem 1.25rem;
     width: 100%;
-    max-width: 360px;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 0 1px rgba(66, 100, 104, 0.1);
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
 }
 
 .confirm-msg {
-    font-size: 0.9rem;
-    color: #111827;
-    line-height: 1.55;
-    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
+    color: #426468;
+    line-height: 1.6;
+    margin: 0 0 1.5rem;
+    font-weight: 400;
 }
 
 .confirm-footer {
@@ -44,68 +48,103 @@
     gap: 0.6rem;
 }
 
-.confirm-ok {
-    background: #111827;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.45rem 1.25rem;
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.1rem;
+    border: 1px solid rgba(66, 100, 104, 0.2);
+    border-radius: 7px;
+    background: transparent;
     font-size: 0.875rem;
+    font-weight: 300;
+    color: #426468;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: all 0.2s ease;
+    font-family: 'Open Sans', inherit;
 }
 
-.confirm-ok:hover { background: #1f2937; }
+.btn-cancel:hover {
+    background: rgba(66, 100, 104, 0.05);
+    border-color: #426468;
+}
 
-.confirm-ok-danger { background: #ef4444; }
-.confirm-ok-danger:hover { background: #dc2626; }
+.confirm-ok {
+    display: inline-flex;
+    align-items: center;
+    background: #426468;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 300;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: 'Open Sans', inherit;
+}
+
+.confirm-ok:hover {
+    background: #2d3a3d;
+}
+
+.confirm-ok-danger {
+    background: #dc2626;
+}
+
+.confirm-ok-danger:hover {
+    background: #b91c1c;
+}
 
 .err-modal {
     background: #fff;
-    border-radius: 14px;
-    padding: 2rem 2rem 1.5rem;
+    border-radius: 12px;
+    padding: 1.75rem 1.75rem 1.5rem;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 0 1px rgba(66, 100, 104, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.6rem;
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
 }
 
 .err-modal-icon {
-    color: #ef4444;
+    color: #dc2626;
     margin-bottom: 0.25rem;
 }
 
 .err-modal-title {
-    font-size: 1rem;
-    color: #111827;
+    font-size: 1.1rem;
+    color: #426468;
     margin: 0;
+    font-weight: 400;
 }
 
 .err-modal-msg {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     color: #6b7280;
     margin: 0;
-    line-height: 1.55;
+    line-height: 1.6;
 }
 
 .err-modal-btn {
-    margin-top: 0.75rem;
-    background: #ef4444;
+    margin-top: 1rem;
+    background: #dc2626;
     color: #fff;
     border: none;
-    border-radius: 8px;
-    padding: 0.5rem 2rem;
+    border-radius: 7px;
+    padding: 0.5rem 1.5rem;
     font-size: 0.875rem;
+    font-weight: 300;
     cursor: pointer;
     transition: background 0.15s;
+    font-family: 'Open Sans', inherit;
 }
 
 .err-modal-btn:hover {
-    background: #dc2626;
+    background: #b91c1c;
 }
 
 /* ── Success toasts ───────────────────────────────────── */
@@ -125,17 +164,18 @@
     align-items: flex-start;
     gap: 0.75rem;
     background: #fff;
-    border: 1px solid #e5e7eb;
+    border: 1px solid rgba(66, 100, 104, 0.15);
     border-left: 4px solid transparent;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 0.9rem 0.9rem 0.9rem 0.85rem;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
     min-width: 300px;
     max-width: 400px;
     pointer-events: all;
     position: relative;
     overflow: hidden;
     animation: notif-in 0.22s ease;
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
 }
 
 @keyframes notif-in {
@@ -158,13 +198,14 @@
 }
 
 .notif-title {
-    font-size: 0.82rem;
-    color: #111827;
+    font-size: 0.8125rem;
+    color: #426468;
     margin: 0 0 0.2rem;
+    font-weight: 500;
 }
 
 .notif-msg {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     color: #6b7280;
     margin: 0;
     line-height: 1.5;
@@ -183,7 +224,7 @@
 }
 
 .notif-close:hover {
-    color: #374151;
+    color: #426468;
 }
 
 .notif-timer {
@@ -198,5 +239,7 @@
 
 @keyframes notif-countdown {
     from { width: 100%; }
+    to   { width: 0%; }
+}
     to   { width: 0; }
 }

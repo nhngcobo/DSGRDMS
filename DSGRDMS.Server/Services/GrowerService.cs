@@ -1,4 +1,5 @@
 using DSGRDMS.Server.DTOs;
+using DSGRDMS.Server.Helpers;
 using DSGRDMS.Server.Models;
 using DSGRDMS.Server.Repositories;
 
@@ -64,6 +65,7 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
             IdNumber          = req.IdNumber.Trim(),
             Phone             = req.Phone.Trim(),
             Email             = req.Email?.Trim(),
+            PasswordHash      = PasswordHelper.Hash("Grower123!"), // Default password
             BusinessName      = req.BusinessName?.Trim(),
             BusinessRegNumber = req.BusinessRegNumber?.Trim(),
             LandTenure        = req.LandTenure,

@@ -273,13 +273,21 @@
     border-color: rgba(245, 158, 11, 0.4) !important;
 }
 
-.badge-status-in-review {
+.badge-status-inspection_pending {
     background: rgba(59, 130, 246, 0.15) !important;
     color: #1e40af !important;
     border-color: rgba(59, 130, 246, 0.4) !important;
 }
 
-.badge-status-returned { 
+.badge-status-in-review,
+.badge-status-review_pending {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #6d28d9 !important;
+    border-color: rgba(139, 92, 246, 0.4) !important;
+}
+
+.badge-status-returned,
+.badge-status-info_requested { 
     background: rgba(249, 115, 22, 0.15) !important;
     color: #c2410c !important;
     border-color: rgba(249, 115, 22, 0.4) !important;

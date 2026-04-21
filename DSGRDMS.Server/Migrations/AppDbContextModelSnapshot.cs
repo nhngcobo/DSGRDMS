@@ -63,7 +63,7 @@ namespace DSGRDMS.Server.Migrations
                     b.HasIndex("GrowerId", "DocumentTypeId")
                         .IsUnique();
 
-                    b.ToTable("ComplianceDocuments");
+                    b.ToTable("ComplianceDocuments", (string)null);
                 });
 
             modelBuilder.Entity("DSGRDMS.Server.Models.FieldVisit", b =>
@@ -134,7 +134,7 @@ namespace DSGRDMS.Server.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("FieldVisits");
+                    b.ToTable("FieldVisits", (string)null);
                 });
 
             modelBuilder.Entity("DSGRDMS.Server.Models.Grower", b =>
@@ -217,7 +217,7 @@ namespace DSGRDMS.Server.Migrations
                     b.HasIndex("InternalId")
                         .IsUnique();
 
-                    b.ToTable("Growers");
+                    b.ToTable("Growers", (string)null);
                 });
 
             modelBuilder.Entity("DSGRDMS.Server.Models.Message", b =>
@@ -259,7 +259,7 @@ namespace DSGRDMS.Server.Migrations
 
                     b.HasIndex("SenderUserId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("DSGRDMS.Server.Models.User", b =>
@@ -294,7 +294,7 @@ namespace DSGRDMS.Server.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 #pragma warning restore 612, 618
         }
