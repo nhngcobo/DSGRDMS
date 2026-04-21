@@ -1,27 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, CheckCircle, XCircle, AlertCircle, AlertTriangle, Upload, Users, MapPin, Droplet, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { fetchGrowerById } from '../services/growersApi';
+import { fetchComplianceSummary, uploadComplianceDocument } from '../services/complianceApi';
+import { useNotification } from '../context/NotificationContext';
+import { friendlyError } from '../utils/apiErrors';
+import UploadDocumentModal from './modals/UploadDocumentModal';
 import './ComplianceDocuments.css';
 
 const REGISTRATION_REQUIREMENTS = [
-    { id: 'plantation', label: 'Plantation Information', icon: MapPin, required: true },
-    { id: 'permit', label: 'Permit to Occupy/KHONZA Letter/Annexure A', icon: FileText, required: true },
-    { id: 'water', label: 'Water Use Status', icon: Droplet, required: true },
-    { id: 'certification', label: 'Certification Status (PEFC or FSC)', icon: Shield, required: true },
+    { id: 'plantation', label: 'Plantation Information', icon: MapPin, required: true, docTypeId: 1 },
+    { id: 'permit', label: 'Permit to Occupy/KHONZA Letter/Annexure A', icon: FileText, required: true, docTypeId: 2 },
+    { id: 'water', label: 'Water Use Status', icon: Droplet, required: true, docTypeId: 3 },
+    { id: 'certification', label: 'Certification Status (PEFC or FSC)', icon: Shield, required: true, docTypeId: 4 },
 ];
 
 const FIELD_VISIT_DOCUMENTS = [
-    { id: 'intake', label: 'Grower Intake Form', required: true },
-    { id: 'id', label: 'ID Documents', required: true },
-    { id: 'cipc', label: 'CIPC Documents', required: false },
-    { id: 'bank', label: 'Bank Information', required: true },
-    { id: 'plantation_info', label: 'Plantation Information', required: true },
+    { id: 'intake', label: 'Grower Intake Form', required: true, docTypeId: 8 },
+    { id: 'id', label: 'ID Documents', required: true, docTypeId: 5 },
+    { id: 'cipc', label: 'CIPC Documents', required: true, docTypeId: 6 },
+    { id: 'bank', label: 'Bank Information', required: true, docTypeId: 7 },
+    { id: 'plantation_info', label: 'Plantation Information', required: true, docTypeId: 1 },
 ];
 
 export default function ComplianceDocuments() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { showError, showSuccess } = useNotification();
+    const [growerData, setGrowerData] = useState(null);
+    const [complianceData, setComplianceData] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [currentStep, setCurrentStep] = useState('registration'); // registration, verification, field_visit, assistance, completed
     const [requirements, setRequirements] = useState(
         REGISTRATION_REQUIREMENTS.reduce((acc, req) => ({ ...acc, [req.id]: false }), {})
@@ -31,13 +40,50 @@ export default function ComplianceDocuments() {
     );
     const [needsAssistance, setNeedsAssistance] = useState(false);
     const [agreementSigned, setAgreementSigned] = useState(false);
+    const [uploadDoc, setUploadDoc] = useState(null);
+
+    // Fetch grower data and compliance documents
+    useEffect(() => {
+        async function loadGrowerData() {
+            if (!user?.growerId) {
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const [grower, compliance] = await Promise.all([
+                    fetchGrowerById(user.growerId),
+                    fetchComplianceSummary(user.growerId).catch(() => null)
+                ]);
+                setGrowerData(grower);
+                setComplianceData(compliance);
+            } catch (err) {
+                showError(friendlyError(err));
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadGrowerData();
+    }, [user?.growerId, showError]);
 
     const allRequirementsMet = () => {
-        return REGISTRATION_REQUIREMENTS.every(req => requirements[req.id]);
+        // Check if all required documents are either checked OR uploaded
+        return REGISTRATION_REQUIREMENTS.every(req => {
+            const compDoc = complianceData?.documents?.find(doc => doc.docTypeId === req.docTypeId);
+            const isUploaded = compDoc && compDoc.status !== 'not_uploaded';
+            return requirements[req.id] || isUploaded;
+        });
     };
 
     const allFieldVisitDocsMet = () => {
-        return FIELD_VISIT_DOCUMENTS.filter(doc => doc.required).every(doc => fieldVisitDocs[doc.id]);
+        // Check if all required field visit documents are either checked OR uploaded
+        return FIELD_VISIT_DOCUMENTS.filter(doc => doc.required).every(doc => {
+            const compDoc = complianceData?.documents?.find(d => d.docTypeId === doc.docTypeId);
+            const isUploaded = compDoc && compDoc.status !== 'not_uploaded';
+            return fieldVisitDocs[doc.id] || isUploaded;
+        });
     };
 
     const handleToggleRequirement = (reqId) => {
@@ -90,6 +136,54 @@ export default function ComplianceDocuments() {
         setAgreementSigned(false);
     };
 
+    // Handle document upload
+    const handleUpload = async (file) => {
+        if (!uploadDoc || !user?.growerId) return;
+        
+        try {
+            await uploadComplianceDocument(user.growerId, uploadDoc.docTypeId, file);
+            showSuccess('Document uploaded successfully!');
+            setUploadDoc(null);
+            
+            // Reload compliance data
+            const updatedCompliance = await fetchComplianceSummary(user.growerId);
+            setComplianceData(updatedCompliance);
+        } catch (err) {
+            showError(friendlyError(err));
+            throw err;
+        }
+    };
+
+    // Helper to find compliance document by docTypeId
+    const getComplianceDoc = (docTypeId) => {
+        return complianceData?.documents?.find(doc => doc.docTypeId === docTypeId) || null;
+    };
+
+    // Helper function to format location from grower data
+    const formatLocation = () => {
+        if (!growerData) return 'Not available';
+        
+        if (growerData.gpsLat && growerData.gpsLng) {
+            return `${growerData.gpsLat.toFixed(4)}°, ${growerData.gpsLng.toFixed(4)}°`;
+        }
+        return growerData.businessName || 'Not specified';
+    };
+
+    const fullName = growerData ? `${growerData.firstName || ''} ${growerData.lastName || ''}`.trim() : user?.name || 'Loading...';
+    const registryId = growerData?.id || 'Loading...';
+    const location = formatLocation();
+
+    if (loading) {
+        return (
+            <div className="compliance-documents">
+                <div className="compliance-header">
+                    <h1>My Compliance Verification</h1>
+                    <p className="compliance-subtitle">Loading your information...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="compliance-documents">
             <div className="compliance-header">
@@ -134,9 +228,12 @@ export default function ComplianceDocuments() {
                     <h2>Your Information</h2>
                     <p>Review your information and start your compliance verification process.</p>
                     <div className="grower-info">
-                        <p><strong>Grower Name:</strong> {user?.fullName || 'Nhlanhla Fortune Ngcobo'}</p>
-                        <p><strong>Registry ID:</strong> {user?.registryId || 'GHW-OR-992-04'}</p>
-                        <p><strong>Location:</strong> {user?.location || 'Willamette Valley, OR'}</p>
+                        <p><strong>Grower Name:</strong> {fullName}</p>
+                        <p><strong>Registry ID:</strong> {registryId}</p>
+                        <p><strong>Location:</strong> {location}</p>
+                        {growerData?.businessName && (
+                            <p><strong>Business:</strong> {growerData.businessName}</p>
+                        )}
                     </div>
                     <button className="btn btn-primary" onClick={() => setCurrentStep('verification')}>
                         Start Verification
@@ -151,20 +248,49 @@ export default function ComplianceDocuments() {
                         <FileText size={32} className="text-primary" />
                     </div>
                     <h2>Document Verification Checklist</h2>
-                    <p>Confirm you have the following required documents:</p>
+                    <p>Upload and verify the following required documents:</p>
                     
                     <div className="requirements-list">
                         {REGISTRATION_REQUIREMENTS.map(req => {
                             const Icon = req.icon;
+                            const compDoc = getComplianceDoc(req.docTypeId);
+                            const isUploaded = compDoc && compDoc.status !== 'not_uploaded';
+                            const isApproved = compDoc && compDoc.status === 'approved';
+                            
                             return (
-                                <div key={req.id} className="requirement-item" onClick={() => handleToggleRequirement(req.id)}>
+                                <div key={req.id} className="requirement-item-enhanced">
                                     <div className="requirement-info">
                                         <Icon size={20} />
-                                        <span>{req.label}</span>
-                                        {req.required && <span className="required-badge">Required</span>}
+                                        <div className="requirement-text">
+                                            <span className="requirement-label">{req.label}</span>
+                                            {req.required && <span className="required-badge">Required</span>}
+                                            {compDoc && (
+                                                <span className={`doc-status-small ${compDoc.status}`}>
+                                                    {compDoc.status === 'approved' ? 'Approved' :
+                                                     compDoc.status === 'pending_review' ? 'Pending Review' :
+                                                     compDoc.status === 'rejected' ? 'Rejected' :
+                                                     'Not Uploaded'}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className={`requirement-status ${requirements[req.id] ? 'met' : 'pending'}`}>
-                                        {requirements[req.id] ? <CheckCircle size={20} /> : <XCircle size={20} />}
+                                    <div className="requirement-actions">
+                                        <div 
+                                            className={`requirement-checkbox ${isUploaded ? 'checked' : ''}`}
+                                            onClick={() => handleToggleRequirement(req.id)}
+                                        >
+                                            {isUploaded ? <CheckCircle size={20} /> : <XCircle size={20} />}
+                                        </div>
+                                        {compDoc && (
+                                            <button
+                                                className="btn-upload-mini"
+                                                onClick={() => setUploadDoc(compDoc)}
+                                                disabled={isApproved}
+                                            >
+                                                <Upload size={14} />
+                                                {isUploaded ? 'Re-upload' : 'Upload'}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             );
@@ -250,18 +376,49 @@ export default function ComplianceDocuments() {
                     <p>A field officer will visit your property to verify the following documents:</p>
                     
                     <div className="requirements-list">
-                        {FIELD_VISIT_DOCUMENTS.map(doc => (
-                            <div key={doc.id} className="requirement-item" onClick={() => handleToggleFieldDoc(doc.id)}>
-                                <div className="requirement-info">
-                                    <FileText size={20} />
-                                    <span>{doc.label}</span>
-                                    {doc.required && <span className="required-badge">Required</span>}
+                        {FIELD_VISIT_DOCUMENTS.map(doc => {
+                            const compDoc = getComplianceDoc(doc.docTypeId);
+                            const isUploaded = compDoc && compDoc.status !== 'not_uploaded';
+                            const isApproved = compDoc && compDoc.status === 'approved';
+                            
+                            return (
+                                <div key={doc.id} className="requirement-item-enhanced">
+                                    <div className="requirement-info">
+                                        <FileText size={20} />
+                                        <div className="requirement-text">
+                                            <span className="requirement-label">{doc.label}</span>
+                                            {doc.required && <span className="required-badge">Required</span>}
+                                            {compDoc && (
+                                                <span className={`doc-status-small ${compDoc.status}`}>
+                                                    {compDoc.status === 'approved' ? 'Approved' :
+                                                     compDoc.status === 'pending_review' ? 'Pending Review' :
+                                                     compDoc.status === 'rejected' ? 'Rejected' :
+                                                     'Not Uploaded'}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="requirement-actions">
+                                        <div 
+                                            className={`requirement-checkbox ${isUploaded ? 'checked' : ''}`}
+                                            onClick={() => handleToggleFieldDoc(doc.id)}
+                                        >
+                                            {isUploaded ? <CheckCircle size={20} /> : <XCircle size={20} />}
+                                        </div>
+                                        {compDoc && (
+                                            <button
+                                                className="btn-upload-mini"
+                                                onClick={() => setUploadDoc(compDoc)}
+                                                disabled={isApproved}
+                                            >
+                                                <Upload size={14} />
+                                                {isUploaded ? 'Re-upload' : 'Upload'}
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className={`requirement-status ${fieldVisitDocs[doc.id] ? 'met' : 'pending'}`}>
-                                    {fieldVisitDocs[doc.id] ? <CheckCircle size={20} /> : <XCircle size={20} />}
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     <button className="btn btn-primary" onClick={handleFieldVisitComplete}>
@@ -307,8 +464,11 @@ export default function ComplianceDocuments() {
                     
                     <div className="completion-summary">
                         <h3>Summary:</h3>
-                        <p><strong>Grower:</strong> {user?.fullName || 'Nhlanhla Fortune Ngcobo'}</p>
-                        <p><strong>Registry ID:</strong> {user?.registryId || 'GHW-OR-992-04'}</p>
+                        <p><strong>Grower:</strong> {fullName}</p>
+                        <p><strong>Registry ID:</strong> {registryId}</p>
+                        {growerData?.businessName && (
+                            <p><strong>Business:</strong> {growerData.businessName}</p>
+                        )}
                         <p><strong>Status:</strong> <span className="status-badge approved">Verified & Compliant</span></p>
                         <p><strong>Date:</strong> {new Date().toLocaleDateString()}</p>
                     </div>
@@ -336,6 +496,15 @@ export default function ComplianceDocuments() {
                         </button>
                     </div>
                 </div>
+            )}
+
+            {/* Upload Modal */}
+            {uploadDoc && (
+                <UploadDocumentModal
+                    doc={uploadDoc}
+                    onClose={() => setUploadDoc(null)}
+                    onSubmit={handleUpload}
+                />
             )}
         </div>
     );

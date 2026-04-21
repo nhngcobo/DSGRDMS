@@ -40,6 +40,7 @@ export default function Sidebar() {
         { to: '/messages',     label: 'Messaging',          icon: MessageSquare },
     ];
     const fieldOfficerNav = [
+        { to: '/',             label: 'Grower Overview', icon: Sprout },
         { to: '/growers',      label: 'Grower Registry',    icon: Users },
         { to: '/applications', label: 'Applications',       icon: FileText },
         { to: '/field-visits', label: 'Field Visit Coordination', icon: ClipboardList },

@@ -1,26 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, FileText, BarChart3, Droplet, Clock, Search } from 'lucide-react';
+import { MapPin, FileText, BarChart3, Droplet, Clock, Search, Calendar, User } from 'lucide-react';
+import { fetchGrowerById } from '../services/growersApi';
+import { fetchComplianceSummary } from '../services/complianceApi';
+import { fieldVisitsApi } from '../services/fieldVisitsApi';
+import { useNotification } from '../context/NotificationContext';
+import { friendlyError } from '../utils/apiErrors';
 import './GrowerDossier.css';
-
-const mockComplianceDocs = [
-    { id: 1, title: 'Organic Certification (USDA)', docId: 'CERT-88219', expiry: 'Jan 2025', status: 'compliant' },
-    { id: 2, title: 'Water Extraction Permit', docId: 'WTR-9022', note: 'Annual Review Required', status: 'pending' },
-    { id: 3, title: 'Pesticide Use Logbook', docId: 'Updated 4 days ago', status: 'compliant' },
-    { id: 4, title: 'Land Title Registry', docId: 'Deed #772-B-991', status: 'compliant' },
-];
-
-const mockVisits = [
-    { id: 1, date: 'Aug 14, 2023', title: 'Post-Harvest Soil Audit', officer: 'Marcus Thorne', description: 'Observed excellent recovery of nitrogen levels after hazelnut harvest. Recommended minor lime amendment for Plot B.' },
-    { id: 2, date: 'May 02, 2023', title: 'Biannual Certification Review', description: 'Full dossier inspection for USDA renewal. All documentation found in order. Parcel boundaries verified via drone telemetry.' },
-    { id: 3, date: 'Jan 20, 2023', title: 'Emergency Frost Damage Assessment', description: 'Brief site visit following record low temperatures. Damage localized to young saplings in the northern corridor.' },
-];
 
 export default function GrowerDossier() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { showError } = useNotification();
     const [searchQuery, setSearchQuery] = useState('');
+    const [growerData, setGrowerData] = useState(null);
+    const [complianceData, setComplianceData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [upcomingVisits, setUpcomingVisits] = useState([]);
+
+    useEffect(() => {
+        async function loadData() {
+            if (!user?.growerId) {
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const [grower, compliance, upcoming] = await Promise.all([
+                    fetchGrowerById(user.growerId),
+                    fetchComplianceSummary(user.growerId).catch(() => null),
+                    fieldVisitsApi.getUpcoming(user.growerId).catch(() => [])
+                ]);
+                
+                setGrowerData(grower);
+                setComplianceData(compliance);
+                setUpcomingVisits(upcoming);
+            } catch (err) {
+                showError(friendlyError(err));
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [user?.growerId, showError]);
+
+    if (loading) {
+        return <div className="grower-dossier"><div className="loading">Loading your profile...</div></div>;
+    }
+
+    if (!user?.growerId || !growerData) {
+        return (
+            <div className="grower-dossier">
+                <div className="empty-state">
+                    <p>No grower profile found. Please contact support.</p>
+                </div>
+            </div>
+        );
+    }
+
+    const fullName = growerData.name || `${growerData.firstName || ''} ${growerData.lastName || ''}`.trim();
+    const approvedDocs = complianceData?.documents?.filter(d => d.status === 'approved') || [];
+    const pendingDocs = complianceData?.documents?.filter(d => d.status === 'pending_review') || [];
+    const complianceRate = complianceData?.complianceScore ?? 0;
 
     return (
         <div className="grower-dossier">
@@ -41,13 +85,22 @@ export default function GrowerDossier() {
                 <div className="header-content">
                     <img src="/person1.png" alt="Grower" className="grower-avatar" />
                     <div className="header-info">
-                        <h1>{user?.fullName || 'Grower Profile'}</h1>
+                        <h1>{fullName}</h1>
+                        {growerData.businessName && (
+                            <p style={{ fontSize: '16px', color: '#426468', fontWeight: '400', marginTop: '4px' }}>
+                                {growerData.businessName}
+                            </p>
+                        )}
                         <div className="header-meta">
-                            <span className="status-badge">Verified Tier 1 Grower</span>
-                            <span className="location">
-                                <MapPin size={14} />
-                                {user?.location || 'Willamette Valley, OR'}
+                            <span className={`status-badge ${growerData.status}`}>
+                                {growerData.status === 'approved' ? 'Verified Grower' : growerData.status}
                             </span>
+                            {growerData.gpsLat && growerData.gpsLng && (
+                                <span className="location">
+                                    <MapPin size={14} />
+                                    Lat: {growerData.gpsLat.toFixed(6)}, Lng: {growerData.gpsLng.toFixed(6)}
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -63,20 +116,29 @@ export default function GrowerDossier() {
                     <div className="card-body">
                         <div className="record-group">
                             <label>Full Legal Name</label>
-                            <p>Nhlanhla Fortune Ngcobo</p>
+                            <p>{fullName}</p>
                         </div>
                         <div className="record-group">
                             <label>Contact Details</label>
-                            <p>{user?.email}</p>
-                            <p className="text-secondary">{user?.phone || '+1 (503) 555-0192'}</p>
+                            <p>{growerData.email || 'Not provided'}</p>
+                            <p className="text-secondary">{growerData.phone}</p>
                         </div>
                         <div className="record-group">
-                            <label>Primary Residence</label>
-                            <p>{user?.address || '4282 Orchard Ridge Rd, Yamhill, OR 97148'}</p>
+                            <label>ID Number</label>
+                            <p>{growerData.idNumber}</p>
                         </div>
+                        {growerData.businessName && (
+                            <div className="record-group">
+                                <label>Business Name</label>
+                                <p>{growerData.businessName}</p>
+                                {growerData.businessRegNumber && (
+                                    <p className="text-secondary">Reg: {growerData.businessRegNumber}</p>
+                                )}
+                            </div>
+                        )}
                         <div className="record-group border-top">
-                            <label>Registry ID</label>
-                            <p className="registry-id">{user?.registryId || 'GHW-OR-992-04'}</p>
+                            <label>Grower ID</label>
+                            <p className="registry-id">{growerData.id}</p>
                         </div>
                     </div>
                 </div>
@@ -88,16 +150,18 @@ export default function GrowerDossier() {
                         <h3>Parcel Intelligence</h3>
                         <div className="parcel-stats">
                             <div className="stat">
-                                <span className="stat-value">124.5</span>
-                                <span className="stat-label">Total Acres</span>
+                                <span className="stat-value">{growerData.plantationSize ? growerData.plantationSize.toFixed(1) : '0.0'}</span>
+                                <span className="stat-label">Hectares (Total Plantation)</span>
                             </div>
                             <div className="stat">
-                                <span className="stat-value">8.4</span>
-                                <span className="stat-label">Mean Soil pH</span>
+                                <span className="stat-value">{complianceRate}%</span>
+                                <span className="stat-label">Compliance Score</span>
                             </div>
                             <div className="stat">
-                                <span className="stat-value">98%</span>
-                                <span className="stat-label">Irrigation Efficiency</span>
+                                <span className="stat-value" style={{ fontSize: growerData.treeSpecies && growerData.treeSpecies.length > 15 ? '1.5rem' : '2rem' }}>
+                                    {growerData.treeSpecies || 'Not specified'}
+                                </span>
+                                <span className="stat-label">Primary Tree Species</span>
                             </div>
                         </div>
                     </div>
@@ -107,25 +171,27 @@ export default function GrowerDossier() {
                         <div className="stat-card">
                             <div className="stat-header">
                                 <BarChart3 size={20} className="text-primary" />
-                                <span className="badge">Active</span>
+                                <span className="badge">{growerData.status}</span>
                             </div>
-                            <p className="stat-title">Hazelnuts</p>
-                            <p className="stat-subtitle">Primary Commodity</p>
+                            <p className="stat-title">{growerData.landTenure || 'Not specified'}</p>
+                            <p className="stat-subtitle">Land Tenure</p>
                         </div>
                         <div className="stat-card">
                             <div className="stat-header">
                                 <Droplet size={20} className="text-tertiary" />
-                                <span className="badge optimal">Optimal</span>
+                                <span className="badge optimal">{approvedDocs.length}</span>
                             </div>
-                            <p className="stat-title">Spring-Fed</p>
-                            <p className="stat-subtitle">Water Source</p>
+                            <p className="stat-title">Approved</p>
+                            <p className="stat-subtitle">Documents</p>
                         </div>
                         <div className="stat-card">
                             <div className="stat-header">
                                 <Clock size={20} className="text-secondary" />
                             </div>
-                            <p className="stat-title">12 Years</p>
-                            <p className="stat-subtitle">Legacy Tenure</p>
+                            <p className="stat-title">
+                                {new Date(growerData.registeredAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                            </p>
+                            <p className="stat-subtitle">Registered</p>
                         </div>
                     </div>
                 </div>
@@ -139,20 +205,32 @@ export default function GrowerDossier() {
                         </div>
                     </div>
                     <div className="compliance-list">
-                        {mockComplianceDocs.map(doc => (
-                            <div key={doc.id} className="compliance-item">
-                                <div className="compliance-info">
-                                    <FileText size={20} />
-                                    <div>
-                                        <p className="compliance-title">{doc.title}</p>
-                                        <p className="compliance-meta">{doc.docId} • {doc.expiry || doc.note}</p>
+                        {complianceData?.documents && complianceData.documents.length > 0 ? (
+                            complianceData.documents.slice(0, 6).map(doc => (
+                                <div key={doc.docTypeId} className="compliance-item">
+                                    <div className="compliance-info">
+                                        <FileText size={20} />
+                                        <div>
+                                            <p className="compliance-title">{doc.documentName}</p>
+                                            <p className="compliance-meta">
+                                                {doc.uploadedAt 
+                                                    ? `Uploaded ${new Date(doc.uploadedAt).toLocaleDateString()}`
+                                                    : 'Not uploaded'}
+                                            </p>
+                                        </div>
                                     </div>
+                                    <span className={`status-badge ${doc.status}`}>
+                                        {doc.status === 'approved' ? 'Approved' : 
+                                         doc.status === 'pending_review' ? 'Pending' : 
+                                         doc.status === 'rejected' ? 'Rejected' : 'Not Uploaded'}
+                                    </span>
                                 </div>
-                                <span className={`status-badge ${doc.status}`}>
-                                    {doc.status === 'compliant' ? 'Compliant' : 'Pending'}
-                                </span>
+                            ))
+                        ) : (
+                            <div className="empty-state">
+                                <p>No compliance documents yet</p>
                             </div>
-                        ))}
+                        )}
                     </div>
                     <button className="btn-view-all" onClick={() => navigate('/compliance')}>View All Documents</button>
                 </div>
@@ -160,22 +238,69 @@ export default function GrowerDossier() {
                 {/* Visit Chronology */}
                 <div className="card visit-card">
                     <div className="card-header">
-                        <h2>Visit Chronology</h2>
+                        <h2>Upcoming Visits</h2>
+                        <p className="card-subtitle">Scheduled field officer visits</p>
                     </div>
-                    <div className="visit-timeline">
-                        {mockVisits.map((visit, idx) => (
-                            <div key={visit.id} className="timeline-item">
-                                <div className="timeline-marker" style={{ order: 0 }}></div>
-                                <div className="timeline-content">
-                                    <p className="visit-date">{visit.date}</p>
-                                    <h4>{visit.title}</h4>
-                                    <p className="visit-description">{visit.description}</p>
+                    <div className="upcoming-visits">
+                        {upcomingVisits.length > 0 ? (
+                            upcomingVisits.map(visit => (
+                                <div key={visit.id} className="visit-item">
+                                    <div className="visit-date-badge">
+                                        <Calendar size={16} />
+                                        <div>
+                                            <p className="visit-date">
+                                                {new Date(visit.scheduledDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase()}
+                                            </p>
+                                            <p className="visit-time">{visit.scheduledTime}</p>
+                                        </div>
+                                    </div>
+                                    <div className="visit-details">
+                                        <h3>{visit.title}</h3>
+                                        <div className="visit-meta">
+                                            <span className="visit-officer">
+                                                <User size={14} />
+                                                {visit.officerName}
+                                            </span>
+                                            <span className="visit-location">
+                                                <MapPin size={14} />
+                                                {visit.location}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span className={`priority-badge ${visit.priority}`}>
+                                        {visit.priority === 'high' ? 'HIGH PRIORITY' : visit.priority === 'critical' ? 'CRITICAL' : 'NORMAL'}
+                                    </span>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="empty-state">No upcoming visits scheduled</p>
+                        )}
                     </div>
-                    <button className="btn-view-all" onClick={() => navigate('/field-visits')}>View Complete Timeline</button>
                 </div>
+
+                {/* Farm Location Map */}
+                {growerData.gpsLat && growerData.gpsLng && (
+                    <div className="card map-card">
+                        <div className="card-header">
+                            <h2>Farm Location</h2>
+                            <p className="card-subtitle">
+                                GPS Coordinates: {growerData.gpsLat.toFixed(6)}, {growerData.gpsLng.toFixed(6)}
+                            </p>
+                        </div>
+                        <div className="map-container">
+                            <iframe
+                                title="Farm Location Map"
+                                width="100%"
+                                height="450"
+                                style={{ border: 0 }}
+                                loading="lazy"
+                                allowFullScreen
+                                referrerPolicy="no-referrer-when-downgrade"
+                                src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${growerData.gpsLat},${growerData.gpsLng}&zoom=15&maptype=satellite`}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

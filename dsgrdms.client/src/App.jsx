@@ -6,6 +6,7 @@ import GrowerDetail from './pages/GrowerDetail';
 import Applications from './pages/Applications';
 import Compliance from './pages/Compliance';
 import FieldVisits from './pages/FieldVisits';
+import FieldVisitCoordination from './pages/FieldVisitCoordination';
 import FieldVisitTimeline from './pages/FieldVisitTimeline';
 import Settings from './pages/Settings';
 import Messages from './pages/Messages';
@@ -26,14 +27,26 @@ function App() {
             <Sidebar />
             <main className="app-main">
                 <Routes>
-                    {/* Admin & Field Officer routes */}
-                    {(user.role === 'admin' || user.role === 'field_officer') && <>
+                    {/* Admin routes */}
+                    {user.role === 'admin' && <>
                         <Route path="/"             element={<Dashboard />} />
                         <Route path="/growers"      element={<Growers />} />
                         <Route path="/growers/:id"  element={<GrowerDetail />} />
                         <Route path="/applications" element={<Applications />} />
                         <Route path="/compliance"   element={<Compliance />} />
                         <Route path="/field-visits" element={<FieldVisits />} />
+                        <Route path="/messages"     element={<Messages />} />
+                        <Route path="/settings"     element={<Settings />} />
+                    </>}
+
+                    {/* Field Officer routes */}
+                    {user.role === 'field_officer' && <>
+                        <Route path="/"             element={<Dashboard />} />
+                        <Route path="/growers"      element={<Growers />} />
+                        <Route path="/growers/:id"  element={<GrowerDetail />} />
+                        <Route path="/applications" element={<Applications />} />
+                        <Route path="/compliance"   element={<Compliance />} />
+                        <Route path="/field-visits" element={<FieldVisitCoordination />} />
                         <Route path="/messages"     element={<Messages />} />
                         <Route path="/settings"     element={<Settings />} />
                     </>}

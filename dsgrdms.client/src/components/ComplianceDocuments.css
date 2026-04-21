@@ -177,6 +177,107 @@
     background: var(--color-surface-container, #eeeeed);
 }
 
+/* Enhanced Requirement Item with Upload Button */
+.requirement-item-enhanced {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: var(--color-surface, #faf9f9);
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.requirement-item-enhanced:hover {
+    background: var(--color-surface-container, #eeeeed);
+}
+
+.requirement-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.requirement-label {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--color-on-surface, #1a1c1c);
+}
+
+.requirement-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.requirement-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.requirement-checkbox.checked svg {
+    color: #2e7d32;
+}
+
+.requirement-checkbox:not(.checked) svg {
+    color: var(--color-outline, #717879);
+}
+
+.doc-status-small {
+    display: inline-block;
+    padding: 0.188rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.688rem;
+    font-weight: 400;
+}
+
+.doc-status-small.approved {
+    background: rgba(185, 221, 225, 0.3);
+    color: #1e5a5e;
+}
+
+.doc-status-small.pending_review {
+    background: rgba(255, 179, 0, 0.15);
+    color: #875a00;
+}
+
+.doc-status-small.rejected {
+    background: rgba(186, 26, 26, 0.15);
+    color: #ba1a1a;
+}
+
+.doc-status-small.not_uploaded {
+    background: rgba(65, 72, 73, 0.1);
+    color: var(--color-on-surface-variant, #414849);
+}
+
+.btn-upload-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.438rem 0.875rem;
+    background: var(--color-primary, #426468);
+    color: var(--color-on-primary, #ffffff);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-upload-mini:hover:not(:disabled) {
+    background: #365156;
+    transform: translateY(-1px);
+}
+
+.btn-upload-mini:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .requirement-info {
     display: flex;
     align-items: center;
@@ -429,4 +530,128 @@
     .btn {
         width: 100%;
     }
+}
+
+/* Documents Table Styles */
+.documents-table-container {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+}
+
+.documents-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-surface, #faf9f9);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.documents-table thead {
+    background: var(--color-surface-dim, #dadada);
+}
+
+.documents-table thead th {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    font-weight: 400;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-on-surface-variant, #414849);
+}
+
+.documents-table tbody tr {
+    border-bottom: 1px solid var(--color-outline-variant, #c1c8c8);
+    transition: background-color 0.2s ease;
+}
+
+.documents-table tbody tr:hover {
+    background: var(--color-surface-container-low, #f4f3f3);
+}
+
+.documents-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.documents-table tbody td {
+    padding: 1rem;
+    font-size: 0.875rem;
+    color: var(--color-on-surface, #292a2a);
+}
+
+.documents-table .doc-name {
+    font-weight: 400;
+    color: var(--color-primary, #426468);
+}
+
+.badge-required,
+.badge-optional {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.badge-required {
+    background: rgba(66, 100, 104, 0.1);
+    color: var(--color-primary, #426468);
+}
+
+.badge-optional {
+    background: rgba(65, 72, 73, 0.1);
+    color: var(--color-on-surface-variant, #414849);
+}
+
+.doc-status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.doc-status.approved {
+    background: rgba(185, 221, 225, 0.3);
+    color: #1e5a5e;
+}
+
+.doc-status.pending {
+    background: rgba(255, 179, 0, 0.15);
+    color: #875a00;
+}
+
+.doc-status.rejected {
+    background: rgba(186, 26, 26, 0.15);
+    color: #ba1a1a;
+}
+
+.doc-status.not-uploaded {
+    background: rgba(65, 72, 73, 0.1);
+    color: var(--color-on-surface-variant, #414849);
+}
+
+.btn-upload-small {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-primary, #426468);
+    color: var(--color-on-primary, #ffffff);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.813rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-upload-small:hover:not(:disabled) {
+    background: #365156;
+    transform: translateY(-1px);
+}
+
+.btn-upload-small:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

@@ -1,4 +1,5 @@
 const BASE = '/api/messages';
+import { apiFetch } from './apiClient.js';
 
 function authHeader(token) {
     return { Authorization: `Bearer ${token}` };
@@ -9,29 +10,28 @@ async function handleResponse(res) {
     return res.json();
 }
 
-export async function fetchMessages(token) {
-    const res = await fetch(BASE, { headers: authHeader(token) });
+export async function fetchMessages() {
+    const res = await apiFetch(BASE);
     return handleResponse(res);
 }
 
-export async function fetchUnreadCount(token) {
-    const res = await fetch(`${BASE}/unread-count`, { headers: authHeader(token) });
+export async function fetchUnreadCount() {
+    const res = await apiFetch(`${BASE}/unread-count`);
     return handleResponse(res);
 }
 
-export async function sendMessage(growerId, subject, body, token) {
-    const res = await fetch(BASE, {
+export async function sendMessage(growerId, subject, body) {
+    const res = await apiFetch(BASE, {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeader(token) },
+        headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ growerId, subject, body }),
     });
     return handleResponse(res);
 }
 
-export async function markMessageRead(id, token) {
-    const res = await fetch(`${BASE}/${id}/read`, {
+export async function markMessageRead(id) {
+    const res = await apiFetch(`${BASE}/${id}/read`, {
         method:  'PUT',
-        headers: authHeader(token),
     });
     if (!res.ok) throw new Error(`Request failed (${res.status})`);
 }

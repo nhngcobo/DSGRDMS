@@ -4,11 +4,14 @@ import { fetchGrowerById } from '../../services/growersApi';
 import { fetchComplianceSummary } from '../../services/complianceApi';
 import { updateGrower } from '../../services/growersApi';
 import { useNotification } from '../../context/NotificationContext';
+import { useAuth } from '../../context/AuthContext';
 import { friendlyError } from '../../utils/apiErrors';
 import './ReviewApplicationModal.css';
 
 export default function ReviewApplicationModal({ applicationId, onClose, onReviewed }) {
     const { showError, showSuccess } = useNotification();
+    const { user } = useAuth();
+    const isViewOnly = user?.role === 'field_officer';
     
     const [grower, setGrower] = useState(null);
     const [summary, setSummary] = useState(null);
@@ -212,6 +215,7 @@ export default function ReviewApplicationModal({ applicationId, onClose, onRevie
                             value={notes}
                             onChange={e => setNotes(e.target.value)}
                             rows={3}
+                            disabled={isViewOnly}
                         />
                     </div>
                 </div>
@@ -222,7 +226,7 @@ export default function ReviewApplicationModal({ applicationId, onClose, onRevie
                         type="button"
                         className="btn-review btn-reject"
                         onClick={() => handleReview('reject')}
-                        disabled={submitting}
+                        disabled={submitting || isViewOnly}
                     >
                         <XCircle size={16} />
                         {selectedAction === 'reject' ? 'Confirm Reject' : 'Reject'}
@@ -231,7 +235,7 @@ export default function ReviewApplicationModal({ applicationId, onClose, onRevie
                         type="button"
                         className="btn-review btn-pending"
                         onClick={() => handleReview('pending')}
-                        disabled={submitting}
+                        disabled={submitting || isViewOnly}
                     >
                         <AlertCircle size={16} />
                         {selectedAction === 'pending' ? 'Confirm Pending' : 'Request More Info'}
@@ -240,7 +244,7 @@ export default function ReviewApplicationModal({ applicationId, onClose, onRevie
                         type="button"
                         className="btn-review btn-approve"
                         onClick={() => handleReview('approve')}
-                        disabled={submitting}
+                        disabled={submitting || isViewOnly}
                     >
                         <CheckCircle size={16} />
                         {selectedAction === 'approve' ? 'Confirm Approve' : 'Approve'}

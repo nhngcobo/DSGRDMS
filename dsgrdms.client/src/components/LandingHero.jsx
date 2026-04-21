@@ -1,6 +1,23 @@
+import { useState, useEffect } from 'react';
 import { ArrowRight, Verified } from 'lucide-react';
 
+const SLIDESHOW_IMAGES = [
+    '/SlideShowImageA.jpeg',
+    '/SlideShowImageB.jpeg',
+    '/SlideShowImageC.jpeg'
+];
+
 export default function LandingHero({ onGetStartedClick }) {
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % SLIDESHOW_IMAGES.length);
+        }, 4000); // Change slide every 4 seconds
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <header className="lp-hero-section">
             <div className="lp-hero-container">
@@ -33,7 +50,12 @@ export default function LandingHero({ onGetStartedClick }) {
                 {/* Right Grid */}
                 <div className="lp-hero-right">
                     <div className="lp-hero-grid-image">
-                        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop" alt="Forest" />
+                        <img 
+                            src={SLIDESHOW_IMAGES[currentSlide]} 
+                            alt={`Forest slideshow ${currentSlide + 1}`}
+                            key={currentSlide}
+                            style={{ animation: 'slideIn 0.8s ease-out' }}
+                        />
                         <div className="lp-hero-grid-overlay"></div>
                     </div>
 

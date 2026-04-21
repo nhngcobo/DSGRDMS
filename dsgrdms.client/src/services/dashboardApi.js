@@ -1,4 +1,5 @@
 const BASE = '/api/dashboard';
+import { apiFetch } from './apiClient.js';
 
 async function handleResponse(res) {
     if (!res.ok) throw new Error(`Request failed (${res.status})`);
@@ -6,6 +7,6 @@ async function handleResponse(res) {
 }
 
 export async function fetchDashboardSummary() {
-    const res = await fetch(`${BASE}/summary`);
+    const res = await apiFetch(`${BASE}/summary`);
     return handleResponse(res);
 }

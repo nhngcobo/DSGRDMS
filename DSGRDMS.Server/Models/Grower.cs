@@ -10,6 +10,7 @@ public class Grower
     public string IdNumber { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string? Email { get; set; }
+    public string? PasswordHash { get; set; } // New: hashed password for grower login
     public string? BusinessName { get; set; }
     public string? BusinessRegNumber { get; set; }
     public string? LandTenure { get; set; }

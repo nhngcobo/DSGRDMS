@@ -4,7 +4,7 @@ using DSGRDMS.Server.Repositories;
 
 namespace DSGRDMS.Server.Services;
 
-public class GrowerService(IGrowerRepository repo, IComplianceRepository complianceRepo) : IGrowerService
+public class GrowerService(IGrowerRepository repo, IComplianceRepository complianceRepo, IFieldVisitRepository fieldVisitRepo) : IGrowerService
 {
     private static readonly int RequiredDocCount = DocumentTypes.All.Count(d => d.IsRequired);
     private static readonly IReadOnlySet<int> RequiredDocIds =
@@ -19,12 +19,19 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
             .GroupBy(d => d.GrowerId)
             .ToDictionary(g => g.Key, g => g.ToList());
 
+        // Bulk load all field visits — one DB round-trip for the whole list
+        var allVisits = (await fieldVisitRepo.GetAllAsync())
+            .GroupBy(v => v.GrowerId)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(v => v.ScheduledDate).FirstOrDefault());
+
         return growers.Select(g =>
         {
             var docs         = allDocs.TryGetValue(g.GrowerId, out var d) ? d : [];
             var approvedCount = docs.Count(d => d.Status == "approved" && RequiredDocIds.Contains(d.DocumentTypeId));
             var score        = (int)Math.Round((double)approvedCount / RequiredDocCount * 100);
-            return ToResponse(g, score);
+            
+            var latestVisit = allVisits.TryGetValue(g.GrowerId, out var v) ? v : null;
+            return ToResponse(g, score, latestVisit);
         });
     }
 
@@ -36,7 +43,11 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         var docs          = await complianceRepo.GetByGrowerIdAsync(growerId);
         var approvedCount = docs.Count(d => d.Status == "approved" && RequiredDocIds.Contains(d.DocumentTypeId));
         var score         = (int)Math.Round((double)approvedCount / RequiredDocCount * 100);
-        return ToResponse(grower, score);
+        
+        var visits = await fieldVisitRepo.GetByGrowerAsync(growerId);
+        var latestVisit = visits.OrderByDescending(v => v.ScheduledDate).FirstOrDefault();
+        
+        return ToResponse(grower, score, latestVisit);
     }
 
     public async Task<(GrowerResponse? Result, string? ConflictMessage)> RegisterAsync(RegisterGrowerRequest req)
@@ -66,7 +77,7 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         };
 
         var saved = await repo.AddAsync(grower);
-        return (ToResponse(saved, 0), null);
+        return (ToResponse(saved, 0, null), null);
     }
 
     public async Task<GrowerResponse?> UpdateAsync(string growerId, UpdateGrowerRequest req)
@@ -104,7 +115,11 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         var docs          = await complianceRepo.GetByGrowerIdAsync(growerId);
         var approvedCount = docs.Count(d => d.Status == "approved" && RequiredDocIds.Contains(d.DocumentTypeId));
         var score         = (int)Math.Round((double)approvedCount / RequiredDocCount * 100);
-        return ToResponse(updated, score);
+        
+        var visits = await fieldVisitRepo.GetByGrowerAsync(growerId);
+        var latestVisit = visits.OrderByDescending(v => v.ScheduledDate).FirstOrDefault();
+        
+        return ToResponse(updated, score, latestVisit);
     }
 
     // ── mapping ──────────────────────────────────────────────────────────────
@@ -116,15 +131,19 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         _    => "low",
     };
 
-    private static GrowerResponse ToResponse(Grower g, int score) => new()
+    private static GrowerResponse ToResponse(Grower g, int score, FieldVisit? latestVisit = null) => new()
     {
         Id                = g.GrowerId,
         Name              = $"{g.FirstName} {g.LastName}",
+        FirstName         = g.FirstName,
+        LastName          = g.LastName,
+        IdNumber          = g.IdNumber,
         Phone             = g.Phone,
         Email             = g.Email,
         BusinessName      = g.BusinessName,
         BusinessRegNumber = g.BusinessRegNumber,
         FarmSize          = g.PlantationSize.HasValue ? $"{g.PlantationSize:0.##} ha" : null,
+        PlantationSize    = g.PlantationSize,
         LandTenure        = g.LandTenure,
         TreeSpecies       = g.TreeSpecies,
         GpsLat            = g.GpsLat,
@@ -134,5 +153,19 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         Risk              = DeriveRisk(score),
         IsDraft           = g.IsDraft,
         RegisteredAt      = g.RegisteredAt,
+        
+        // Visit Status
+        VisitStatus       = DeriveVisitStatus(latestVisit),
+        ScheduledDate     = latestVisit?.ScheduledDate,
+        Findings          = latestVisit?.Findings,
+    };
+    
+    private static string DeriveVisitStatus(FieldVisit? visit) => visit switch
+    {
+        null => "Pending",
+        _ when visit.Status == "scheduled" => "Scheduled",
+        _ when visit.Status == "in_progress" => "Visited",
+        _ when visit.Status == "completed" => "Completed",
+        _ => "Pending"
     };
 }

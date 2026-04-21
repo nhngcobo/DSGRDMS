@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DSGRDMS.Server.DTOs;
 using DSGRDMS.Server.Services;
@@ -10,6 +11,7 @@ public class GrowersController(IGrowerService growerService) : ControllerBase
 {
     // GET api/growers
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
         var growers = await growerService.GetAllAsync();
@@ -18,6 +20,7 @@ public class GrowersController(IGrowerService growerService) : ControllerBase
 
     // GET api/growers/{growerId}
     [HttpGet("{growerId}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(string growerId)
     {
         var grower = await growerService.GetByIdAsync(growerId);

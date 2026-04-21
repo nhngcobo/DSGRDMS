@@ -1,4 +1,5 @@
 const BASE = '/api/growers';
+import { apiFetch } from './apiClient.js';
 
 async function handleResponse(res) {
     if (res.status === 409) {
@@ -17,17 +18,17 @@ async function handleResponse(res) {
 }
 
 export async function fetchGrowers() {
-    const res = await fetch(BASE);
+    const res = await apiFetch(BASE);
     return handleResponse(res);
 }
 
 export async function fetchGrowerById(growerId) {
-    const res = await fetch(`${BASE}/${encodeURIComponent(growerId)}`);
+    const res = await apiFetch(`${BASE}/${encodeURIComponent(growerId)}`);
     return handleResponse(res);
 }
 
 export async function registerGrower(formData) {
-    const res = await fetch(BASE, {
+    const res = await apiFetch(BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -50,7 +51,7 @@ export async function registerGrower(formData) {
 }
 
 export async function updateGrower(growerId, formData) {
-    const res = await fetch(`${BASE}/${encodeURIComponent(growerId)}`, {
+    const res = await apiFetch(`${BASE}/${encodeURIComponent(growerId)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
