@@ -51,7 +51,8 @@ export default function LogFindingsModal({ visitId, grower, onClose, onSaved }) 
                 observations,
                 activities,
                 plantationCondition,
-                notes: '' // Photo upload not implemented yet - frontend to backend integration
+                photos: photos.filter(p => p.file), // Include selected photos
+                notes: ''
             });
 
             showSuccess(`Findings logged for ${grower?.name || 'grower'}`);

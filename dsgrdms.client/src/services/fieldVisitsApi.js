@@ -1,23 +1,30 @@
-import axios from 'axios';
+import { apiFetch } from './apiClient.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5089/api';
+const BASE = '/api/field-visits';
 
-const getAuthHeader = () => {
-    const token = sessionStorage.getItem('_auth_token');
-    if (!token) {
-        console.warn('No auth token found in sessionStorage');
-        return {};
+async function handleResponse(res) {
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message ?? `Request failed (${res.status})`);
     }
-    return { Authorization: `Bearer ${token}` };
-};
+    return res.json();
+}
 
 export const fieldVisitsApi = {
+    getAll: async () => {
+        try {
+            const res = await apiFetch(BASE);
+            return handleResponse(res);
+        } catch (error) {
+            console.error('Error fetching all visits:', error.message);
+            throw error;
+        }
+    },
+
     getByGrower: async (growerId) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/field-visits/grower/${growerId}`, {
-                headers: getAuthHeader()
-            });
-            return response.data;
+            const res = await apiFetch(`${BASE}/grower/${growerId}`);
+            return handleResponse(res);
         } catch (error) {
             console.error(`Error fetching visits for grower ${growerId}:`, error.message);
             throw error;
@@ -26,10 +33,8 @@ export const fieldVisitsApi = {
 
     getUpcoming: async (growerId) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/field-visits/grower/${growerId}/upcoming`, {
-                headers: getAuthHeader()
-            });
-            return response.data;
+            const res = await apiFetch(`${BASE}/grower/${growerId}/upcoming`);
+            return handleResponse(res);
         } catch (error) {
             console.error(`Error fetching upcoming visits for grower ${growerId}:`, error.message);
             throw error;
@@ -38,10 +43,8 @@ export const fieldVisitsApi = {
 
     getPast: async (growerId) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/field-visits/grower/${growerId}/past`, {
-                headers: getAuthHeader()
-            });
-            return response.data;
+            const res = await apiFetch(`${BASE}/grower/${growerId}/past`);
+            return handleResponse(res);
         } catch (error) {
             console.error(`Error fetching past visits for grower ${growerId}:`, error.message);
             throw error;
@@ -49,69 +52,122 @@ export const fieldVisitsApi = {
     },
 
     getById: async (id) => {
-        const response = await axios.get(`${API_BASE_URL}/field-visits/${id}`, {
-            headers: getAuthHeader()
-        });
-        return response.data;
+        const res = await apiFetch(`${BASE}/${id}`);
+        return handleResponse(res);
     },
 
     create: async (data) => {
-        const response = await axios.post(`${API_BASE_URL}/field-visits`, data, {
-            headers: getAuthHeader()
+        const res = await apiFetch(BASE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
         });
-        return response.data;
+        return handleResponse(res);
     },
 
     update: async (id, data) => {
-        const response = await axios.put(`${API_BASE_URL}/field-visits/${id}`, data, {
-            headers: getAuthHeader()
+        const res = await apiFetch(`${BASE}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
         });
-        return response.data;
+        return handleResponse(res);
     },
 
-    scheduleVisit: async (applicationId, data) => {
+    scheduleVisit: async (growerId, data) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/field-visits`, {
-                growerId: applicationId,
-                visitorType: 'field inspection',
-                title: data.purpose || 'Field Visit',
-                scheduledDate: data.scheduledDate,
-                scheduledTime: data.scheduledTime,
-                location: 'TBD',
-                priority: 'normal',
-                officerId: 'OFFICER_ID', // Will be set from user context if needed
-                officerName: 'Field Officer',
-                notes: data.purpose
-            }, {
-                headers: getAuthHeader()
+            const scheduledDate = data.scheduledDate instanceof Date 
+                ? data.scheduledDate.toISOString().split('T')[0]
+                : data.scheduledDate;
+            
+            const payload = {
+                growerId,
+                scheduledDate: `${scheduledDate}T00:00:00`,
+                scheduledTime: data.scheduledTime || '09:00',
+                purpose: data.purpose || 'Field Visit',
+                notes: data.notes || null
+            };
+            
+            const res = await apiFetch(`${BASE}/schedule`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
             });
-            return response.data;
+            return handleResponse(res);
         } catch (error) {
-            console.error(`Error scheduling visit for ${applicationId}:`, error.message);
+            console.error(`Error scheduling visit for ${growerId}:`, error.message);
             throw error;
         }
     },
 
     logFindings: async (visitId, data) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/field-visits/${visitId}/log-findings`, {
-                observations: data.observations,
-                activities: data.activities,
-                plantationCondition: data.plantationCondition,
-                notes: data.notes
-            }, {
-                headers: getAuthHeader()
+            // Use FormData to send files and other data
+            const formData = new FormData();
+            formData.append('observations', data.observations);
+            formData.append('activities', data.activities);
+            formData.append('plantationCondition', data.plantationCondition);
+            formData.append('notes', data.notes || '');
+            
+            // Add photos if any
+            if (data.photos && data.photos.length > 0) {
+                data.photos.forEach((photo) => {
+                    formData.append('photos', photo.file);
+                });
+            }
+            
+            // Get token for Authorization
+            const token = sessionStorage.getItem('_auth_token');
+            
+            console.log('DEBUG logFindings: Sending request with', {
+                visitId,
+                hasToken: !!token,
+                photoCount: data.photos ? data.photos.length : 0,
             });
-            return response.data;
+            
+            // Build fetch options - keep it minimal
+            const options = {
+                method: 'POST',
+                body: formData,
+            };
+            
+            // Only add headers if we have a token
+            if (token) {
+                options.headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+            }
+            
+            const res = await fetch(`/api/field-visits/${visitId}/log-findings`, options);
+            
+            console.log('DEBUG logFindings: Response status', res.status, 'Content-Type:', res.headers.get('content-type'));
+            
+            if (!res.ok) {
+                const errorBody = await res.text();
+                console.error('DEBUG logFindings error response:', errorBody);
+            }
+            
+            return handleResponse(res);
         } catch (error) {
-            console.error(`Error logging findings for visit ${visitId}:`, error.message);
+            console.error(`Error logging findings for visit ${visitId}:`, error);
             throw error;
         }
     },
 
     delete: async (id) => {
-        await axios.delete(`${API_BASE_URL}/field-visits/${id}`, {
-            headers: getAuthHeader()
+        const res = await apiFetch(`${BASE}/${id}`, {
+            method: 'DELETE',
         });
+        return handleResponse(res);
+    },
+
+    getPhotos: async (visitId) => {
+        try {
+            const res = await apiFetch(`${BASE}/${visitId}/photos`);
+            return handleResponse(res);
+        } catch (error) {
+            console.error(`Error fetching photos for visit ${visitId}:`, error.message);
+            return { photos: [] };
+        }
     }
 };

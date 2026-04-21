@@ -155,8 +155,9 @@
     border-radius: 6px;
     font-size: 0.9375rem;
     color: #1f2937;
-    font-family: inherit;
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
     transition: border-color 0.2s ease;
+    background: #fff;
 }
 
 .form-group input[type="date"]:focus,
@@ -165,6 +166,30 @@
     outline: none;
     border-color: #426468;
     box-shadow: 0 0 0 3px rgba(66, 100, 104, 0.1);
+}
+
+/* Date picker calendar styling */
+.form-group input[type="date"]::placeholder {
+    color: #9ca3af;
+}
+
+/* Webkit calendar (Chrome, Safari, Edge) */
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 4px;
+    opacity: 0.6;
+    filter: invert(0.3);
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* Calendar picker button */
+.form-group input[type="date"]::-webkit-outer-spin-button,
+.form-group input[type="date"]::-webkit-inner-spin-button {
+    display: none;
 }
 
 .form-group textarea {

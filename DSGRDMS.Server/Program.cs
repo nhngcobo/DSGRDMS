@@ -156,6 +156,23 @@ using (var scope = app.Services.CreateScope())
         );
         db.SaveChanges();
     }
+    else
+    {
+        // Ensure a field officer exists
+        var fieldOfficer = db.Users.FirstOrDefault(u => u.Email == "officer@demo.com");
+        if (fieldOfficer == null)
+        {
+            fieldOfficer = new User 
+            { 
+                Email = "officer@demo.com", 
+                PasswordHash = PasswordHelper.Hash("Officer123!"), 
+                Role = "field_officer", 
+                FullName = "James Dlamini" 
+            };
+            db.Users.Add(fieldOfficer);
+            db.SaveChanges();
+        }
+    }
 
     // Seed compliance documents for Busisiwe if she doesn't have any
     if (!db.ComplianceDocuments.Any(c => c.GrowerId == busisiweGrower.GrowerId))

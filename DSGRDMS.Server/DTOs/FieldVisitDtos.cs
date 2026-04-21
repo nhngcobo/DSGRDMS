@@ -42,3 +42,11 @@ public record LogFindingsRequest(
     string PlantationCondition,
     string? Notes
 );
+
+public record ScheduleVisitRequest(
+    string GrowerId,
+    DateTime ScheduledDate,
+    string ScheduledTime,
+    string Purpose,
+    string? Notes = null
+);

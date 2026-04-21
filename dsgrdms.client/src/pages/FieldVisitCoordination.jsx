@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Eye, Search, ChevronLeft, ChevronRight, Calendar, Plus, Clock, MapPin } from 'lucide-react';
+import { Eye, Search, ChevronLeft, ChevronRight, Calendar, Plus, Clock, MapPin, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import { fetchGrowers } from '../services/growersApi';
@@ -7,6 +7,7 @@ import { fieldVisitsApi } from '../services/fieldVisitsApi';
 import { friendlyError } from '../utils/apiErrors';
 import ScheduleVisitModal from '../components/modals/ScheduleVisitModal';
 import LogFindingsModal from '../components/modals/LogFindingsModal';
+import ViewFindingsModal from '../components/modals/ViewFindingsModal';
 import './FieldVisitCoordination.css';
 
 const PAGE_SIZE = 10;
@@ -24,6 +25,7 @@ export default function FieldVisitCoordination() {
     
     const [schedulingAppId, setSchedulingAppId] = useState(null);
     const [loggingVisitId, setLoggingVisitId] = useState(null);
+    const [viewingFindingsAppId, setViewingFindingsAppId] = useState(null);
 
     const VISIT_STATUS_FILTERS = ['All', 'Pending', 'Scheduled', 'Visited', 'Completed'];
 
@@ -35,7 +37,7 @@ export default function FieldVisitCoordination() {
         try {
             const [data, allVisits] = await Promise.all([
                 fetchGrowers(),
-                fieldVisitsApi.getByGrower('').catch(() => []) // Get all visits (if endpoint supports empty grower ID)
+                fieldVisitsApi.getAll().catch(() => []) // Get all field visits
             ]);
             
             setVisits(allVisits || []);
@@ -105,6 +107,10 @@ export default function FieldVisitCoordination() {
         if (app?.visitId) {
             setLoggingVisitId(app.visitId);
         }
+    };
+
+    const handleViewFindings = (appId) => {
+        setViewingFindingsAppId(appId);
     };
 
     const handleVisitScheduled = async () => {
@@ -258,6 +264,7 @@ export default function FieldVisitCoordination() {
                                                 {(app.visitStatus === 'Visited' || app.visitStatus === 'Completed') && app.findings && (
                                                     <button
                                                         className="btn-action btn-view-findings"
+                                                        onClick={() => handleViewFindings(app.id)}
                                                         title="View findings"
                                                     >
                                                         <Eye size={16} />
@@ -314,6 +321,19 @@ export default function FieldVisitCoordination() {
                     onSaved={handleFindingsLogged}
                 />
             )}
+
+            {/* View Findings Modal */}
+            {viewingFindingsAppId && (() => {
+                const app = applications.find(a => a.id === viewingFindingsAppId);
+                return app ? (
+                    <ViewFindingsModal
+                        visitId={app.visitId}
+                        grower={app}
+                        findings={app.findings}
+                        onClose={() => setViewingFindingsAppId(null)}
+                    />
+                ) : null;
+            })()}
         </div>
     );
 }
