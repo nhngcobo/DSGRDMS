@@ -1,148 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, User, MapPin, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { fieldVisitsApi } from '../services/fieldVisitsApi';
 import './FieldVisits.css';
 
-const mockUpcomingInspections = [
-    {
-        id: 1,
-        date: 'April 28, 2026',
-        time: '10:00 AM',
-        title: 'Spring Growth Assessment',
-        officer: { name: 'Marcus Thorne', role: 'Senior Field Officer' },
-        location: 'All Production Areas',
-        status: 'scheduled',
-        priority: 'high',
-        purpose: 'Evaluate spring growth patterns and identify any early-season pest or disease issues.',
-    },
-    {
-        id: 2,
-        date: 'May 15, 2026',
-        time: '09:30 AM',
-        title: 'Irrigation System Evaluation',
-        officer: { name: 'Elena Rodriguez', role: 'Water Management Specialist' },
-        location: 'All Irrigation Zones',
-        status: 'scheduled',
-        priority: 'medium',
-        purpose: 'Annual inspection of irrigation infrastructure and water usage efficiency.',
-    },
-    {
-        id: 3,
-        date: 'June 10, 2026',
-        time: '02:00 PM',
-        title: 'Mid-Season Compliance Review',
-        officer: { name: 'Sarah Chen', role: 'Certification Specialist' },
-        location: 'Main Office & Selected Parcels',
-        status: 'scheduled',
-        priority: 'high',
-        purpose: 'Review compliance documentation and conduct spot checks on farming practices.',
-    },
-];
-
-// Generate mock field visits (120+ visits across 12 months)
-function generateMockFieldVisits() {
-    const officers = [
-        { name: 'Sarah Chen', initials: 'SC' },
-        { name: 'Marcus Thorne', initials: 'MT' },
-        { name: 'Elena Rodriguez', initials: 'ER' },
-        { name: 'James Mbeki', initials: 'JM' },
-        { name: 'Aisha Ndlovu', initials: 'AN' },
-        { name: 'David van der Merwe', initials: 'DM' },
-    ];
-
-    const visitTypes = [
-        'Routine Inspection',
-        'Compliance Verification',
-        'Pest Management Check',
-        'Irrigation Assessment',
-        'Soil Quality Review',
-        'Harvest Oversight',
-        'Equipment Inspection',
-        'Weather Damage Assessment',
-        'Certification Audit',
-        'Training Session',
-        'Quality Control',
-        'Safety Inspection',
-    ];
-
-    const locations = [
-        'North Fields, Parcels 1-5',
-        'South Fields, Parcels 10-15',
-        'East Fields, All Parcels',
-        'West Fields, Parcels 20-25',
-        'Central Zone, Parcels 6-9',
-        'Greenhouse Complex A',
-        'Greenhouse Complex B',
-        'Irrigation Zones 1-3',
-        'Storage Facilities',
-        'Processing Area',
-        'Main Office & Adjacent Fields',
-        'Organic Section, Parcels 30-35',
-    ];
-
-    const findings = [
-        'All crops showing healthy development. Irrigation systems functioning properly.',
-        'Excellent compliance with organic farming standards. Record-keeping is exemplary.',
-        'Minor pest activity observed. Recommended organic treatment applied.',
-        'Soil analysis shows good nutrient levels. Cover crops establishing well.',
-        'Equipment maintenance records reviewed and found satisfactory.',
-        'All safety protocols being followed correctly. No violations noted.',
-        'Harvest quality meets certification standards. Proper handling procedures observed.',
-        'Irrigation efficiency at optimal levels. Water conservation measures effective.',
-        'Crop rotation schedule on track. Field preparation progressing as planned.',
-        'Documentation complete and properly organized. Digital records up to date.',
-    ];
-
-    const recommendations = [
-        'Continue current pest management protocol. Schedule follow-up in 2 weeks.',
-        'Maintain current practices. Consider implementing additional buffer zones.',
-        'Begin planning for next planting cycle. Review seed selection.',
-        'Monitor weather conditions. Adjust irrigation schedule as needed.',
-        'Schedule equipment maintenance before peak season.',
-        'Update safety training for seasonal workers.',
-        'Implement recommended soil amendments before next planting.',
-        'Continue regular monitoring of pest traps.',
-    ];
-
-    const visits = [];
-    const now = new Date(2026, 3, 20); // April 20, 2026
-    let visitId = 1;
-
-    // Generate visits for the past 12 months (average 10 per month = 120 total)
-    for (let monthOffset = 0; monthOffset < 12; monthOffset++) {
-        const visitsThisMonth = Math.floor(Math.random() * 6) + 8; // 8-13 visits per month
-        
-        for (let i = 0; i < visitsThisMonth; i++) {
-            const visitDate = new Date(now.getFullYear(), now.getMonth() - monthOffset, Math.floor(Math.random() * 28) + 1);
-            const hour = Math.floor(Math.random() * 8) + 8; // 8 AM to 4 PM
-            const minute = [0, 15, 30, 45][Math.floor(Math.random() * 4)];
-            
-            visits.push({
-                id: visitId++,
-                date: visitDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-                time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`,
-                title: visitTypes[Math.floor(Math.random() * visitTypes.length)],
-                officer: officers[Math.floor(Math.random() * officers.length)],
-                location: locations[Math.floor(Math.random() * locations.length)],
-                status: 'completed',
-                findings: findings[Math.floor(Math.random() * findings.length)],
-                recommendations: recommendations[Math.floor(Math.random() * recommendations.length)],
-                documents: Math.random() > 0.5 
-                    ? ['Inspection Report.pdf', 'Photo Documentation.zip']
-                    : ['Inspection Report.pdf'],
-            });
-        }
-    }
-
-    // Sort by date (newest first)
-    return visits.sort((a, b) => new Date(b.date) - new Date(a.date));
-}
-
-const mockFieldVisits = generateMockFieldVisits();
-
 export default function FieldVisits() {
-    const [timePeriod, setTimePeriod] = useState('1year'); // '3months', '6months', '1year'
+    const [allVisits, setAllVisits] = useState([]);
+    const [upcomingVisits, setUpcomingVisits] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [timePeriod, setTimePeriod] = useState('1year');
     const [expandedVisit, setExpandedVisit] = useState(null);
     const [selectedMonthData, setSelectedMonthData] = useState(null);
+
+    // Fetch field visits from database
+    useEffect(() => {
+        const loadVisits = async () => {
+            setLoading(true);
+            try {
+                const visits = await fieldVisitsApi.getAll();
+                if (visits && Array.isArray(visits)) {
+                    // Sort by date
+                    const sorted = [...visits].sort((a, b) => 
+                        new Date(b.scheduledDate) - new Date(a.scheduledDate)
+                    );
+                    setAllVisits(sorted);
+
+                    // Separate upcoming and past visits
+                    const now = new Date();
+                    const upcoming = sorted.filter(v => 
+                        v.status?.toLowerCase() === 'scheduled' && 
+                        new Date(v.scheduledDate) > now
+                    ).slice(0, 3); // Show only next 3 scheduled
+                    setUpcomingVisits(upcoming);
+                }
+            } catch (err) {
+                console.error('Error loading field visits:', err);
+                setAllVisits([]);
+                setUpcomingVisits([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadVisits();
+    }, []);
 
     // Generate chart data based on time period
     function generateChartData(period) {
@@ -157,8 +57,8 @@ export default function FieldVisits() {
             const monthIndex = date.getMonth();
             const year = date.getFullYear();
             
-            const visitsInMonth = mockFieldVisits.filter(visit => {
-                const visitDate = new Date(visit.date);
+            const visitsInMonth = allVisits.filter(visit => {
+                const visitDate = new Date(visit.scheduledDate);
                 return visitDate.getMonth() === monthIndex && visitDate.getFullYear() === year;
             });
 
@@ -207,17 +107,22 @@ export default function FieldVisits() {
 
     // Get recent past visits for timeline list
     function getRecentVisits() {
-        const sorted = [...mockFieldVisits].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sorted = [...allVisits]
+            .filter(v => v.status?.toLowerCase() === 'completed')
+            .sort((a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate));
         return sorted.slice(0, 10);
     }
 
     // Get visits for a specific month
     function getVisitsForMonth(monthData) {
-        return mockFieldVisits.filter(visit => {
-            const visitDate = new Date(visit.date);
-            return visitDate.getMonth() === monthData.date.getMonth() && 
-                   visitDate.getFullYear() === monthData.date.getFullYear();
-        }).sort((a, b) => new Date(b.date) - new Date(a.date));
+        return allVisits
+            .filter(v => v.status?.toLowerCase() === 'completed')
+            .filter(visit => {
+                const visitDate = new Date(visit.scheduledDate);
+                return visitDate.getMonth() === monthData.date.getMonth() && 
+                       visitDate.getFullYear() === monthData.date.getFullYear();
+            })
+            .sort((a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate));
     }
 
     // Handle month point click
@@ -243,15 +148,15 @@ export default function FieldVisits() {
 
             <div className="timeline-stats">
                 <div className="stat-box">
-                    <span className="stat-value">{mockFieldVisits.length}</span>
+                    <span className="stat-value">{allVisits.length}</span>
                     <span className="stat-label">Total Visits</span>
                 </div>
                 <div className="stat-box">
-                    <span className="stat-value">6</span>
+                    <span className="stat-value">{new Set(allVisits.map(v => v.officerId)).size}</span>
                     <span className="stat-label">Active Officers</span>
                 </div>
                 <div className="stat-box">
-                    <span className="stat-value">{mockUpcomingInspections.length}</span>
+                    <span className="stat-value">{upcomingVisits.length}</span>
                     <span className="stat-label">Upcoming Visits</span>
                 </div>
             </div>
@@ -259,29 +164,35 @@ export default function FieldVisits() {
             {/* Upcoming Inspections Section */}
             <div className="upcoming-inspections-section">
                 <h2 className="section-title">Upcoming Field Inspections</h2>
-                <div className="upcoming-inspections-grid">
-                    {mockUpcomingInspections.map((inspection) => (
-                        <div key={inspection.id} className="upcoming-inspection-card">
-                            <span className={`priority-badge ${inspection.priority}`}>
-                                {inspection.priority}
-                            </span>
-                            <div className="inspection-date-time">
-                                <Calendar size={16} />
-                                <span>{inspection.date} • {inspection.time}</span>
+                {upcomingVisits.length === 0 ? (
+                    <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af' }}>
+                        <p>No upcoming field visits scheduled</p>
+                    </div>
+                ) : (
+                    <div className="upcoming-inspections-grid">
+                        {upcomingVisits.map((visit) => (
+                            <div key={visit.id} className="upcoming-inspection-card">
+                                <span className={`priority-badge ${visit.priority?.toLowerCase() || 'medium'}`}>
+                                    {visit.priority || 'normal'}
+                                </span>
+                                <div className="inspection-date-time">
+                                    <Calendar size={16} />
+                                    <span>{new Date(visit.scheduledDate).toLocaleDateString()} • {visit.scheduledTime || '—'}</span>
+                                </div>
+                                <h3 className="inspection-title">{visit.title}</h3>
+                                <div className="inspection-officer">
+                                    <User size={16} />
+                                    <span>{visit.officerName || 'Field Officer'}</span>
+                                </div>
+                                <div className="inspection-location">
+                                    <MapPin size={16} />
+                                    <span>{visit.location || 'TBD'}</span>
+                                </div>
+                                <p className="inspection-purpose">{visit.notes || visit.title}</p>
                             </div>
-                            <h3 className="inspection-title">{inspection.title}</h3>
-                            <div className="inspection-officer">
-                                <User size={16} />
-                                <span>{inspection.officer.name} <span className="officer-role">• {inspection.officer.role}</span></span>
-                            </div>
-                            <div className="inspection-location">
-                                <MapPin size={16} />
-                                <span>{inspection.location}</span>
-                            </div>
-                            <p className="inspection-purpose">{inspection.purpose}</p>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Visit Trends Chart */}
@@ -412,10 +323,10 @@ export default function FieldVisits() {
                                     <div className="visit-card-header" onClick={() => setExpandedVisit(expandedVisit === visit.id ? null : visit.id)}>
                                         <div className="visit-date">
                                             <Calendar size={16} />
-                                            <span>{visit.date}</span>
+                                            <span>{new Date(visit.scheduledDate).toLocaleDateString()}</span>
                                         </div>
                                         <div className="visit-meta">
-                                            <span className="visit-type-badge">{visit.type}</span>
+                                            <span className="visit-type-badge">{visit.title}</span>
                                             <button className="expand-btn">
                                                 {expandedVisit === visit.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                                             </button>
@@ -424,7 +335,7 @@ export default function FieldVisits() {
                                     <div className="visit-card-body">
                                         <div className="visit-info-row">
                                             <User size={16} />
-                                            <span>{visit.officer.name}</span>
+                                            <span>{visit.officerName || 'Field Officer'}</span>
                                         </div>
                                         <div className="visit-info-row">
                                             <MapPin size={16} />
@@ -433,25 +344,18 @@ export default function FieldVisits() {
                                     </div>
                                     {expandedVisit === visit.id && (
                                         <div className="visit-details-expanded">
-                                            <div className="visit-section">
-                                                <h4>Key Findings</h4>
-                                                <p>{visit.findings}</p>
-                                            </div>
-                                            <div className="visit-section">
-                                                <h4>Recommendations</h4>
-                                                <p>{visit.recommendations}</p>
-                                            </div>
-                                            <div className="visit-section">
-                                                <h4>Documents</h4>
-                                                <div className="document-list">
-                                                    {visit.documents.map((doc, i) => (
-                                                        <div key={i} className="document-item">
-                                                            <FileText size={14} />
-                                                            <span>{doc}</span>
-                                                        </div>
-                                                    ))}
+                                            {visit.findings && (
+                                                <div className="visit-section">
+                                                    <h4>Findings</h4>
+                                                    <p>{visit.findings}</p>
                                                 </div>
-                                            </div>
+                                            )}
+                                            {visit.notes && (
+                                                <div className="visit-section">
+                                                    <h4>Notes</h4>
+                                                    <p>{visit.notes}</p>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -463,57 +367,60 @@ export default function FieldVisits() {
 
             {/* Recent Past Visits */}
             <h2 className="section-title">Recent Past Visits</h2>
-            <div className="past-visits-timeline">
-                {recentVisits.map((visit) => (
-                    <div key={visit.id} className="visit-card">
-                        <div className="visit-card-header" onClick={() => setExpandedVisit(expandedVisit === visit.id ? null : visit.id)}>
-                            <div className="visit-date">
-                                <Calendar size={16} />
-                                <span>{visit.date}</span>
+            {loading ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af' }}>
+                    <p>Loading field visits...</p>
+                </div>
+            ) : getRecentVisits().length === 0 ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af' }}>
+                    <p>No completed field visits found</p>
+                </div>
+            ) : (
+                <div className="past-visits-timeline">
+                    {getRecentVisits().map((visit) => (
+                        <div key={visit.id} className="visit-card">
+                            <div className="visit-card-header" onClick={() => setExpandedVisit(expandedVisit === visit.id ? null : visit.id)}>
+                                <div className="visit-date">
+                                    <Calendar size={16} />
+                                    <span>{new Date(visit.scheduledDate).toLocaleDateString()}</span>
+                                </div>
+                                <div className="visit-meta">
+                                    <span className="visit-type-badge">{visit.title}</span>
+                                    <button className="expand-btn">
+                                        {expandedVisit === visit.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                    </button>
+                                </div>
                             </div>
-                            <div className="visit-meta">
-                                <span className="visit-type-badge">{visit.type}</span>
-                                <button className="expand-btn">
-                                    {expandedVisit === visit.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                </button>
+                            <div className="visit-card-body">
+                                <div className="visit-info-row">
+                                    <User size={16} />
+                                    <span>{visit.officerName || 'Field Officer'}</span>
+                                </div>
+                                <div className="visit-info-row">
+                                    <MapPin size={16} />
+                                    <span>{visit.location}</span>
+                                </div>
                             </div>
+                            {expandedVisit === visit.id && (
+                                <div className="visit-details-expanded">
+                                    {visit.findings && (
+                                        <div className="visit-section">
+                                            <h4>Findings</h4>
+                                            <p>{visit.findings}</p>
+                                        </div>
+                                    )}
+                                    {visit.notes && (
+                                        <div className="visit-section">
+                                            <h4>Notes</h4>
+                                            <p>{visit.notes}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
-                        <div className="visit-card-body">
-                            <div className="visit-info-row">
-                                <User size={16} />
-                                <span>{visit.officer.name}</span>
-                            </div>
-                            <div className="visit-info-row">
-                                <MapPin size={16} />
-                                <span>{visit.location}</span>
-                            </div>
-                        </div>
-                        {expandedVisit === visit.id && (
-                            <div className="visit-details-expanded">
-                                <div className="visit-section">
-                                    <h4>Key Findings</h4>
-                                    <p>{visit.findings}</p>
-                                </div>
-                                <div className="visit-section">
-                                    <h4>Recommendations</h4>
-                                    <p>{visit.recommendations}</p>
-                                </div>
-                                <div className="visit-section">
-                                    <h4>Documents</h4>
-                                    <div className="document-list">
-                                        {visit.documents.map((doc, i) => (
-                                            <div key={i} className="document-item">
-                                                <FileText size={14} />
-                                                <span>{doc}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

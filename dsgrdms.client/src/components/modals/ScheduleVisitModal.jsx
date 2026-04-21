@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { X, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { X, Calendar, Clock, AlertCircle, User } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
 import { fieldVisitsApi } from '../../services/fieldVisitsApi';
 import './ScheduleVisitModal.css';
 
 export default function ScheduleVisitModal({ applicationId, grower, onClose, onScheduled }) {
+    const { user } = useAuth();
     const { showError, showSuccess } = useNotification();
     
     const [selectedDate, setSelectedDate] = useState('');
@@ -33,7 +35,7 @@ export default function ScheduleVisitModal({ applicationId, grower, onClose, onS
                 purpose,
             });
 
-            showSuccess(`Visit scheduled for ${grower?.name || 'grower'}`);
+            showSuccess(`Visit scheduled for ${grower?.name || 'grower'} and assigned to ${user?.name || 'you'}`);
             onScheduled();
             onClose();
         } catch (err) {
@@ -88,6 +90,19 @@ export default function ScheduleVisitModal({ applicationId, grower, onClose, onS
                                 <p>{grower?.phone || '—'}</p>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Officer Assignment */}
+                    <div className="schedule-section">
+                        <h3>Officer Assignment</h3>
+                        <div className="officer-assignment">
+                            <User size={20} />
+                            <div className="officer-details">
+                                <span className="officer-name">{user?.name || 'Field Officer'}</span>
+                                <span className="officer-email">{user?.email || 'No email'}</span>
+                            </div>
+                        </div>
+                        <p className="assignment-note">This visit will be assigned to you</p>
                     </div>
 
                     {/* Visit Details */}

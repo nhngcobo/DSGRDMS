@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DSGRDMS.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+59c547dd1432841e24955be7e12e0415a0c06a62")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+de0f59d0156f674d6bd9b6dba835d6b57176ef7a")]
 [assembly: System.Reflection.AssemblyProductAttribute("DSGRDMS.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DSGRDMS.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Eye, Search, ChevronLeft, ChevronRight, Calendar, Plus, Clock, MapPin, FileText } from 'lucide-react';
+import { Eye, Search, ChevronLeft, ChevronRight, Calendar, Plus, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
-import { fetchGrowers } from '../services/growersApi';
 import { fieldVisitsApi } from '../services/fieldVisitsApi';
 import { friendlyError } from '../utils/apiErrors';
 import ScheduleVisitModal from '../components/modals/ScheduleVisitModal';
@@ -16,72 +15,49 @@ export default function FieldVisitCoordination() {
     const { user } = useAuth();
     const { showError } = useNotification();
     
-    const [applications, setApplications] = useState([]);
     const [visits, setVisits] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
-    const [visitStatusFilter, setVisitStatusFilter] = useState('All'); // All, Pending, Scheduled, Visited, Completed
+    const [visitStatusFilter, setVisitStatusFilter] = useState('All');
     const [page, setPage] = useState(1);
     
-    const [schedulingAppId, setSchedulingAppId] = useState(null);
+    const [schedulingGrowerId, setSchedulingGrowerId] = useState(null);
     const [loggingVisitId, setLoggingVisitId] = useState(null);
-    const [viewingFindingsAppId, setViewingFindingsAppId] = useState(null);
+    const [viewingVisitId, setViewingVisitId] = useState(null);
 
-    const VISIT_STATUS_FILTERS = ['All', 'Pending', 'Scheduled', 'Visited', 'Completed'];
+    const VISIT_STATUS_FILTERS = ['All', 'scheduled', 'in_progress', 'completed'];
 
     // Reset page when filter/search changes
     useEffect(() => { setPage(1); }, [search, visitStatusFilter]);
 
-    const loadApplications = useCallback(async () => {
+    const loadVisits = useCallback(async () => {
         setLoading(true);
         try {
-            const [data, allVisits] = await Promise.all([
-                fetchGrowers(),
-                fieldVisitsApi.getAll().catch(() => []) // Get all field visits
-            ]);
-            
+            const allVisits = await fieldVisitsApi.getAll();
             setVisits(allVisits || []);
-            
-            // Add visit status to each application
-            const withVisitStatus = (data || []).map(app => {
-                const latestVisit = (allVisits || [])
-                    .filter(v => v.growerId === app.id)
-                    .sort((a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate))[0];
-                
-                return {
-                    ...app,
-                    visitId: latestVisit?.id,
-                    visitStatus: latestVisit?.status === 'scheduled' ? 'Scheduled' : 
-                               latestVisit?.status === 'in_progress' ? 'Visited' :
-                               latestVisit?.status === 'completed' ? 'Completed' :
-                               latestVisit ? 'Visited' : 'Pending',
-                    scheduledDate: latestVisit?.scheduledDate || null,
-                    findings: latestVisit?.findings || null,
-                };
-            });
-            setApplications(withVisitStatus);
         } catch (err) {
             showError(friendlyError(err));
-            setApplications([]);
+            setVisits([]);
         } finally {
             setLoading(false);
         }
     }, [showError]);
 
-    useEffect(() => { loadApplications(); }, [loadApplications]);
+    useEffect(() => { loadVisits(); }, [loadVisits]);
 
-    // Filter applications
-    const filtered = applications.filter(app => {
+    // Filter visits
+    const filtered = visits.filter(visit => {
         const matchesFilter =
             visitStatusFilter === 'All' ||
-            app.visitStatus === visitStatusFilter;
+            visit.status?.toLowerCase() === visitStatusFilter;
         
         const q = search.toLowerCase();
         const matchesSearch =
             !q ||
-            app.name.toLowerCase().includes(q) ||
-            app.id.toLowerCase().includes(q) ||
-            (app.email && app.email.toLowerCase().includes(q));
+            visit.title?.toLowerCase().includes(q) ||
+            visit.growerId?.toLowerCase().includes(q) ||
+            visit.growerName?.toLowerCase().includes(q) ||
+            visit.location?.toLowerCase().includes(q);
         
         return matchesFilter && matchesSearch;
     });
@@ -91,46 +67,54 @@ export default function FieldVisitCoordination() {
 
     // Statistics
     const stats = {
-        total: applications.length,
-        pending: applications.filter(a => a.visitStatus === 'Pending').length,
-        scheduled: applications.filter(a => a.visitStatus === 'Scheduled').length,
-        visited: applications.filter(a => a.visitStatus === 'Visited').length,
-        completed: applications.filter(a => a.visitStatus === 'Completed').length,
+        total: visits.length,
+        scheduled: visits.filter(v => v.status?.toLowerCase() === 'scheduled').length,
+        inProgress: visits.filter(v => v.status?.toLowerCase() === 'in_progress').length,
+        completed: visits.filter(v => v.status?.toLowerCase() === 'completed').length,
     };
 
-    const handleScheduleVisit = (appId) => {
-        setSchedulingAppId(appId);
+    const handleScheduleVisit = (growerId) => {
+        setSchedulingGrowerId(growerId);
     };
 
-    const handleLogFindings = (appId) => {
-        const app = applications.find(a => a.id === appId);
-        if (app?.visitId) {
-            setLoggingVisitId(app.visitId);
-        }
+    const handleLogFindings = (visitId) => {
+        setLoggingVisitId(visitId);
     };
 
-    const handleViewFindings = (appId) => {
-        setViewingFindingsAppId(appId);
+    const handleViewFindings = (visitId) => {
+        setViewingVisitId(visitId);
     };
 
     const handleVisitScheduled = async () => {
-        setSchedulingAppId(null);
-        await loadApplications(); // Refresh data
+        setSchedulingGrowerId(null);
+        await loadVisits();
     };
 
     const handleFindingsLogged = async () => {
         setLoggingVisitId(null);
-        await loadApplications(); // Refresh data
+        await loadVisits();
     };
 
     const getStatusBadgeClass = (status) => {
-        switch (status) {
-            case 'Pending': return 'badge-pending';
-            case 'Scheduled': return 'badge-scheduled';
-            case 'Visited': return 'badge-visited';
-            case 'Completed': return 'badge-completed';
+        switch (status?.toLowerCase()) {
+            case 'scheduled': return 'badge-scheduled';
+            case 'in_progress': return 'badge-visited';
+            case 'completed': return 'badge-completed';
             default: return '';
         }
+    };
+
+    const getStatusLabel = (status) => {
+        switch (status?.toLowerCase()) {
+            case 'scheduled': return 'Scheduled';
+            case 'in_progress': return 'In Progress';
+            case 'completed': return 'Completed';
+            default: return status || 'Unknown';
+        }
+    };
+
+    const getVisitForModal = (visitId) => {
+        return visits.find(v => v.id === visitId);
     };
 
     return (
@@ -138,27 +122,23 @@ export default function FieldVisitCoordination() {
             <div className="fv-coordination-header">
                 <div>
                     <h1>Field Visit Coordination</h1>
-                    <p>Schedule and manage field visits for grower applications</p>
+                    <p>Manage all scheduled field visits</p>
                 </div>
             </div>
 
             {/* Statistics overview */}
             <div className="fv-stats">
                 <div className="stat-card">
-                    <div className="stat-label">Total</div>
+                    <div className="stat-label">Total Visits</div>
                     <div className="stat-value">{stats.total}</div>
-                </div>
-                <div className="stat-card pending">
-                    <div className="stat-label">Pending Visit</div>
-                    <div className="stat-value">{stats.pending}</div>
                 </div>
                 <div className="stat-card scheduled">
                     <div className="stat-label">Scheduled</div>
                     <div className="stat-value">{stats.scheduled}</div>
                 </div>
                 <div className="stat-card visited">
-                    <div className="stat-label">Visited</div>
-                    <div className="stat-value">{stats.visited}</div>
+                    <div className="stat-label">In Progress</div>
+                    <div className="stat-value">{stats.inProgress}</div>
                 </div>
                 <div className="stat-card completed">
                     <div className="stat-label">Completed</div>
@@ -172,7 +152,7 @@ export default function FieldVisitCoordination() {
                     <Search size={18} />
                     <input
                         type="text"
-                        placeholder="Search by grower name or ID..."
+                        placeholder="Search by grower, visit title, or location..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
@@ -185,19 +165,19 @@ export default function FieldVisitCoordination() {
                             className={`filter-btn ${visitStatusFilter === status ? 'active' : ''}`}
                             onClick={() => setVisitStatusFilter(status)}
                         >
-                            {status}
+                            {status === 'All' ? 'All' : getStatusLabel(status)}
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* Applications List */}
+            {/* Visits List */}
             <div className="fv-content">
                 {loading ? (
-                    <div className="fv-loading">Loading agreements...</div>
+                    <div className="fv-loading">Loading field visits...</div>
                 ) : paged.length === 0 ? (
                     <div className="fv-empty">
-                        <p>No applications found</p>
+                        <p>No field visits found</p>
                     </div>
                 ) : (
                     <div className="fv-table-wrapper">
@@ -205,66 +185,69 @@ export default function FieldVisitCoordination() {
                             <thead>
                                 <tr>
                                     <th>Grower</th>
+                                    <th>Visit Title</th>
                                     <th>Status</th>
-                                    <th>Visit Status</th>
                                     <th>Scheduled Date</th>
+                                    <th>Location</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {paged.map(app => (
-                                    <tr key={app.id}>
+                                {paged.map(visit => (
+                                    <tr key={visit.id}>
                                         <td>
                                             <div className="app-info">
-                                                <div className="app-name">{app.name}</div>
-                                                <div className="app-id">{app.id}</div>
+                                                <div className="app-name">{visit.growerName}</div>
+                                                <div className="app-id">{visit.growerId}</div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span className={`badge badge-status-${app.status?.toLowerCase()}`}>
-                                                {app.status}
+                                            <div className="visit-title">{visit.title}</div>
+                                        </td>
+                                        <td>
+                                            <span className={`badge ${getStatusBadgeClass(visit.status)}`}>
+                                                {getStatusLabel(visit.status)}
                                             </span>
                                         </td>
                                         <td>
-                                            <span className={`badge ${getStatusBadgeClass(app.visitStatus)}`}>
-                                                {app.visitStatus}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {app.scheduledDate ? (
+                                            {visit.scheduledDate ? (
                                                 <div className="visit-date">
                                                     <Calendar size={14} />
-                                                    <span>{new Date(app.scheduledDate).toLocaleDateString()}</span>
+                                                    <span>{new Date(visit.scheduledDate).toLocaleDateString()}</span>
                                                 </div>
                                             ) : (
                                                 <span className="text-muted">—</span>
                                             )}
                                         </td>
+                                        <td className="location-cell">
+                                            <span className="location-text">{visit.location || '—'}</span>
+                                        </td>
                                         <td>
                                             <div className="action-buttons">
                                                 <button
                                                     className="btn-action btn-schedule"
-                                                    onClick={() => handleScheduleVisit(app.id)}
-                                                    disabled={app.visitStatus === 'Completed'}
-                                                    title={app.visitStatus === 'Completed' ? 'Visit completed' : 'Schedule visit'}
+                                                    onClick={() => handleScheduleVisit(visit.growerId)}
+                                                    title="Schedule new visit"
                                                 >
                                                     <Plus size={16} />
                                                     Schedule
                                                 </button>
-                                                {app.visitStatus === 'Scheduled' && (
+                                                {visit.status?.toLowerCase() === 'scheduled' && (
                                                     <button
                                                         className="btn-action btn-log-findings"
-                                                        onClick={() => handleLogFindings(app.id)}
+                                                        onClick={() => handleLogFindings(visit.id)}
                                                         title="Log visit findings"
                                                     >
                                                         <FileText size={16} />
-                                                        Findings
+                                                        Log
                                                     </button>
                                                 )}
-                                                {(app.visitStatus === 'Visited' || app.visitStatus === 'Completed') && app.findings && (
+                                                {(visit.status?.toLowerCase() === 'in_progress' || 
+                                                  visit.status?.toLowerCase() === 'completed') && 
+                                                  visit.findings && (
                                                     <button
                                                         className="btn-action btn-view-findings"
-                                                        onClick={() => handleViewFindings(app.id)}
+                                                        onClick={() => handleViewFindings(visit.id)}
                                                         title="View findings"
                                                     >
                                                         <Eye size={16} />
@@ -302,35 +285,31 @@ export default function FieldVisitCoordination() {
                 )}
             </div>
 
-            {/* Schedule Visit Modal */}
-            {schedulingAppId && (
+            {/* Modals */}
+            {schedulingGrowerId && (
                 <ScheduleVisitModal
-                    applicationId={schedulingAppId}
-                    grower={applications.find(a => a.id === schedulingAppId)}
-                    onClose={() => setSchedulingAppId(null)}
-                    onScheduled={handleVisitScheduled}
+                    growerId={schedulingGrowerId}
+                    onSuccess={handleVisitScheduled}
+                    onClose={() => setSchedulingGrowerId(null)}
                 />
             )}
 
-            {/* Log Findings Modal */}
             {loggingVisitId && (
                 <LogFindingsModal
                     visitId={loggingVisitId}
-                    grower={applications.find(a => a.visitId === loggingVisitId)}
+                    onSuccess={handleFindingsLogged}
                     onClose={() => setLoggingVisitId(null)}
-                    onSaved={handleFindingsLogged}
                 />
             )}
 
-            {/* View Findings Modal */}
-            {viewingFindingsAppId && (() => {
-                const app = applications.find(a => a.id === viewingFindingsAppId);
-                return app ? (
+            {viewingVisitId && (() => {
+                const visitData = getVisitForModal(viewingVisitId);
+                return visitData ? (
                     <ViewFindingsModal
-                        visitId={app.visitId}
-                        grower={app}
-                        findings={app.findings}
-                        onClose={() => setViewingFindingsAppId(null)}
+                        visitId={viewingVisitId}
+                        grower={{ id: visitData.growerId, name: visitData.growerName }}
+                        findings={visitData.findings}
+                        onClose={() => setViewingVisitId(null)}
                     />
                 ) : null;
             })()}

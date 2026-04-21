@@ -61,6 +61,10 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
                 ApiResponse<object>.Fail($"Only admins and field officers can schedule visits. Got role='{userRole ?? "NULL"}'"));
         }
 
+        // Get authenticated user's ID and name from JWT claims
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+        var userName = User.FindFirst(ClaimTypes.Name)?.Value ?? "Field Officer";
+
         var createRequest = new CreateFieldVisitRequest(
             GrowerId: request.GrowerId,
             VisitType: "Inspection",
@@ -69,8 +73,8 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
             ScheduledTime: request.ScheduledTime,
             Location: "TBD",
             Priority: "normal",
-            OfficerId: "OF001",
-            OfficerName: "Field Officer",
+            OfficerId: userId,
+            OfficerName: userName,
             Notes: request.Notes
         );
         
