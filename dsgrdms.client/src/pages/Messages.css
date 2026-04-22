@@ -352,6 +352,63 @@
     flex-shrink: 0;
 }
 
+/* ── Query assignment panel ────────────────────────────────────── */
+.msg-assign-panel {
+    margin: 1rem 0;
+    padding: 0.9rem 1rem;
+    background: rgba(66, 100, 104, 0.05);
+    border: 1px solid rgba(66, 100, 104, 0.15);
+    border-radius: 10px;
+}
+
+.msg-assigned-to {
+    font-size: 0.82rem;
+    color: #426468;
+    font-weight: 300;
+    margin: 0 0 0.65rem;
+}
+.msg-assigned-to strong { font-weight: 600; }
+.msg-assigned-to.msg-unassigned { color: #9ca3af; font-style: italic; }
+
+.msg-assign-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.msg-assign-select {
+    flex: 1;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid rgba(66, 100, 104, 0.3);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    font-weight: 300;
+    color: #374151;
+    background: #fff;
+    outline: none;
+}
+.msg-assign-select:focus {
+    border-color: #426468;
+    box-shadow: 0 0 0 2px rgba(66, 100, 104, 0.15);
+}
+
+.msg-assign-btn {
+    padding: 0.45rem 1rem;
+    background: #426468;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    font-weight: 400;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+.msg-assign-btn:hover:not(:disabled) { background: #354f52; }
+.msg-assign-btn:disabled { opacity: 0.55; cursor: default; }
+
 /* ── Mobile responsive ─────────────────────────────────────────── */
 @media (max-width: 768px) {
     .msg-pane-layout {

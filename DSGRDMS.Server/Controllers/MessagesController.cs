@@ -14,7 +14,7 @@ namespace DSGRDMS.Server.Controllers;
 public class MessagesController(AppDbContext db) : ControllerBase
 {
     static MessageDto ToDto(Message m) =>
-        new(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType);
+        new(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName);
 
     // GET api/messages
     // Grower  → all messages where GrowerId matches (both inbox and their own queries)
@@ -32,7 +32,7 @@ public class MessagesController(AppDbContext db) : ControllerBase
             var messages = await db.Messages
                 .Where(m => m.GrowerId == growerId)
                 .OrderByDescending(m => m.SentAt)
-                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType))
+                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName))
                 .ToListAsync();
 
             return Ok(messages);
@@ -46,7 +46,7 @@ public class MessagesController(AppDbContext db) : ControllerBase
             var messages = await db.Messages
                 .Where(m => (m.SentByGrower == false && m.SenderUserId == userId) || m.SentByGrower == true)
                 .OrderByDescending(m => m.SentAt)
-                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType))
+                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName))
                 .ToListAsync();
 
             return Ok(messages);
@@ -142,6 +142,44 @@ public class MessagesController(AppDbContext db) : ControllerBase
         await db.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetMessages), ToDto(msg));
+    }
+
+    // GET api/messages/field-officers — list of field officers for the assign dropdown (admin only)
+    [HttpGet("field-officers")]
+    public async Task<IActionResult> GetFieldOfficers()
+    {
+        var role = User.FindFirstValue("role") ?? User.FindFirstValue(ClaimTypes.Role);
+        if (role != "admin") return Forbid();
+
+        var officers = await db.Users
+            .Where(u => u.Role == "field_officer")
+            .OrderBy(u => u.FullName)
+            .Select(u => new FieldOfficerDto(u.Id, u.FullName))
+            .ToListAsync();
+
+        return Ok(officers);
+    }
+
+    // PUT api/messages/{id}/assign — admin assigns a grower query to a field officer
+    [HttpPut("{id:int}/assign")]
+    public async Task<IActionResult> AssignQuery(int id, [FromBody] AssignQueryRequest req)
+    {
+        var role = User.FindFirstValue("role") ?? User.FindFirstValue(ClaimTypes.Role);
+        if (role != "admin") return Forbid();
+
+        var msg = await db.Messages.FindAsync(id);
+        if (msg is null) return NotFound();
+        if (!msg.SentByGrower) return BadRequest(new { message = "Only grower queries can be assigned." });
+
+        var officer = await db.Users.FindAsync(req.OfficerUserId);
+        if (officer is null || officer.Role != "field_officer")
+            return BadRequest(new { message = "User is not a field officer." });
+
+        msg.AssignedToUserId = officer.Id;
+        msg.AssignedToName   = officer.FullName;
+        await db.SaveChangesAsync();
+
+        return Ok(ToDto(msg));
     }
 
     // PUT api/messages/{id}/read — mark a message as read

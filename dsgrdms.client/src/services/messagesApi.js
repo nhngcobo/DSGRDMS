@@ -38,3 +38,17 @@ export async function markMessageRead(id) {
     const res = await apiFetch(`${BASE}/${id}/read`, { method: 'PUT' });
     if (!res.ok) throw new Error(`Request failed (${res.status})`);
 }
+
+export async function fetchFieldOfficers() {
+    const res = await apiFetch(`${BASE}/field-officers`);
+    return handleResponse(res);
+}
+
+export async function assignQuery(messageId, officerUserId) {
+    const res = await apiFetch(`${BASE}/${messageId}/assign`, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ officerUserId }),
+    });
+    return handleResponse(res);
+}

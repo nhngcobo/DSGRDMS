@@ -12,4 +12,6 @@ public class Message
     public bool IsRead { get; set; } = false;
     public bool SentByGrower { get; set; } = false;     // true = grower query to staff
     public string? QueryType { get; set; }              // category when sent by grower
+    public int? AssignedToUserId { get; set; }          // field officer this query is assigned to
+    public string? AssignedToName { get; set; }         // denormalised name for display
 }

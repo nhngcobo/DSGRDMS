@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Mail, MailOpen, Send, Plus, Inbox, ChevronLeft, MessageSquarePlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { fetchMessages, markMessageRead } from '../services/messagesApi';
+import { fetchMessages, markMessageRead, fetchFieldOfficers, assignQuery } from '../services/messagesApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
 import ComposeMessageModal from '../components/modals/ComposeMessageModal';
@@ -22,15 +22,19 @@ function timeAgo(dateStr) {
 
 export default function Messages() {
     const { user, token } = useAuth();
-    const { showError }   = useNotification();
+    const { showError, showSuccess } = useNotification();
 
+    const isAdmin = user?.role === 'admin';
     const isStaff = user?.role === 'admin' || user?.role === 'field_officer';
 
-    const [messages,    setMessages]    = useState([]);
-    const [selected,    setSelected]    = useState(null);
-    const [loading,     setLoading]     = useState(true);
-    const [showCompose, setShowCompose] = useState(false);
-    const [showQuery,   setShowQuery]   = useState(false);
+    const [messages,       setMessages]       = useState([]);
+    const [selected,       setSelected]       = useState(null);
+    const [loading,        setLoading]        = useState(true);
+    const [showCompose,    setShowCompose]    = useState(false);
+    const [showQuery,      setShowQuery]      = useState(false);
+    const [fieldOfficers,  setFieldOfficers]  = useState([]);
+    const [assignOfficer,  setAssignOfficer]  = useState('');
+    const [assigning,      setAssigning]      = useState(false);
     // Grower tabs: 'inbox' | 'queries'
     const [tab, setTab] = useState('inbox');
 
@@ -48,11 +52,19 @@ export default function Messages() {
 
     useEffect(() => { load(); }, [load]);
 
-    // Reset selected when tab changes
-    useEffect(() => { setSelected(null); }, [tab]);
+    // Load field officers list once for admin
+    useEffect(() => {
+        if (isAdmin) {
+            fetchFieldOfficers().then(setFieldOfficers).catch(() => {});
+        }
+    }, [isAdmin]);
+
+    // Reset selected + assign state when tab changes
+    useEffect(() => { setSelected(null); setAssignOfficer(''); }, [tab]);
 
     async function openMessage(msg) {
         setSelected(msg);
+        setAssignOfficer(msg.assignedToUserId?.toString() ?? '');
         if (!msg.isRead) {
             // Grower reads staff→grower msgs; staff reads grower queries
             const shouldMark = isStaff ? msg.sentByGrower : !msg.sentByGrower;
@@ -76,6 +88,22 @@ export default function Messages() {
 
     const inboxUnread   = inbox.filter(m => !m.isRead).length;
     const queriesUnread = isStaff ? messages.filter(m => m.sentByGrower && !m.isRead).length : 0;
+
+    async function handleAssign(e) {
+        e.preventDefault();
+        if (!assignOfficer || !selected) return;
+        setAssigning(true);
+        try {
+            const updated = await assignQuery(selected.id, parseInt(assignOfficer, 10));
+            setMessages(prev => prev.map(m => m.id === updated.id ? updated : m));
+            setSelected(updated);
+            showSuccess('Query assigned successfully.');
+        } catch (err) {
+            showError(friendlyError(err));
+        } finally {
+            setAssigning(false);
+        }
+    }
 
     return (
         <div className="msg-page">
@@ -218,6 +246,40 @@ export default function Messages() {
                             {selected.queryType && (
                                 <span className="msg-query-type-badge">{selected.queryType}</span>
                             )}
+
+                            {/* Assignment panel — admin only, grower queries only */}
+                            {isAdmin && selected.sentByGrower && (
+                                <div className="msg-assign-panel">
+                                    {selected.assignedToName ? (
+                                        <p className="msg-assigned-to">
+                                            Assigned to: <strong>{selected.assignedToName}</strong>
+                                        </p>
+                                    ) : (
+                                        <p className="msg-assigned-to msg-unassigned">Not yet assigned</p>
+                                    )}
+                                    <form className="msg-assign-form" onSubmit={handleAssign}>
+                                        <select
+                                            className="msg-assign-select"
+                                            value={assignOfficer}
+                                            onChange={e => setAssignOfficer(e.target.value)}
+                                            required
+                                        >
+                                            <option value="">Select field officer…</option>
+                                            {fieldOfficers.map(o => (
+                                                <option key={o.id} value={o.id}>{o.fullName}</option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            type="submit"
+                                            className="msg-assign-btn"
+                                            disabled={assigning || !assignOfficer}
+                                        >
+                                            {assigning ? 'Assigning…' : selected.assignedToName ? 'Reassign' : 'Assign'}
+                                        </button>
+                                    </form>
+                                </div>
+                            )}
+
                             <div className="msg-detail-body">{selected.body}</div>
                         </div>
                     ) : (
