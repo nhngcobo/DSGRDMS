@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Mail, MailOpen, Send, Plus, Inbox, ChevronLeft, MessageSquarePlus, CalendarPlus } from 'lucide-react';
+import { Mail, MailOpen, Send, Plus, Inbox, ChevronLeft, MessageSquarePlus, CalendarPlus, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { fetchMessages, markMessageRead, fetchFieldOfficers, assignQuery } from '../services/messagesApi';
+import { fetchMessages, markMessageRead, fetchFieldOfficers, assignQuery, replyToMessage } from '../services/messagesApi';
 import { fetchGrowerById } from '../services/growersApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
@@ -38,6 +38,7 @@ export default function Messages() {
     const [fieldOfficers,  setFieldOfficers]  = useState([]);
     const [assignOfficer,  setAssignOfficer]  = useState('');
     const [assigning,      setAssigning]      = useState(false);
+    const [replying,       setReplying]       = useState(false);
     const [showSchedule,   setShowSchedule]   = useState(false);
     const [scheduleGrower, setScheduleGrower] = useState(null);
     // Field officer scope: 'mine' = assigned to me | 'all' = everything
@@ -121,6 +122,21 @@ export default function Messages() {
             showError(friendlyError(err));
         } finally {
             setAssigning(false);
+        }
+    }
+
+    async function handleReply(status) {
+        if (!selected) return;
+        setReplying(true);
+        try {
+            const updated = await replyToMessage(selected.id, status);
+            setMessages(prev => prev.map(m => m.id === updated.id ? updated : m));
+            setSelected(updated);
+            showSuccess(`Response recorded: "${status}"`);
+        } catch (err) {
+            showError(friendlyError(err));
+        } finally {
+            setReplying(false);
         }
     }
 
@@ -324,6 +340,57 @@ export default function Messages() {
                             )}
 
                             <div className="msg-detail-body">{selected.body}</div>
+
+                            {/* Admin/Staff view — show grower's reply status */}
+                            {isStaff && !selected.sentByGrower && selected.replyStatus && (
+                                <div className="msg-reply-status">
+                                    <div className="msg-reply-status-content">
+                                        <CheckCircle size={16} className="msg-reply-check" />
+                                        <p>Grower responded: <strong>{selected.replyStatus}</strong></p>
+                                        {selected.repliedAt && (
+                                            <span className="msg-reply-date">{new Date(selected.repliedAt).toLocaleString()}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Grower reply section — growers only, inbox messages only, no existing reply */}
+                            {!isStaff && !selected.sentByGrower && !selected.replyStatus && (
+                                <div className="msg-reply-panel">
+                                    <p className="msg-reply-prompt">How would you like to respond?</p>
+                                    <div className="msg-reply-buttons">
+                                        <button
+                                            className="msg-reply-btn msg-reply-addressed"
+                                            onClick={() => handleReply('Addressed')}
+                                            disabled={replying}
+                                        >
+                                            <CheckCircle size={16} />
+                                            {replying ? 'Sending…' : 'Addressed'}
+                                        </button>
+                                        <button
+                                            className="msg-reply-btn msg-reply-assistance"
+                                            onClick={() => handleReply('Need Assistance')}
+                                            disabled={replying}
+                                        >
+                                            <AlertCircle size={16} />
+                                            {replying ? 'Sending…' : 'Need Assistance'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Reply status display — show if grower replied */}
+                            {!isStaff && !selected.sentByGrower && selected.replyStatus && (
+                                <div className="msg-reply-status">
+                                    <div className="msg-reply-status-content">
+                                        <CheckCircle size={16} className="msg-reply-check" />
+                                        <p>You responded: <strong>{selected.replyStatus}</strong></p>
+                                        {selected.repliedAt && (
+                                            <span className="msg-reply-date">{new Date(selected.repliedAt).toLocaleString()}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Schedule visit — field officer only, grower queries only */}
                             {isFieldOfficer && selected.sentByGrower && (

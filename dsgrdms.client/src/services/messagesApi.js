@@ -52,3 +52,12 @@ export async function assignQuery(messageId, officerUserId) {
     });
     return handleResponse(res);
 }
+
+export async function replyToMessage(messageId, replyStatus) {
+    const res = await apiFetch(`${BASE}/${messageId}/reply`, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ replyStatus }),
+    });
+    return handleResponse(res);
+}

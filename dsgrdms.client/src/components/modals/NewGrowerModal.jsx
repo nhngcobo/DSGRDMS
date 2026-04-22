@@ -10,7 +10,6 @@ const EMPTY = {
     firstName: '', lastName: '', idNumber: '', phone: '', email: '', confirmEmail: '',
     businessName: '', businessRegNumber: '',
     landTenure: '', treeSpecies: '', plantationSize: '', gpsLat: '', gpsLng: '',
-    risk: 'low',
 };
 
 export default function NewGrowerModal({ onClose, onSubmit }) {
@@ -268,32 +267,7 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
                                 </select>
                                 {errors.landTenure && <span className="field-error">{errors.landTenure}</span>}
                             </div>
-                            <div className="form-group">
-                                <label>Initial Risk Assessment</label>
-                                <div className="risk-options">
-                                    <button
-                                        type="button"
-                                        className={`risk-btn risk-low${form.risk === 'low' ? ' active' : ''}`}
-                                        onClick={() => setForm(f => ({ ...f, risk: 'low' }))}
-                                    >
-                                        Low Risk
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className={`risk-btn risk-medium${form.risk === 'medium' ? ' active' : ''}`}
-                                        onClick={() => setForm(f => ({ ...f, risk: 'medium' }))}
-                                    >
-                                        Medium Risk
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className={`risk-btn risk-high${form.risk === 'high' ? ' active' : ''}`}
-                                        onClick={() => setForm(f => ({ ...f, risk: 'high' }))}
-                                    >
-                                        High Risk
-                                    </button>
-                                </div>
-                            </div>
+
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>{tf.treeSpecies}</label>

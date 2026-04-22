@@ -3,6 +3,7 @@ import { X, User, Building2, Leaf, MapPin, CheckCircle, XCircle, AlertCircle, Fi
 import { fetchGrowerById } from '../../services/growersApi';
 import { fetchComplianceSummary } from '../../services/complianceApi';
 import { updateGrower } from '../../services/growersApi';
+import { sendMessage } from '../../services/messagesApi';
 import { useNotification } from '../../context/NotificationContext';
 import { useAuth } from '../../context/AuthContext';
 import { friendlyError } from '../../utils/apiErrors';
@@ -62,6 +63,13 @@ export default function ReviewApplicationModal({ applicationId, onClose, onRevie
         setSubmitting(true);
         try {
             await updateGrower(applicationId, { status: statusMap[action] });
+            
+            // Send message to grower if marking as pending (requesting more info)
+            if (action === 'pending') {
+                const messageBody = notes || 'More information is required for your application. Please review the compliance requirements and resubmit.';
+                await sendMessage(applicationId, 'More Information Requested', messageBody);
+            }
+            
             showSuccess(`Application ${action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'marked pending'}.`);
             onReviewed();
             onClose();

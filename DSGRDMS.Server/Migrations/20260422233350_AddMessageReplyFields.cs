@@ -1,37 +1,39 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace DSGRDMS.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class AddQueryAssignment : Migration
+    public partial class AddMessageReplyFields : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "AssignedToName",
+            migrationBuilder.AddColumn<DateTime>(
+                name: "RepliedAt",
                 table: "Messages",
-                type: "nvarchar(max)",
+                type: "datetime(6)",
                 nullable: true);
 
-            migrationBuilder.AddColumn<int>(
-                name: "AssignedToUserId",
+            migrationBuilder.AddColumn<string>(
+                name: "ReplyStatus",
                 table: "Messages",
-                type: "int",
-                nullable: true);
+                type: "longtext",
+                nullable: true)
+                .Annotation("MySql:CharSet", "utf8mb4");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "AssignedToName",
+                name: "RepliedAt",
                 table: "Messages");
 
             migrationBuilder.DropColumn(
-                name: "AssignedToUserId",
+                name: "ReplyStatus",
                 table: "Messages");
         }
     }

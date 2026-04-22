@@ -14,7 +14,7 @@ namespace DSGRDMS.Server.Controllers;
 public class MessagesController(AppDbContext db) : ControllerBase
 {
     static MessageDto ToDto(Message m) =>
-        new(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName);
+        new(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName, m.ReplyStatus, m.RepliedAt);
 
     // GET api/messages
     // Grower        → all messages where GrowerId matches
@@ -33,7 +33,7 @@ public class MessagesController(AppDbContext db) : ControllerBase
             var messages = await db.Messages
                 .Where(m => m.GrowerId == growerId)
                 .OrderByDescending(m => m.SentAt)
-                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName))
+                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName, m.ReplyStatus, m.RepliedAt))
                 .ToListAsync();
 
             return Ok(messages);
@@ -43,7 +43,7 @@ public class MessagesController(AppDbContext db) : ControllerBase
             // Admin sees everything
             var messages = await db.Messages
                 .OrderByDescending(m => m.SentAt)
-                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName))
+                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName, m.ReplyStatus, m.RepliedAt))
                 .ToListAsync();
 
             return Ok(messages);
@@ -57,7 +57,7 @@ public class MessagesController(AppDbContext db) : ControllerBase
             var messages = await db.Messages
                 .Where(m => (m.SentByGrower == false && m.SenderUserId == userId) || m.SentByGrower == true)
                 .OrderByDescending(m => m.SentAt)
-                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName))
+                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName, m.ReplyStatus, m.RepliedAt))
                 .ToListAsync();
 
             return Ok(messages);
@@ -219,5 +219,36 @@ public class MessagesController(AppDbContext db) : ControllerBase
         await db.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    // PUT api/messages/{id}/reply — grower replies to a message from staff
+    [HttpPut("{id:int}/reply")]
+    public async Task<IActionResult> ReplyToMessage(int id, [FromBody] ReplyMessageRequest req)
+    {
+        var role     = User.FindFirstValue("role") ?? User.FindFirstValue(ClaimTypes.Role);
+        var growerId = User.FindFirstValue("growerId");
+
+        if (role != "grower" || string.IsNullOrEmpty(growerId))
+            return Forbid();
+
+        // Validate reply status
+        if (!new[] { "Addressed", "Need Assistance" }.Contains(req.ReplyStatus))
+            return BadRequest(new { message = "ReplyStatus must be 'Addressed' or 'Need Assistance'." });
+
+        var msg = await db.Messages.FindAsync(id);
+        if (msg is null) return NotFound();
+
+        // Grower can only reply to messages sent to them from staff, and only once
+        if (msg.GrowerId != growerId || msg.SentByGrower)
+            return Forbid();
+
+        if (msg.ReplyStatus != null)
+            return BadRequest(new { message = "This message has already been replied to." });
+
+        msg.ReplyStatus = req.ReplyStatus;
+        msg.RepliedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+
+        return Ok(ToDto(msg));
     }
 }

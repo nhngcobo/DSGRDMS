@@ -14,4 +14,6 @@ public class Message
     public string? QueryType { get; set; }              // category when sent by grower
     public int? AssignedToUserId { get; set; }          // field officer this query is assigned to
     public string? AssignedToName { get; set; }         // denormalised name for display
+    public string? ReplyStatus { get; set; }            // grower reply: "Addressed" or "Need Assistance"
+    public DateTime? RepliedAt { get; set; }            // when grower replied
 }

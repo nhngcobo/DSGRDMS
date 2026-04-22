@@ -276,36 +276,36 @@
 }
 
 .btn-reject {
-    background: #dc2626;
-    border-color: #dc2626;
-    color: #fff;
+    background: #991b1b !important;
+    border-color: #991b1b !important;
+    color: #fff !important;
 }
 
 .btn-reject:hover:not(:disabled) {
-    background: #b91c1c;
-    border-color: #b91c1c;
+    background: #7f1515 !important;
+    border-color: #7f1515 !important;
 }
 
 .btn-pending {
-    background: #f59e0b;
-    border-color: #f59e0b;
-    color: #fff;
+    background: #b45309 !important;
+    border-color: #b45309 !important;
+    color: #fff !important;
 }
 
 .btn-pending:hover:not(:disabled) {
-    background: #d97706;
-    border-color: #d97706;
+    background: #9a4208 !important;
+    border-color: #9a4208 !important;
 }
 
 .btn-approve {
-    background: #16a34a;
-    border-color: #16a34a;
-    color: #fff;
+    background: #166534 !important;
+    border-color: #166534 !important;
+    color: #fff !important;
 }
 
 .btn-approve:hover:not(:disabled) {
-    background: #15803d;
-    border-color: #15803d;
+    background: #12542a !important;
+    border-color: #12542a !important;
 }
 
 /* Outstanding Documents Warning */

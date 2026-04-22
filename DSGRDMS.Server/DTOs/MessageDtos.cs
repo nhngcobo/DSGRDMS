@@ -16,5 +16,9 @@ public record MessageDto(
     bool SentByGrower,
     string? QueryType,
     int? AssignedToUserId,
-    string? AssignedToName
+    string? AssignedToName,
+    string? ReplyStatus,
+    DateTime? RepliedAt
 );
+
+public record ReplyMessageRequest(int MessageId, string ReplyStatus); // "Addressed" or "Need Assistance"
