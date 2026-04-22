@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, User, Building2, Leaf, MapPin, CheckCircle, XCircle, AlertCircle, FileCheck } from 'lucide-react';
+import { X, User, Building2, Leaf, MapPin, CheckCircle, XCircle, AlertCircle, FileCheck, Info } from 'lucide-react';
 import { fetchGrowerById } from '../../services/growersApi';
 import { fetchComplianceSummary } from '../../services/complianceApi';
 import { updateGrower } from '../../services/growersApi';
@@ -19,6 +19,7 @@ export default function ReviewApplicationModal({ applicationId, onClose, onRevie
     const [submitting, setSubmitting] = useState(false);
     const [notes, setNotes] = useState('');
     const [selectedAction, setSelectedAction] = useState(null);
+    const [showDocumentsInfo, setShowDocumentsInfo] = useState(false);
 
     useEffect(() => {
         async function load() {
@@ -83,9 +84,12 @@ export default function ReviewApplicationModal({ applicationId, onClose, onRevie
 
     if (!grower) return null;
 
+    const REQUIRED_DOCUMENTS = 8;
     const checklist = summary?.documents ?? [];
     const approvedCount = checklist.filter(d => d.status === 'approved').length;
     const total = checklist.length;
+    const missingDocuments = Math.max(0, REQUIRED_DOCUMENTS - approvedCount);
+    const hasOutstandingDocuments = approvedCount < REQUIRED_DOCUMENTS;
     
     // Use grower's actual compliance and risk from backend
     const complianceScore = grower.compliance ?? 0;
@@ -222,33 +226,46 @@ export default function ReviewApplicationModal({ applicationId, onClose, onRevie
 
                 {/* Actions Footer */}
                 <div className="review-modal-footer">
-                    <button
-                        type="button"
-                        className="btn-review btn-reject"
-                        onClick={() => handleReview('reject')}
-                        disabled={submitting || isViewOnly}
-                    >
-                        <XCircle size={16} />
-                        {selectedAction === 'reject' ? 'Confirm Reject' : 'Reject'}
-                    </button>
-                    <button
-                        type="button"
-                        className="btn-review btn-pending"
-                        onClick={() => handleReview('pending')}
-                        disabled={submitting || isViewOnly}
-                    >
-                        <AlertCircle size={16} />
-                        {selectedAction === 'pending' ? 'Confirm Pending' : 'Request More Info'}
-                    </button>
-                    <button
-                        type="button"
-                        className="btn-review btn-approve"
-                        onClick={() => handleReview('approve')}
-                        disabled={submitting || isViewOnly}
-                    >
-                        <CheckCircle size={16} />
-                        {selectedAction === 'approve' ? 'Confirm Approve' : 'Approve'}
-                    </button>
+                    {hasOutstandingDocuments && (
+                        <div className="review-documents-warning">
+                            <Info size={16} />
+                            <div className="review-warning-text">
+                                <strong>{missingDocuments} outstanding document{missingDocuments !== 1 ? 's' : ''}</strong>
+                                <p>Please ensure all required documents are approved before approving this application</p>
+                            </div>
+                        </div>
+                    )}
+                    
+                    <div className="review-actions-group">
+                        <button
+                            type="button"
+                            className="btn-review btn-reject"
+                            onClick={() => handleReview('reject')}
+                            disabled={submitting || isViewOnly}
+                        >
+                            <XCircle size={16} />
+                            {selectedAction === 'reject' ? 'Confirm Reject' : 'Reject'}
+                        </button>
+                        <button
+                            type="button"
+                            className="btn-review btn-pending"
+                            onClick={() => handleReview('pending')}
+                            disabled={submitting || isViewOnly}
+                        >
+                            <AlertCircle size={16} />
+                            {selectedAction === 'pending' ? 'Confirm Pending' : 'Request More Info'}
+                        </button>
+                        <button
+                            type="button"
+                            className="btn-review btn-approve"
+                            onClick={() => handleReview('approve')}
+                            disabled={submitting || isViewOnly || hasOutstandingDocuments}
+                            title={hasOutstandingDocuments ? `${missingDocuments} outstanding document${missingDocuments !== 1 ? 's' : ''} - please review compliance` : 'Approve this application'}
+                        >
+                            <CheckCircle size={16} />
+                            {selectedAction === 'approve' ? 'Confirm Approve' : 'Approve'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

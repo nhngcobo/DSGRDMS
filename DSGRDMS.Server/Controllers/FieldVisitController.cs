@@ -9,7 +9,7 @@ namespace DSGRDMS.Server.Controllers;
 [ApiController]
 [Route("api/field-visits")]
 [Authorize]
-public class FieldVisitController(IFieldVisitService service) : ControllerBase
+public class FieldVisitController(IFieldVisitService service, IGrowerService growerService) : ControllerBase
 {
     [HttpGet]
     [Authorize]
@@ -79,6 +79,11 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
         );
         
         var visit = await service.CreateAsync(createRequest);
+        
+        // Auto-update grower status to inspection_pending when visit is scheduled
+        var updateRequest = new UpdateGrowerRequest { Status = "inspection_pending" };
+        await growerService.UpdateAsync(request.GrowerId, updateRequest);
+        
         return Ok(visit);
     }
 
@@ -188,6 +193,11 @@ public class FieldVisitController(IFieldVisitService service) : ControllerBase
 
         var visit = await service.UpdateAsync(updateRequest);
         if (visit == null) return NotFound();
+        
+        // Auto-update grower status to review_pending when findings are logged
+        var growerUpdateRequest = new UpdateGrowerRequest { Status = "review_pending" };
+        await growerService.UpdateAsync(visit.GrowerId, growerUpdateRequest);
+        
         return Ok(visit);
     }
 
