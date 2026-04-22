@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Mail, MailOpen, Send, Plus, Inbox, ChevronLeft } from 'lucide-react';
+import { Mail, MailOpen, Send, Plus, Inbox, ChevronLeft, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { fetchMessages, markMessageRead } from '../services/messagesApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
 import ComposeMessageModal from '../components/modals/ComposeMessageModal';
+import SubmitQueryForm from '../components/SubmitQueryForm';
 import './Messages.css';
 
 function timeAgo(dateStr) {
@@ -29,6 +30,7 @@ export default function Messages() {
     const [selected,       setSelected]       = useState(null);
     const [loading,        setLoading]        = useState(true);
     const [showCompose,    setShowCompose]     = useState(false);
+    const [activeTab,      setActiveTab]      = useState('messages');  // messages or queries
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -66,12 +68,12 @@ export default function Messages() {
             <div className="msg-header">
                 <div>
                     <h1 className="msg-title">
-                        {isStaff ? 'Sent Messages' : 'Messages'}
+                        {isStaff ? 'Sent Messages' : 'Communications'}
                     </h1>
                     <p className="msg-subtitle">
                         {isStaff
                             ? 'Messages you have sent to growers'
-                            : `Communications from your field officer${unreadCount > 0 ? ` — ${unreadCount} unread` : ''}`}
+                            : 'Messages and queries with your field officer'}
                     </p>
                 </div>
                 {isStaff && (
@@ -81,7 +83,28 @@ export default function Messages() {
                 )}
             </div>
 
-            {/* Two-pane layout */}
+            {/* Tabs for growers */}
+            {!isStaff && (
+                <div className="msg-tabs">
+                    <button
+                        className={`msg-tab ${activeTab === 'messages' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('messages')}
+                    >
+                        <Mail size={16} />
+                        Messages
+                    </button>
+                    <button
+                        className={`msg-tab ${activeTab === 'queries' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('queries')}
+                    >
+                        <AlertCircle size={16} />
+                        Submit Query
+                    </button>
+                </div>
+            )}
+
+            {/* Two-pane layout for messages / Query form */}
+            {activeTab === 'messages' ? (
             <div className="msg-pane-layout">
                 {/* Message list */}
                 <div className={`msg-list-pane${selected ? ' hide-mobile' : ''}`}>
@@ -169,6 +192,11 @@ export default function Messages() {
                     )}
                 </div>
             </div>
+            ) : (
+            <div className="msg-query-section">
+                <SubmitQueryForm onQuerySubmitted={load} />
+            </div>
+            )}
 
             {showCompose && (
                 <ComposeMessageModal

@@ -10,4 +10,12 @@ public class Message
     public string Body { get; set; } = string.Empty;
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
     public bool IsRead { get; set; } = false;
+    
+    // New query system fields
+    public string MessageType { get; set; } = "direct";  // direct (staff→grower), query (grower→system)
+    public string? QueryType { get; set; }  // plants_not_growing, documents, equipment, pests, general, etc.
+    public string Status { get; set; } = "open";  // open, assigned, in_progress, resolved, closed
+    public int? AssignedToUserId { get; set; }  // field officer assigned to handle this query
+    public string? AssignedToName { get; set; }
+    public string Priority { get; set; } = "medium";  // low, medium, high
 }

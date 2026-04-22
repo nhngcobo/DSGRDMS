@@ -46,6 +46,39 @@
 }
 .msg-compose-btn:hover { background: #1f2937; }
 
+/* Tabs */
+.msg-tabs {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 1rem;
+}
+
+.msg-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    margin-bottom: -1px;
+}
+
+.msg-tab:hover {
+    color: #426468;
+}
+
+.msg-tab.active {
+    color: #426468;
+    border-bottom-color: #426468;
+}
+
 /* ── Two-pane layout ───────────────────────────────────────────── */
 .msg-pane-layout {
     display: grid;
@@ -265,6 +298,15 @@
     color: #374151;
     line-height: 1.65;
     white-space: pre-wrap;
+}
+
+/* ── Query Section ─────────────────────────────────────────────── */
+.msg-query-section {
+    flex: 1;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    overflow-y: auto;
 }
 
 /* ── Mobile responsive ─────────────────────────────────────────── */

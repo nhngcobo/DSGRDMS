@@ -90,11 +90,11 @@ using (var scope = app.Services.CreateScope())
     {
         db.Users.AddRange(
             new User { Email = "admin@demo.com",   PasswordHash = PasswordHelper.Hash("Admin123!"),   Role = "admin",        FullName = "System Admin"   },
-            new User { Email = "officer@demo.com", PasswordHash = PasswordHelper.Hash("Officer123!"), Role = "field_officer", FullName = "James Dlamini" },
-            new User { Email = "grower@demo.com",  PasswordHash = PasswordHelper.Hash("Grower123!"),  Role = "grower",       FullName = "Demo Grower"    }
+            new User { Email = "officer@demo.com", PasswordHash = PasswordHelper.Hash("Officer123!"), Role = "field_officer", FullName = "James Dlamini" }
         );
         db.SaveChanges();
     }
+
     else
     {
         // Ensure a field officer exists
@@ -117,3 +117,4 @@ using (var scope = app.Services.CreateScope())
 app.MapFallbackToFile("/index.html");
 
 app.Run();
+
