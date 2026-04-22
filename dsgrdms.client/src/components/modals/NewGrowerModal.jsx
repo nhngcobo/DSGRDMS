@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, MapPin, Loader } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import { registerGrower } from '../../services/growersApi';
 import { useNotification } from '../../context/NotificationContext';
@@ -21,6 +21,9 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
     const [form, setForm] = useState(EMPTY);
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
+    const [locating, setLocating] = useState(false);
+    const [locationError, setLocationError] = useState('');
+    const [manualLocation, setManualLocation] = useState(false);
 
     function set(field) {
         return e => {
@@ -73,6 +76,35 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
             }
             return { ...prev, phone: error };
         });
+    }
+
+    function handleDetectLocation() {
+        if (!navigator.geolocation) {
+            setLocationError(tf.locationUnavailable);
+            return;
+        }
+        setLocating(true);
+        setLocationError('');
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                setForm(f => ({
+                    ...f,
+                    gpsLat: pos.coords.latitude.toString(),
+                    gpsLng: pos.coords.longitude.toString(),
+                }));
+                setLocating(false);
+            },
+            err => {
+                setLocating(false);
+                if (err.code === err.PERMISSION_DENIED) {
+                    setManualLocation(true);
+                    setLocationError(tf.locationDenied);
+                } else {
+                    setLocationError(tf.locationUnavailable);
+                }
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
     }
 
     function validate(data) {
@@ -277,17 +309,69 @@ export default function NewGrowerModal({ onClose, onSubmit }) {
                                     {errors.plantationSize && <span className="field-error">{errors.plantationSize}</span>}
                                 </div>
                             </div>
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>{tf.gpsLat}</label>
-                                    <input className={errors.gpsLat ? 'input-error' : ''} placeholder={tf.gpsLatPlaceholder} value={form.gpsLat} onChange={set('gpsLat')} />
-                                    {errors.gpsLat && <span className="field-error">{errors.gpsLat}</span>}
+                            <div className="form-group">
+                                <div className="location-label-row">
+                                    <label>{tf.farmLocation}</label>
+                                    <button
+                                        type="button"
+                                        className="location-mode-toggle"
+                                        onClick={() => { setManualLocation(m => !m); setLocationError(''); setForm(f => ({ ...f, gpsLat: '', gpsLng: '' })); }}
+                                    >
+                                        {manualLocation ? tf.useLiveLocation : tf.enterManually}
+                                    </button>
                                 </div>
-                                <div className="form-group">
-                                    <label>{tf.gpsLng}</label>
-                                    <input className={errors.gpsLng ? 'input-error' : ''} placeholder={tf.gpsLngPlaceholder} value={form.gpsLng} onChange={set('gpsLng')} />
-                                    {errors.gpsLng && <span className="field-error">{errors.gpsLng}</span>}
-                                </div>
+
+                                {manualLocation ? (
+                                    <div className="location-manual-row">
+                                        <div className="form-group">
+                                            <label>{tf.gpsLat}</label>
+                                            <input
+                                                className={errors.gpsLat ? 'input-error' : ''}
+                                                placeholder={tf.gpsLatPlaceholder}
+                                                value={form.gpsLat}
+                                                onChange={set('gpsLat')}
+                                            />
+                                            {errors.gpsLat && <span className="field-error">{errors.gpsLat}</span>}
+                                        </div>
+                                        <div className="form-group">
+                                            <label>{tf.gpsLng}</label>
+                                            <input
+                                                className={errors.gpsLng ? 'input-error' : ''}
+                                                placeholder={tf.gpsLngPlaceholder}
+                                                value={form.gpsLng}
+                                                onChange={set('gpsLng')}
+                                            />
+                                            {errors.gpsLng && <span className="field-error">{errors.gpsLng}</span>}
+                                        </div>
+                                    </div>
+                                ) : !form.gpsLat && !form.gpsLng ? (
+                                    <button
+                                        type="button"
+                                        className={`location-detect-btn${locating ? ' locating' : ''}`}
+                                        onClick={handleDetectLocation}
+                                        disabled={locating}
+                                    >
+                                        {locating
+                                            ? <Loader size={14} className="location-spin" />
+                                            : <MapPin size={14} />}
+                                        {locating ? tf.detectingLocation : tf.detectLocation}
+                                    </button>
+                                ) : (
+                                    <div className="location-display">
+                                        <MapPin size={14} className="location-icon" />
+                                        <span className="location-coords">
+                                            {parseFloat(form.gpsLat).toFixed(5)}°, {parseFloat(form.gpsLng).toFixed(5)}°
+                                        </span>
+                                        <button
+                                            type="button"
+                                            className="location-clear-btn"
+                                            onClick={() => { setForm(f => ({ ...f, gpsLat: '', gpsLng: '' })); setLocationError(''); }}
+                                        >
+                                            {tf.locationClear}
+                                        </button>
+                                    </div>
+                                )}
+                                {locationError && <span className="field-error">{locationError}</span>}
                             </div>
                         </section>
                     </form>

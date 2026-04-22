@@ -160,7 +160,16 @@
         "gpsLat":                "GPS Latitude",
         "gpsLatPlaceholder":     "e.g. -29.8587",
         "gpsLng":                "GPS Longitude",
-        "gpsLngPlaceholder":     "e.g. 30.9823"
+        "gpsLngPlaceholder":     "e.g. 30.9823",
+        "farmLocation":          "Farm Location",
+        "detectLocation":        "Use Live Location",
+        "detectingLocation":     "Detecting location…",
+        "locationDetected":      "Location captured",
+        "locationClear":         "Clear & retry",
+        "locationDenied":        "Location access was blocked. Please enter coordinates manually.",
+        "locationUnavailable":   "Unable to determine location. Please try again.",
+        "enterManually":         "Enter coordinates manually",
+        "useLiveLocation":       "Use live location instead"
       },
       "cancel":        "Cancel",
       "saveAsDraft":   "Save as Draft",

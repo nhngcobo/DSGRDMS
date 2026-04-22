@@ -388,6 +388,129 @@
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
 }
 
+/* Location Detection */
+.location-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+}
+
+.location-label-row label {
+    margin-bottom: 0;
+}
+
+.location-mode-toggle {
+    background: none;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: #426468;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-family: 'Open Sans', sans-serif;
+    transition: opacity 0.2s ease;
+}
+
+.location-mode-toggle:hover {
+    opacity: 0.7;
+}
+
+.location-manual-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.location-manual-row .form-group {
+    margin-bottom: 0;
+}
+
+
+.location-detect-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border: 1.5px dashed rgba(66, 100, 104, 0.35);
+    border-radius: 8px;
+    background: rgba(66, 100, 104, 0.03);
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: #426468;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Open Sans', sans-serif;
+    width: 100%;
+    justify-content: center;
+}
+
+.location-detect-btn:hover:not(:disabled) {
+    border-color: #426468;
+    background: rgba(66, 100, 104, 0.06);
+}
+
+.location-detect-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.location-detect-btn.locating {
+    border-style: solid;
+    border-color: #426468;
+}
+
+.location-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.location-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid rgba(66, 100, 104, 0.25);
+    border-radius: 8px;
+    background: rgba(66, 100, 104, 0.04);
+}
+
+.location-icon {
+    color: #426468;
+    flex-shrink: 0;
+}
+
+.location-coords {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: #426468;
+    flex: 1;
+}
+
+.location-clear-btn {
+    background: none;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    transition: color 0.2s ease;
+    font-family: 'Open Sans', sans-serif;
+    flex-shrink: 0;
+}
+
+.location-clear-btn:hover {
+    color: #426468;
+}
+
 /* Responsive Design */
 @media (max-width: 640px) {
     .modal {
