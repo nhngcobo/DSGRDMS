@@ -42,6 +42,29 @@ export default function ComplianceDocuments() {
     const [agreementSigned, setAgreementSigned] = useState(false);
     const [uploadDoc, setUploadDoc] = useState(null);
 
+    // Step progression order for persistent state
+    const STEP_ORDER = ['registration', 'verification', 'field_visit', 'agreement', 'completed'];
+
+    // Helper to get the furthest step reached from localStorage
+    const getFurthestStep = () => {
+        const saved = localStorage.getItem(`grower_${user?.growerId}_furthest_step`);
+        if (saved && STEP_ORDER.includes(saved)) {
+            return saved;
+        }
+        return 'registration';
+    };
+
+    // Helper to update furthest step if current step is further along
+    const updateFurthestStep = (step) => {
+        const currentIndex = STEP_ORDER.indexOf(step);
+        const savedStep = localStorage.getItem(`grower_${user?.growerId}_furthest_step`);
+        const savedIndex = savedStep ? STEP_ORDER.indexOf(savedStep) : -1;
+        
+        if (currentIndex > savedIndex) {
+            localStorage.setItem(`grower_${user?.growerId}_furthest_step`, step);
+        }
+    };
+
     // Fetch grower data and compliance documents
     useEffect(() => {
         async function loadGrowerData() {
@@ -58,6 +81,10 @@ export default function ComplianceDocuments() {
                 ]);
                 setGrowerData(grower);
                 setComplianceData(compliance);
+
+                // Auto-navigate to furthest step reached (once-off workflow)
+                const furthestStep = getFurthestStep();
+                setCurrentStep(furthestStep);
             } catch (err) {
                 showError(friendlyError(err));
             } finally {
@@ -96,8 +123,10 @@ export default function ComplianceDocuments() {
 
     const handleVerification = () => {
         if (allRequirementsMet()) {
+            updateFurthestStep('field_visit');
             setCurrentStep('field_visit');
         } else {
+            updateFurthestStep('verification');
             setCurrentStep('assistance_check');
         }
     };
@@ -105,14 +134,17 @@ export default function ComplianceDocuments() {
     const handleAssistanceDecision = (needsHelp) => {
         setNeedsAssistance(needsHelp);
         if (needsHelp) {
+            updateFurthestStep('verification');
             setCurrentStep('assistance');
         } else {
+            updateFurthestStep('verification');
             setCurrentStep('completed_incomplete');
         }
     };
 
     const handleFieldVisitComplete = () => {
         if (allFieldVisitDocsMet() && allRequirementsMet()) {
+            updateFurthestStep('agreement');
             setCurrentStep('agreement');
         } else {
             alert('Please complete all required field visit documents before proceeding.');
@@ -121,6 +153,7 @@ export default function ComplianceDocuments() {
 
     const handleAgreementSigned = () => {
         setAgreementSigned(true);
+        updateFurthestStep('completed');
         setCurrentStep('completed');
     };
 
@@ -134,6 +167,8 @@ export default function ComplianceDocuments() {
         setFieldVisitDocs(FIELD_VISIT_DOCUMENTS.reduce((acc, doc) => ({ ...acc, [doc.id]: false }), {}));
         setNeedsAssistance(false);
         setAgreementSigned(false);
+        // Clear the step progression tracking
+        localStorage.removeItem(`grower_${user.growerId}_furthest_step`);
     };
 
     // Handle document upload
@@ -235,7 +270,10 @@ export default function ComplianceDocuments() {
                             <p><strong>Business:</strong> {growerData.businessName}</p>
                         )}
                     </div>
-                    <button className="btn btn-primary" onClick={() => setCurrentStep('verification')}>
+                    <button className="btn btn-primary" onClick={() => {
+                        updateFurthestStep('verification');
+                        setCurrentStep('verification');
+                    }}>
                         Start Verification
                     </button>
                 </div>
