@@ -1,10 +1,6 @@
 const BASE = '/api/messages';
 import { apiFetch } from './apiClient.js';
 
-function authHeader(token) {
-    return { Authorization: `Bearer ${token}` };
-}
-
 async function handleResponse(res) {
     if (!res.ok) throw new Error(`Request failed (${res.status})`);
     return res.json();
@@ -29,9 +25,16 @@ export async function sendMessage(growerId, subject, body) {
     return handleResponse(res);
 }
 
-export async function markMessageRead(id) {
-    const res = await apiFetch(`${BASE}/${id}/read`, {
-        method:  'PUT',
+export async function sendQuery(queryType, subject, body) {
+    const res = await apiFetch(`${BASE}/query`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ queryType, subject, body }),
     });
+    return handleResponse(res);
+}
+
+export async function markMessageRead(id) {
+    const res = await apiFetch(`${BASE}/${id}/read`, { method: 'PUT' });
     if (!res.ok) throw new Error(`Request failed (${res.status})`);
 }

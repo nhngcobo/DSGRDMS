@@ -14,10 +14,11 @@ namespace DSGRDMS.Server.Controllers;
 public class MessagesController(AppDbContext db) : ControllerBase
 {
     static MessageDto ToDto(Message m) =>
-        new(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead);
+        new(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType);
 
     // GET api/messages
-    // Grower → their inbox; Admin/FieldOfficer → their sent messages
+    // Grower  → all messages where GrowerId matches (both inbox and their own queries)
+    // Staff   → messages they sent + all grower queries
     [HttpGet]
     public async Task<IActionResult> GetMessages()
     {
@@ -28,38 +29,50 @@ public class MessagesController(AppDbContext db) : ControllerBase
         {
             if (string.IsNullOrEmpty(growerId)) return Ok(Array.Empty<MessageDto>());
 
-            var inbox = await db.Messages
+            var messages = await db.Messages
                 .Where(m => m.GrowerId == growerId)
                 .OrderByDescending(m => m.SentAt)
-                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead))
+                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType))
                 .ToListAsync();
 
-            return Ok(inbox);
+            return Ok(messages);
         }
         else
         {
             var subClaim = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(subClaim, out var userId)) return Unauthorized();
 
-            var sent = await db.Messages
-                .Where(m => m.SenderUserId == userId)
+            // Staff see: messages they sent + all grower queries
+            var messages = await db.Messages
+                .Where(m => (m.SentByGrower == false && m.SenderUserId == userId) || m.SentByGrower == true)
                 .OrderByDescending(m => m.SentAt)
-                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead))
+                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType))
                 .ToListAsync();
 
-            return Ok(sent);
+            return Ok(messages);
         }
     }
 
-    // GET api/messages/unread-count — grower unread badge count
+    // GET api/messages/unread-count — unread badge for growers (inbox) and staff (grower queries)
     [HttpGet("unread-count")]
     public async Task<IActionResult> GetUnreadCount()
     {
+        var role     = User.FindFirstValue("role");
         var growerId = User.FindFirstValue("growerId");
-        if (string.IsNullOrEmpty(growerId)) return Ok(new { count = 0 });
 
-        var count = await db.Messages.CountAsync(m => m.GrowerId == growerId && !m.IsRead);
-        return Ok(new { count });
+        if (role == "grower")
+        {
+            if (string.IsNullOrEmpty(growerId)) return Ok(new { count = 0 });
+            // Grower unread = unread messages FROM staff
+            var count = await db.Messages.CountAsync(m => m.GrowerId == growerId && !m.IsRead && !m.SentByGrower);
+            return Ok(new { count });
+        }
+        else
+        {
+            // Staff unread = unread grower queries
+            var count = await db.Messages.CountAsync(m => m.SentByGrower && !m.IsRead);
+            return Ok(new { count });
+        }
     }
 
     // POST api/messages — admin / field_officer sends a message to a grower
@@ -91,6 +104,7 @@ public class MessagesController(AppDbContext db) : ControllerBase
             Subject      = req.Subject,
             Body         = req.Body,
             SentAt       = DateTime.UtcNow,
+            SentByGrower = false,
         };
 
         db.Messages.Add(msg);
@@ -99,15 +113,58 @@ public class MessagesController(AppDbContext db) : ControllerBase
         return CreatedAtAction(nameof(GetMessages), ToDto(msg));
     }
 
-    // PUT api/messages/{id}/read — grower marks a message as read
+    // POST api/messages/query — grower sends a query to staff
+    [HttpPost("query")]
+    public async Task<IActionResult> SendQuery([FromBody] SendQueryRequest req)
+    {
+        var role     = User.FindFirstValue("role") ?? User.FindFirstValue(ClaimTypes.Role);
+        var growerId = User.FindFirstValue("growerId");
+        if (role != "grower" || string.IsNullOrEmpty(growerId)) return Forbid();
+
+        if (string.IsNullOrWhiteSpace(req.Subject) || string.IsNullOrWhiteSpace(req.Body))
+            return BadRequest(new { message = "Subject and Body are required." });
+
+        var senderName = User.FindFirstValue("name") ?? growerId;
+
+        var msg = new Message
+        {
+            SenderUserId = 0,
+            SenderName   = senderName,
+            GrowerId     = growerId,
+            Subject      = req.Subject,
+            Body         = req.Body,
+            QueryType    = req.QueryType,
+            SentAt       = DateTime.UtcNow,
+            SentByGrower = true,
+        };
+
+        db.Messages.Add(msg);
+        await db.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetMessages), ToDto(msg));
+    }
+
+    // PUT api/messages/{id}/read — mark a message as read
+    // Grower marks staff→grower messages; staff marks grower queries
     [HttpPut("{id:int}/read")]
     public async Task<IActionResult> MarkRead(int id)
     {
+        var role     = User.FindFirstValue("role");
         var growerId = User.FindFirstValue("growerId");
-        var msg = await db.Messages.FindAsync(id);
+        var msg      = await db.Messages.FindAsync(id);
 
         if (msg is null) return NotFound();
-        if (msg.GrowerId != growerId) return Forbid();
+
+        if (role == "grower")
+        {
+            // Grower can only mark messages addressed to them from staff
+            if (msg.GrowerId != growerId || msg.SentByGrower) return Forbid();
+        }
+        else
+        {
+            // Staff can only mark grower queries as read
+            if (!msg.SentByGrower) return Forbid();
+        }
 
         msg.IsRead = true;
         await db.SaveChangesAsync();

@@ -1,12 +1,57 @@
 /* ── Messages page ─────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
+
 .msg-page {
-    padding: 2rem;
-    background: #f9fafb;
+    padding: 3rem;
+    background: #faf9f9;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.75rem;
     box-sizing: border-box;
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Grower tabs ───────────────────────────────────────────────── */
+.msg-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid rgba(66, 100, 104, 0.15);
+    padding-bottom: 0;
+}
+
+.msg-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.5rem 1.2rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: #6b7280;
+    cursor: pointer;
+    font-family: 'Open Sans', system-ui, sans-serif;
+    letter-spacing: 0.01em;
+    transition: color 0.15s, border-color 0.15s;
+}
+.msg-tab:hover { color: #426468; }
+.msg-tab.active {
+    color: #426468;
+    font-weight: 400;
+    border-bottom-color: #426468;
+}
+
+.msg-tab-badge {
+    background: #426468;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 400;
+    padding: 1px 7px;
+    border-radius: 10px;
+    line-height: 1.4;
 }
 
 .msg-header {
@@ -17,14 +62,16 @@
 }
 
 .msg-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 0.25rem;
+    font-size: 1.75rem;
+    font-weight: 300;
+    color: #426468;
+    margin: 0 0 0.3rem;
+    letter-spacing: 0.01em;
 }
 
 .msg-subtitle {
     font-size: 0.875rem;
+    font-weight: 300;
     color: #6b7280;
     margin: 0;
 }
@@ -33,24 +80,30 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 0.55rem 1rem;
-    background: #111827;
+    padding: 0.65rem 1.25rem;
+    background: #426468;
     color: #fff;
     border: none;
     border-radius: 8px;
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 400;
+    font-family: 'Open Sans', system-ui, sans-serif;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
 }
-.msg-compose-btn:hover { background: #1f2937; }
+.msg-compose-btn:hover {
+    background: #384f52;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    transform: translateY(-1px);
+}
 
 /* ── Two-pane layout ───────────────────────────────────────────── */
 .msg-pane-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
-    gap: 1rem;
+    gap: 1.25rem;
     flex: 1;
     min-height: 600px;
 }
@@ -58,11 +111,12 @@
 /* ── List pane ─────────────────────────────────────────────────── */
 .msg-list-pane {
     background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    border: 1px solid rgba(66, 100, 104, 0.12);
+    border-radius: 12px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .msg-list-empty {
@@ -75,9 +129,9 @@
     padding: 40px 20px;
     text-align: center;
 }
-.msg-list-empty p    { margin: 0; font-weight: 600; font-size: 0.9rem; color: #374151; }
-.msg-list-empty span { font-size: 0.8125rem; color: #9ca3af; }
-.msg-empty-icon      { color: #d1d5db; margin-bottom: 4px; }
+.msg-list-empty p    { margin: 0; font-weight: 300; font-size: 0.9rem; color: #426468; }
+.msg-list-empty span { font-size: 0.8125rem; font-weight: 300; color: #9ca3af; }
+.msg-empty-icon      { color: rgba(66,100,104,0.25); margin-bottom: 4px; }
 
 .msg-list {
     list-style: none;
@@ -90,30 +144,31 @@
     gap: 12px;
     padding: 14px 16px;
     cursor: pointer;
-    border-bottom: 1px solid #f3f4f6;
-    transition: background 0.1s;
+    border-bottom: 1px solid rgba(66,100,104,0.06);
+    transition: background 0.15s;
 }
 .msg-item:last-child   { border-bottom: none; }
-.msg-item:hover        { background: #f9fafb; }
-.msg-item.active       { background: #f0f9ff; border-left: 3px solid #374151; }
-.msg-item.unread       { background: #fafbff; }
+.msg-item:hover        { background: #f4f3f3; }
+.msg-item.active       { background: rgba(66,100,104,0.06); border-left: 3px solid #426468; }
+.msg-item.unread       { background: rgba(66,100,104,0.04); }
 
 .msg-item-avatar {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #f3f4f6;
-    color: #374151;
+    background: rgba(66,100,104,0.1);
+    color: #426468;
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 400;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    letter-spacing: 0.02em;
 }
 .msg-item.unread .msg-item-avatar {
-    background: #e5e7eb;
-    color: #111827;
+    background: rgba(66,100,104,0.18);
+    color: #384f52;
 }
 
 .msg-item-body { flex: 1; min-width: 0; }
@@ -127,8 +182,8 @@
 
 .msg-item-from {
     font-size: 0.875rem;
-    font-weight: 600;
-    color: #111827;
+    font-weight: 400;
+    color: #426468;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -136,6 +191,7 @@
 
 .msg-item-time {
     font-size: 0.75rem;
+    font-weight: 300;
     color: #9ca3af;
     flex-shrink: 0;
     margin-left: 8px;
@@ -143,7 +199,7 @@
 
 .msg-item-subject {
     font-size: 0.8125rem;
-    font-weight: 500;
+    font-weight: 300;
     color: #374151;
     margin: 0 0 2px;
     display: flex;
@@ -158,12 +214,13 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #111827;
+    background: #426468;
     flex-shrink: 0;
 }
 
 .msg-item-preview {
     font-size: 0.75rem;
+    font-weight: 300;
     color: #9ca3af;
     margin: 0;
     overflow: hidden;
@@ -174,11 +231,12 @@
 /* ── Detail pane ───────────────────────────────────────────────── */
 .msg-detail-pane {
     background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    border: 1px solid rgba(66, 100, 104, 0.12);
+    border-radius: 12px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .msg-detail-empty {
@@ -188,9 +246,9 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    color: #9ca3af;
+    color: rgba(66,100,104,0.3);
 }
-.msg-detail-empty p { margin: 0; font-size: 0.875rem; color: #6b7280; }
+.msg-detail-empty p { margin: 0; font-size: 0.875rem; font-weight: 300; color: #6b7280; }
 
 .msg-detail {
     padding: 2rem;
@@ -224,25 +282,27 @@
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    background: #f3f4f6;
-    color: #374151;
+    background: rgba(66,100,104,0.1);
+    color: #426468;
     font-size: 0.875rem;
-    font-weight: 700;
+    font-weight: 400;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    letter-spacing: 0.02em;
 }
 
 .msg-detail-from {
     font-size: 0.9rem;
-    font-weight: 600;
-    color: #111827;
+    font-weight: 400;
+    color: #426468;
     margin: 0 0 2px;
 }
 
 .msg-detail-date {
     font-size: 0.8rem;
+    font-weight: 300;
     color: #9ca3af;
     margin: 0;
 }
@@ -255,8 +315,8 @@
 
 .msg-detail-subject {
     font-size: 1.1rem;
-    font-weight: 700;
-    color: #111827;
+    font-weight: 400;
+    color: #426468;
     margin: 0;
 }
 
@@ -265,6 +325,31 @@
     color: #374151;
     line-height: 1.65;
     white-space: pre-wrap;
+}
+
+.msg-query-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.85rem;
+    background: rgba(66, 100, 104, 0.08);
+    color: #426468;
+    border: 1px solid rgba(66, 100, 104, 0.2);
+    border-radius: 20px;
+    font-size: 0.775rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    width: fit-content;
+}
+
+.msg-item-type-tag {
+    font-size: 0.7rem;
+    font-weight: 300;
+    color: #426468;
+    background: rgba(66,100,104,0.07);
+    border-radius: 10px;
+    padding: 1px 7px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 /* ── Mobile responsive ─────────────────────────────────────────── */
