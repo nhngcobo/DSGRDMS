@@ -17,12 +17,13 @@ public class MessagesController(AppDbContext db) : ControllerBase
         new(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName);
 
     // GET api/messages
-    // Grower  → all messages where GrowerId matches (both inbox and their own queries)
-    // Staff   → messages they sent + all grower queries
+    // Grower        → all messages where GrowerId matches
+    // Admin         → all messages in the system
+    // Field officer → messages they sent + all grower queries
     [HttpGet]
     public async Task<IActionResult> GetMessages()
     {
-        var role     = User.FindFirstValue("role");
+        var role     = User.FindFirstValue("role") ?? User.FindFirstValue(ClaimTypes.Role);
         var growerId = User.FindFirstValue("growerId");
 
         if (role == "grower")
@@ -37,12 +38,22 @@ public class MessagesController(AppDbContext db) : ControllerBase
 
             return Ok(messages);
         }
+        else if (role == "admin")
+        {
+            // Admin sees everything
+            var messages = await db.Messages
+                .OrderByDescending(m => m.SentAt)
+                .Select(m => new MessageDto(m.Id, m.SenderName, m.GrowerId, m.Subject, m.Body, m.SentAt, m.IsRead, m.SentByGrower, m.QueryType, m.AssignedToUserId, m.AssignedToName))
+                .ToListAsync();
+
+            return Ok(messages);
+        }
         else
         {
+            // Field officer: messages they sent + all grower queries
             var subClaim = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(subClaim, out var userId)) return Unauthorized();
 
-            // Staff see: messages they sent + all grower queries
             var messages = await db.Messages
                 .Where(m => (m.SentByGrower == false && m.SenderUserId == userId) || m.SentByGrower == true)
                 .OrderByDescending(m => m.SentAt)
@@ -57,7 +68,7 @@ public class MessagesController(AppDbContext db) : ControllerBase
     [HttpGet("unread-count")]
     public async Task<IActionResult> GetUnreadCount()
     {
-        var role     = User.FindFirstValue("role");
+        var role     = User.FindFirstValue("role") ?? User.FindFirstValue(ClaimTypes.Role);
         var growerId = User.FindFirstValue("growerId");
 
         if (role == "grower")
@@ -187,7 +198,7 @@ public class MessagesController(AppDbContext db) : ControllerBase
     [HttpPut("{id:int}/read")]
     public async Task<IActionResult> MarkRead(int id)
     {
-        var role     = User.FindFirstValue("role");
+        var role     = User.FindFirstValue("role") ?? User.FindFirstValue(ClaimTypes.Role);
         var growerId = User.FindFirstValue("growerId");
         var msg      = await db.Messages.FindAsync(id);
 

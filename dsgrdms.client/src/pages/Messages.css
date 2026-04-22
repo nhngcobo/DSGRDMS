@@ -409,6 +409,33 @@
 .msg-assign-btn:hover:not(:disabled) { background: #354f52; }
 .msg-assign-btn:disabled { opacity: 0.55; cursor: default; }
 
+/* ── Schedule visit panel ──────────────────────────────────────── */
+.msg-schedule-panel {
+    margin: 1rem 0 0;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(66, 100, 104, 0.12);
+}
+
+.msg-schedule-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.75rem 1.5rem;
+    background: #426468;
+    color: #fff;
+    border: 1px solid #426468;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.msg-schedule-btn:hover {
+    background: #5a8187;
+    border-color: #5a8187;
+}
+
 /* ── Mobile responsive ─────────────────────────────────────────── */
 @media (max-width: 768px) {
     .msg-pane-layout {

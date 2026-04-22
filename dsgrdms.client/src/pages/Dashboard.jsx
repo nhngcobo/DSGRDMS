@@ -166,7 +166,7 @@ export default function Dashboard() {
                                     <div className="app-name">{name}</div>
                                     <div className="app-id">{td.recentApplications.idPrefix}{id}</div>
                                 </div>
-                                <span className={`badge badge-${status.replace(' ', '-')}`}>{status}</span>
+                                <span className={`badge badge-status-${status.toLowerCase()}`}>{status}</span>
                             </div>
                         ))}
                     </div>

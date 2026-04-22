@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Mail, MailOpen, Send, Plus, Inbox, ChevronLeft, MessageSquarePlus } from 'lucide-react';
+import { Mail, MailOpen, Send, Plus, Inbox, ChevronLeft, MessageSquarePlus, CalendarPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { fetchMessages, markMessageRead, fetchFieldOfficers, assignQuery } from '../services/messagesApi';
+import { fetchGrowerById } from '../services/growersApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
 import ComposeMessageModal from '../components/modals/ComposeMessageModal';
 import ComposeQueryModal from '../components/modals/ComposeQueryModal';
+import ScheduleVisitModal from '../components/modals/ScheduleVisitModal';
 import './Messages.css';
 
 function timeAgo(dateStr) {
@@ -24,8 +26,9 @@ export default function Messages() {
     const { user, token } = useAuth();
     const { showError, showSuccess } = useNotification();
 
-    const isAdmin = user?.role === 'admin';
-    const isStaff = user?.role === 'admin' || user?.role === 'field_officer';
+    const isAdmin         = user?.role === 'admin';
+    const isFieldOfficer  = user?.role === 'field_officer';
+    const isStaff         = isAdmin || isFieldOfficer;
 
     const [messages,       setMessages]       = useState([]);
     const [selected,       setSelected]       = useState(null);
@@ -35,6 +38,10 @@ export default function Messages() {
     const [fieldOfficers,  setFieldOfficers]  = useState([]);
     const [assignOfficer,  setAssignOfficer]  = useState('');
     const [assigning,      setAssigning]      = useState(false);
+    const [showSchedule,   setShowSchedule]   = useState(false);
+    const [scheduleGrower, setScheduleGrower] = useState(null);
+    // Field officer scope: 'mine' = assigned to me | 'all' = everything
+    const [viewScope, setViewScope] = useState('mine');
     // Grower tabs: 'inbox' | 'queries'
     const [tab, setTab] = useState('inbox');
 
@@ -84,10 +91,22 @@ export default function Messages() {
     // Filtered lists for grower tabs
     const inbox   = messages.filter(m => !m.sentByGrower);
     const queries = messages.filter(m => m.sentByGrower);
-    const visibleMessages = isStaff ? messages : (tab === 'inbox' ? inbox : queries);
+
+    // Field officer scope filter
+    const myUserId = parseInt(user?.userId, 10);
+    const staffMessages = isFieldOfficer && viewScope === 'mine'
+        ? messages.filter(m => m.sentByGrower
+            ? m.assignedToUserId === myUserId
+            : true)  // keep sent messages always
+        : messages;
+
+    const visibleMessages = isStaff ? staffMessages : (tab === 'inbox' ? inbox : queries);
 
     const inboxUnread   = inbox.filter(m => !m.isRead).length;
     const queriesUnread = isStaff ? messages.filter(m => m.sentByGrower && !m.isRead).length : 0;
+    const myQueriesUnread = isFieldOfficer
+        ? messages.filter(m => m.sentByGrower && m.assignedToUserId === myUserId && !m.isRead).length
+        : 0;
 
     async function handleAssign(e) {
         e.preventDefault();
@@ -114,12 +133,14 @@ export default function Messages() {
                         {isStaff ? 'Messages' : 'Messages'}
                     </h1>
                     <p className="msg-subtitle">
-                        {isStaff
-                            ? `Sent messages and grower queries${queriesUnread > 0 ? ` — ${queriesUnread} unread quer${queriesUnread === 1 ? 'y' : 'ies'}` : ''}`
-                            : `Communications with your field officer${inboxUnread > 0 ? ` — ${inboxUnread} unread` : ''}`}
+                        {isFieldOfficer
+                            ? `${viewScope === 'mine' ? 'Queries assigned to you' : 'All messages & queries'}${myQueriesUnread > 0 ? ` — ${myQueriesUnread} unread` : ''}`
+                            : isAdmin
+                                ? `All messages and grower queries${queriesUnread > 0 ? ` — ${queriesUnread} unread quer${queriesUnread === 1 ? 'y' : 'ies'}` : ''}`
+                                : `Communications with your field officer${inboxUnread > 0 ? ` — ${inboxUnread} unread` : ''}`}
                     </p>
                 </div>
-                {isStaff && (
+                {user?.role === 'field_officer' && (
                     <button className="msg-compose-btn" onClick={() => setShowCompose(true)}>
                         <Plus size={15} /> New Message
                     </button>
@@ -130,6 +151,26 @@ export default function Messages() {
                     </button>
                 )}
             </div>
+
+            {/* Field officer scope toggle */}
+            {isFieldOfficer && (
+                <div className="msg-tabs">
+                    <button
+                        className={`msg-tab${viewScope === 'mine' ? ' active' : ''}`}
+                        onClick={() => { setViewScope('mine'); setSelected(null); }}
+                    >
+                        Assigned to Me
+                        {myQueriesUnread > 0 && <span className="msg-tab-badge">{myQueriesUnread}</span>}
+                    </button>
+                    <button
+                        className={`msg-tab${viewScope === 'all' ? ' active' : ''}`}
+                        onClick={() => { setViewScope('all'); setSelected(null); }}
+                    >
+                        All
+                        {queriesUnread > 0 && <span className="msg-tab-badge">{queriesUnread}</span>}
+                    </button>
+                </div>
+            )}
 
             {/* Grower tabs */}
             {!isStaff && (
@@ -159,7 +200,9 @@ export default function Messages() {
                     ) : visibleMessages.length === 0 ? (
                         <div className="msg-list-empty">
                             <Inbox size={36} strokeWidth={1.2} className="msg-empty-icon" />
-                            {isStaff && <p>No messages yet</p>}
+                            {isFieldOfficer && viewScope === 'mine' && <p>No queries assigned to you yet</p>}
+                            {isFieldOfficer && viewScope === 'all'  && <p>No messages yet</p>}
+                            {isAdmin && <p>No messages yet</p>}
                             {!isStaff && tab === 'inbox' && <p>No messages from your field officer yet</p>}
                             {!isStaff && tab === 'queries' && (
                                 <>
@@ -281,6 +324,26 @@ export default function Messages() {
                             )}
 
                             <div className="msg-detail-body">{selected.body}</div>
+
+                            {/* Schedule visit — field officer only, grower queries only */}
+                            {isFieldOfficer && selected.sentByGrower && (
+                                <div className="msg-schedule-panel">
+                                    <button
+                                        className="msg-schedule-btn"
+                                        onClick={async () => {
+                                            let grower = { id: selected.growerId, name: selected.senderName };
+                                            try {
+                                                const g = await fetchGrowerById(selected.growerId);
+                                                grower = { id: g.id, name: `${g.firstName} ${g.lastName}`.trim(), email: g.email, phone: g.phone };
+                                            } catch { /* use fallback */ }
+                                            setScheduleGrower(grower);
+                                            setShowSchedule(true);
+                                        }}
+                                    >
+                                        <CalendarPlus size={15} /> Schedule Field Visit
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="msg-detail-empty">
@@ -301,6 +364,14 @@ export default function Messages() {
                 <ComposeQueryModal
                     onClose={() => setShowQuery(false)}
                     onSent={() => { setShowQuery(false); setTab('queries'); load(); }}
+                />
+            )}
+            {showSchedule && selected && (
+                <ScheduleVisitModal
+                    applicationId={selected.growerId}
+                    grower={scheduleGrower || { id: selected.growerId, name: selected.senderName }}
+                    onClose={() => setShowSchedule(false)}
+                    onScheduled={() => setShowSchedule(false)}
                 />
             )}
         </div>
