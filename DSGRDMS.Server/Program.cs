@@ -25,6 +25,8 @@ builder.Services.AddScoped<IGrowerService, GrowerService>();
 builder.Services.AddScoped<IComplianceRepository, ComplianceRepository>();
 builder.Services.AddScoped<IComplianceService, ComplianceService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IFieldVisitRepository, FieldVisitRepository>();
+builder.Services.AddScoped<IFieldVisitService, FieldVisitService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"]!;
@@ -92,6 +94,23 @@ using (var scope = app.Services.CreateScope())
             new User { Email = "grower@demo.com",  PasswordHash = PasswordHelper.Hash("Grower123!"),  Role = "grower",       FullName = "Demo Grower"    }
         );
         db.SaveChanges();
+    }
+    else
+    {
+        // Ensure a field officer exists
+        var fieldOfficer = db.Users.FirstOrDefault(u => u.Email == "officer@demo.com");
+        if (fieldOfficer == null)
+        {
+            fieldOfficer = new User 
+            { 
+                Email = "officer@demo.com", 
+                PasswordHash = PasswordHelper.Hash("Officer123!"), 
+                Role = "field_officer", 
+                FullName = "James Dlamini" 
+            };
+            db.Users.Add(fieldOfficer);
+            db.SaveChanges();
+        }
     }
 }
 

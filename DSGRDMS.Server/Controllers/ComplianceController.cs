@@ -57,4 +57,12 @@ public class ComplianceController(IComplianceService complianceService) : Contro
         var (filePath, fileName, contentType) = result.Value;
         return PhysicalFile(filePath, contentType, fileName);
     }
+
+    // POST api/compliance/seed - Force reseed compliance data
+    [HttpPost("seed")]
+    public async Task<IActionResult> SeedComplianceData()
+    {
+        var result = await complianceService.SeedComplianceDataAsync();
+        return Ok(new { message = "Compliance data seeded successfully", documentsCreated = result });
+    }
 }

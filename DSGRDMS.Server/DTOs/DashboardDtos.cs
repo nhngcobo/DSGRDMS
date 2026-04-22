@@ -6,6 +6,11 @@ public class DashboardSummaryResponse
     public int PendingCount { get; set; }
     public int VerifiedCount { get; set; }
     public int HighRiskCount { get; set; }
+    public int LowRiskCount { get; set; }
+    public int MediumRiskCount { get; set; }
+    public int LowRiskPercent { get; set; }
+    public int MediumRiskPercent { get; set; }
+    public int HighRiskPercent { get; set; }
     public List<MonthlyRegistrationDto> MonthlyRegistrations { get; set; } = [];
     public List<RecentApplicationDto> RecentApplications { get; set; } = [];
 }

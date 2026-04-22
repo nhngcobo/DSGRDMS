@@ -63,7 +63,78 @@ namespace DSGRDMS.Server.Migrations
                     b.HasIndex("GrowerId", "DocumentTypeId")
                         .IsUnique();
 
-                    b.ToTable("ComplianceDocuments");
+                    b.ToTable("ComplianceDocuments", (string)null);
+                });
+
+            modelBuilder.Entity("DSGRDMS.Server.Models.FieldVisit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Findings")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("GrowerId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("OfficerId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("OfficerName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ScheduledDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<TimeOnly>("ScheduledTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("VisitType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GrowerId");
+
+                    b.HasIndex("ScheduledDate");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("FieldVisits", (string)null);
                 });
 
             modelBuilder.Entity("DSGRDMS.Server.Models.Grower", b =>
@@ -114,6 +185,10 @@ namespace DSGRDMS.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -142,7 +217,7 @@ namespace DSGRDMS.Server.Migrations
                     b.HasIndex("InternalId")
                         .IsUnique();
 
-                    b.ToTable("Growers");
+                    b.ToTable("Growers", (string)null);
                 });
 
             modelBuilder.Entity("DSGRDMS.Server.Models.Message", b =>
@@ -184,7 +259,7 @@ namespace DSGRDMS.Server.Migrations
 
                     b.HasIndex("SenderUserId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("DSGRDMS.Server.Models.User", b =>
@@ -219,7 +294,7 @@ namespace DSGRDMS.Server.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 #pragma warning restore 612, 618
         }

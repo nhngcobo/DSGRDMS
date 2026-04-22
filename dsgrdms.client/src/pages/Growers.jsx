@@ -6,7 +6,6 @@ import { useT } from '../hooks/useT';
 import { fetchGrowers } from '../services/growersApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
-import mockGrowersData from '../data/mockGrowersData.json';
 import './Growers.css';
 
 const PAGE_SIZE = 10;
@@ -26,22 +25,38 @@ export default function Growers() {
     // Reset to page 1 whenever search or filter changes
     useEffect(() => { setPage(1); }, [search, filter]);
 
-    const STATUS_FILTERS = [tg.filters.all, tg.filters.pending, tg.filters.verified];
+    const STATUS_FILTERS = [
+        tg.filters.all,
+        tg.filters.pending,
+        tg.filters.inspection_pending,
+        tg.filters.review_pending,
+        tg.filters.approved,
+        tg.filters.rejected,
+        tg.filters.info_requested
+    ];
+
+    // Map filter display values to actual status values
+    const getStatusValue = (filterLabel) => {
+        const statusMap = {
+            [tg.filters.all]: 'all',
+            [tg.filters.pending]: 'pending',
+            [tg.filters.inspection_pending]: 'inspection_pending',
+            [tg.filters.review_pending]: 'review_pending',
+            [tg.filters.approved]: 'approved',
+            [tg.filters.rejected]: 'rejected',
+            [tg.filters.info_requested]: 'info_requested'
+        };
+        return statusMap[filterLabel] || filterLabel.toLowerCase();
+    };
 
     const loadGrowers = useCallback(async () => {
         setLoading(true);
         try {
             const data = await fetchGrowers();
-            // Use mock data if API returns empty or invalid data
-            if (!data || data.length === 0) {
-                setGrowers(mockGrowersData);
-            } else {
-                setGrowers(data);
-            }
+            setGrowers(data || []);
         } catch (err) {
             showError(friendlyError(err));
-            // Use mock data as fallback
-            setGrowers(mockGrowersData);
+            setGrowers([]);
         } finally {
             setLoading(false);
         }
@@ -50,9 +65,10 @@ export default function Growers() {
     useEffect(() => { loadGrowers(); }, [loadGrowers]);
 
     const visible = growers.filter(g => {
+        const statusValue = getStatusValue(filter);
         const matchesFilter =
-            filter === tg.filters.all ||
-            g.status === filter.toLowerCase();
+            statusValue === 'all' ||
+            g.status === statusValue;
         const q = search.toLowerCase();
         const matchesSearch =
             !q ||

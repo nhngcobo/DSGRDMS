@@ -9,6 +9,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ComplianceDocument> ComplianceDocuments { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<FieldVisit> FieldVisits { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -19,6 +20,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(g => g.GrowerId).IsUnique();
             e.HasIndex(g => g.IdNumber).IsUnique();
             e.Property(g => g.PlantationSize).HasColumnType("decimal(10,2)");
+            e.Property(g => g.PasswordHash).HasMaxLength(256);
         });
 
         modelBuilder.Entity<ComplianceDocument>(e =>
@@ -38,6 +40,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasKey(m => m.Id);
             e.HasIndex(m => m.GrowerId);
             e.HasIndex(m => m.SenderUserId);
+        });
+
+        modelBuilder.Entity<FieldVisit>(e =>
+        {
+            e.HasKey(v => v.Id);
+            e.HasIndex(v => v.GrowerId);
+            e.HasIndex(v => v.Status);
+            e.HasIndex(v => v.ScheduledDate);
+            e.Property(v => v.OfficerId).HasMaxLength(255);
+            e.Property(v => v.OfficerName).HasMaxLength(255);
         });
     }
 }

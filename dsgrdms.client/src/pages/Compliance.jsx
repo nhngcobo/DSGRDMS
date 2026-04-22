@@ -458,7 +458,7 @@ export default function Compliance() {
                         <tbody>
                             {filtered.map(doc => {
                                 const meta    = STATUS_META[doc.status];
-                                const canUpload = doc.status !== 'approved';
+                                const canUpload = doc.status !== 'approved' && user?.role !== 'admin';
                                 const canReview = doc.status === 'pending_review';
                                 return (
                                     <tr key={doc.docTypeId}>
@@ -480,14 +480,16 @@ export default function Compliance() {
                                         </td>
                                         <td>
                                             <div className="action-buttons">
-                                                <button
-                                                    className="btn-upload"
-                                                    onClick={() => setUploadDoc(doc)}
-                                                    disabled={!canUpload}
-                                                    title={!canUpload ? 'Document already approved' : undefined}
-                                                >
-                                                    <Upload size={13} /> {tc.checklist.upload}
-                                                </button>
+                                                {user?.role !== 'admin' && (
+                                                    <button
+                                                        className="btn-upload"
+                                                        onClick={() => setUploadDoc(doc)}
+                                                        disabled={!canUpload}
+                                                        title={!canUpload ? 'Document already approved' : undefined}
+                                                    >
+                                                        <Upload size={13} /> {tc.checklist.upload}
+                                                    </button>
+                                                )}
                                                 <button
                                                     className="btn-review"
                                                     onClick={() => setReviewDoc(doc)}

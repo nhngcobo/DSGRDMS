@@ -1,0 +1,528 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
+
+* {
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+/* Schedule Visit Modal */
+.schedule-modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.schedule-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.schedule-modal-header h2 {
+    font-size: 1.25rem;
+    color: #426468;
+    margin: 0 0 0.25rem;
+    font-weight: 300;
+}
+
+.schedule-modal-header p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    color: #1f2937;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.schedule-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.schedule-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.25rem;
+    background: #f9fafb;
+}
+
+.schedule-section h3 {
+    font-size: 1rem;
+    color: #426468;
+    margin: 0 0 1rem;
+    font-weight: 400;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.info-item label {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 0.375rem;
+}
+
+.info-item p {
+    font-size: 0.9375rem;
+    color: #1f2937;
+    margin: 0;
+}
+
+/* Officer Assignment */
+.officer-assignment {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #eff6f7;
+    border: 1px solid #d1e8ec;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+}
+
+.officer-assignment svg {
+    color: #426468;
+    flex-shrink: 0;
+}
+
+.officer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.officer-name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.officer-email {
+    font-size: 0.8125rem;
+    color: #6b7280;
+}
+
+.assignment-note {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    margin: 0;
+    font-style: italic;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #426468;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+.form-group label svg {
+    color: #6b7280;
+}
+
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    color: #1f2937;
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
+    transition: border-color 0.2s ease;
+    background: #fff;
+}
+
+.form-group input[type="date"]:focus,
+.form-group input[type="time"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #426468;
+    box-shadow: 0 0 0 3px rgba(66, 100, 104, 0.1);
+}
+
+/* Date picker calendar styling */
+.form-group input[type="date"]::placeholder {
+    color: #9ca3af;
+}
+
+/* Webkit calendar (Chrome, Safari, Edge) */
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 4px;
+    opacity: 0.6;
+    filter: invert(0.3);
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* Calendar picker button */
+.form-group input[type="date"]::-webkit-outer-spin-button,
+.form-group input[type="date"]::-webkit-inner-spin-button {
+    display: none;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.form-error {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    color: #991b1b;
+    font-size: 0.9375rem;
+}
+
+.form-error svg {
+    flex-shrink: 0;
+}
+
+.schedule-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.btn-cancel,
+.btn-submit {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel {
+    background: #fff;
+    color: #6b7280;
+}
+
+.btn-cancel:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.btn-submit {
+    background: #426468;
+    color: #fff;
+    border-color: #426468;
+}
+
+.btn-submit:hover:not(:disabled) {
+    background: #5a8187;
+    border-color: #5a8187;
+}
+
+.btn-cancel:disabled,
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Log Findings Modal */
+.findings-modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+.findings-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.findings-modal-header h2 {
+    font-size: 1.25rem;
+    color: #426468;
+    margin: 0 0 0.25rem;
+    font-weight: 300;
+}
+
+.findings-modal-header p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.findings-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.findings-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.25rem;
+    background: #f9fafb;
+}
+
+.findings-section h3 {
+    font-size: 1rem;
+    color: #426468;
+    margin: 0 0 1rem;
+    font-weight: 400;
+}
+
+.findings-section label {
+    display: block;
+    font-size: 0.875rem;
+    color: #426468;
+    font-weight: 400;
+    margin-bottom: 0.75rem;
+}
+
+.findings-section textarea,
+.findings-section select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    color: #1f2937;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.findings-section textarea:focus,
+.findings-section select:focus {
+    outline: none;
+    border-color: #426468;
+    box-shadow: 0 0 0 3px rgba(66, 100, 104, 0.1);
+}
+
+.findings-section select {
+    background: #fff;
+    cursor: pointer;
+}
+
+/* Photo Upload */
+.photo-upload-area {
+    margin-bottom: 1rem;
+}
+
+.btn-upload-photos {
+    width: 100%;
+    padding: 2rem;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #6b7280;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    transition: all 0.2s ease;
+}
+
+.btn-upload-photos:hover {
+    border-color: #426468;
+    background: #f9fafb;
+    color: #426468;
+}
+
+.btn-upload-photos small {
+    font-size: 0.8125rem;
+    color: #9ca3af;
+}
+
+.photo-gallery {
+    margin-top: 1rem;
+}
+
+.photo-gallery h4 {
+    font-size: 0.875rem;
+    color: #426468;
+    margin: 0 0 0.75rem;
+    font-weight: 400;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+}
+
+.photo-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+}
+
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn-remove-photo {
+    position: absolute;
+    top: 0.375rem;
+    right: 0.375rem;
+    background: #dc2626;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.375rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.photo-item:hover .btn-remove-photo {
+    opacity: 1;
+}
+
+.photo-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.375rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.findings-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .schedule-modal,
+    .findings-modal {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-modal-footer,
+    .findings-modal-footer {
+        flex-direction: column-reverse;
+    }
+
+    .btn-cancel,
+    .btn-submit {
+        width: 100%;
+    }
+
+    .photo-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+}

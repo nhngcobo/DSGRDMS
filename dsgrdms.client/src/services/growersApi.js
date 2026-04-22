@@ -1,4 +1,5 @@
 const BASE = '/api/growers';
+import { apiFetch } from './apiClient.js';
 
 async function handleResponse(res) {
     if (res.status === 409) {
@@ -17,17 +18,17 @@ async function handleResponse(res) {
 }
 
 export async function fetchGrowers() {
-    const res = await fetch(BASE);
+    const res = await apiFetch(BASE);
     return handleResponse(res);
 }
 
 export async function fetchGrowerById(growerId) {
-    const res = await fetch(`${BASE}/${encodeURIComponent(growerId)}`);
+    const res = await apiFetch(`${BASE}/${encodeURIComponent(growerId)}`);
     return handleResponse(res);
 }
 
 export async function registerGrower(formData) {
-    const res = await fetch(BASE, {
+    const res = await apiFetch(BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -50,11 +51,11 @@ export async function registerGrower(formData) {
 }
 
 export async function updateGrower(growerId, formData) {
-    const res = await fetch(`${BASE}/${encodeURIComponent(growerId)}`, {
+    const res = await apiFetch(`${BASE}/${encodeURIComponent(growerId)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            phone:             formData.phone,
+            phone:             formData.phone || null,
             email:             formData.email || null,
             businessName:      formData.businessName || null,
             businessRegNumber: formData.businessRegNumber || null,
@@ -63,7 +64,10 @@ export async function updateGrower(growerId, formData) {
             plantationSize:    formData.plantationSize ? parseFloat(formData.plantationSize) : null,
             gpsLat:            formData.gpsLat ? parseFloat(formData.gpsLat) : null,
             gpsLng:            formData.gpsLng ? parseFloat(formData.gpsLng) : null,
+            status:            formData.status || null,
         }),
     });
-    return handleResponse(res);
+    const result = await handleResponse(res);
+    // Unwrap the new API response format if it exists
+    return result?.data || result;
 }
