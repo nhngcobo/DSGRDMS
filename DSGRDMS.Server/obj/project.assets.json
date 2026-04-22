@@ -93,7 +93,7 @@
           "build/Microsoft.AspNetCore.OpenApi.targets": {}
         }
       },
-      "Microsoft.AspNetCore.SpaProxy/10.0.6": {
+      "Microsoft.AspNetCore.SpaProxy/10.0.7": {
         "type": "package",
         "compile": {
           "lib/net10.0/Microsoft.AspNetCore.SpaProxy.dll": {}
@@ -811,36 +811,6 @@
           "buildTransitive/Mono.TextTemplating.targets": {}
         }
       },
-      "MySqlConnector/2.4.0": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/MySqlConnector.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/MySqlConnector.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "[9.0.0, 9.0.999]",
-          "MySqlConnector": "2.4.0"
-        },
-        "compile": {
-          "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.dll": {
-            "related": ".xml"
-          }
-        }
-      },
       "System.ClientModel/1.0.0": {
         "type": "package",
         "dependencies": {
@@ -1243,10 +1213,10 @@
         "microsoft.aspnetcore.openapi.nuspec"
       ]
     },
-    "Microsoft.AspNetCore.SpaProxy/10.0.6": {
-      "sha512": "m7dB5DTFFnXodL55eeCI1B4GTNgouwIc7N90l59gn7wdZi9zgsG/CleQP90RH0dKlsmWWBHm1QiDhikt/oa69g==",
+    "Microsoft.AspNetCore.SpaProxy/10.0.7": {
+      "sha512": "K1zHPjHZap3NKURVED91/v2E9e5mazt/n0cIxY8S0PXDMk+bAUUbXWsOyz/mLAF+p5Mhv5ns6Pnff2sXIPaFqQ==",
       "type": "package",
-      "path": "microsoft.aspnetcore.spaproxy/10.0.6",
+      "path": "microsoft.aspnetcore.spaproxy/10.0.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -1254,7 +1224,7 @@
         "THIRD-PARTY-NOTICES.TXT",
         "build/Microsoft.AspNetCore.SpaProxy.targets",
         "lib/net10.0/Microsoft.AspNetCore.SpaProxy.dll",
-        "microsoft.aspnetcore.spaproxy.10.0.6.nupkg.sha512",
+        "microsoft.aspnetcore.spaproxy.10.0.7.nupkg.sha512",
         "microsoft.aspnetcore.spaproxy.nuspec"
       ]
     },
@@ -2718,50 +2688,6 @@
         "readme.md"
       ]
     },
-    "MySqlConnector/2.4.0": {
-      "sha512": "78M+gVOjbdZEDIyXQqcA7EYlCGS3tpbUELHvn6638A2w0pkPI625ixnzsa5staAd3N9/xFmPJtkKDYwsXpFi/w==",
-      "type": "package",
-      "path": "mysqlconnector/2.4.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "README.md",
-        "lib/net462/MySqlConnector.dll",
-        "lib/net462/MySqlConnector.xml",
-        "lib/net471/MySqlConnector.dll",
-        "lib/net471/MySqlConnector.xml",
-        "lib/net48/MySqlConnector.dll",
-        "lib/net48/MySqlConnector.xml",
-        "lib/net6.0/MySqlConnector.dll",
-        "lib/net6.0/MySqlConnector.xml",
-        "lib/net8.0/MySqlConnector.dll",
-        "lib/net8.0/MySqlConnector.xml",
-        "lib/net9.0/MySqlConnector.dll",
-        "lib/net9.0/MySqlConnector.xml",
-        "lib/netstandard2.0/MySqlConnector.dll",
-        "lib/netstandard2.0/MySqlConnector.xml",
-        "lib/netstandard2.1/MySqlConnector.dll",
-        "lib/netstandard2.1/MySqlConnector.xml",
-        "logo.png",
-        "mysqlconnector.2.4.0.nupkg.sha512",
-        "mysqlconnector.nuspec"
-      ]
-    },
-    "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
-      "sha512": "cl7S4s6CbJno0LjNxrBHNc2xxmCliR5i40ATPZk/eTywVaAbHCbdc9vbGc3QThvwGjHqrDHT8vY9m1VF/47o0g==",
-      "type": "package",
-      "path": "pomelo.entityframeworkcore.mysql/9.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "README.md",
-        "icon.png",
-        "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.dll",
-        "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.xml",
-        "pomelo.entityframeworkcore.mysql.9.0.0.nupkg.sha512",
-        "pomelo.entityframeworkcore.mysql.nuspec"
-      ]
-    },
     "System.ClientModel/1.0.0": {
       "sha512": "I3CVkvxeqFYjIVEP59DnjbeoGNfo/+SZrCLpRz2v/g0gpCHaEMPtWSY0s9k/7jR1rAsLNg2z2u1JRB76tPjnIw==",
       "type": "package",
@@ -3197,28 +3123,27 @@
       "Microsoft.AspNetCore.SpaProxy >= 10.*-*",
       "Microsoft.EntityFrameworkCore.Design >= 9.0.6",
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.6",
-      "Microsoft.EntityFrameworkCore.Tools >= 9.0.6",
-      "Pomelo.EntityFrameworkCore.MySql >= 9.0.0"
+      "Microsoft.EntityFrameworkCore.Tools >= 9.0.6"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Nhlanhla Fortune\\.nuget\\packages\\": {},
+    "C:\\Users\\nhngcobo\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Nhlanhla Fortune\\source\\repos\\GrowerSystem\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj",
+      "projectUniqueName": "C:\\Users\\nhngcobo\\OneDrive - Deloitte (O365D)\\Documents\\DSGRDMS\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj",
       "projectName": "DSGRDMS.Server",
-      "projectPath": "C:\\Users\\Nhlanhla Fortune\\source\\repos\\GrowerSystem\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj",
-      "packagesPath": "C:\\Users\\Nhlanhla Fortune\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Nhlanhla Fortune\\source\\repos\\GrowerSystem\\DSGRDMS\\DSGRDMS.Server\\obj\\",
+      "projectPath": "C:\\Users\\nhngcobo\\OneDrive - Deloitte (O365D)\\Documents\\DSGRDMS\\DSGRDMS\\DSGRDMS.Server\\DSGRDMS.Server.csproj",
+      "packagesPath": "C:\\Users\\nhngcobo\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\nhngcobo\\OneDrive - Deloitte (O365D)\\Documents\\DSGRDMS\\DSGRDMS\\DSGRDMS.Server\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Nhlanhla Fortune\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\nhngcobo\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3278,10 +3203,6 @@
             "suppressParent": "All",
             "target": "Package",
             "version": "[9.0.6, )"
-          },
-          "Pomelo.EntityFrameworkCore.MySql": {
-            "target": "Package",
-            "version": "[9.0.0, )"
           }
         },
         "imports": [

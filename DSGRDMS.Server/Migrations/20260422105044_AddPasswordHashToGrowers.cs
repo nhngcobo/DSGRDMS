@@ -5,7 +5,7 @@
 namespace DSGRDMS.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class AddUsers : Migration
+    public partial class AddPasswordHashToGrowers : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

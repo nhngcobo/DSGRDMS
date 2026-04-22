@@ -10,10 +10,9 @@
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.5",
           "Microsoft.AspNetCore.OpenApi": "10.0.5",
-          "Microsoft.AspNetCore.SpaProxy": "10.0.6",
+          "Microsoft.AspNetCore.SpaProxy": "10.0.7",
           "Microsoft.EntityFrameworkCore.Design": "9.0.6",
-          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.6",
-          "Pomelo.EntityFrameworkCore.MySql": "9.0.0"
+          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.6"
         },
         "runtime": {
           "DSGRDMS.Server.dll": {}
@@ -76,11 +75,11 @@
           }
         }
       },
-      "Microsoft.AspNetCore.SpaProxy/10.0.6": {
+      "Microsoft.AspNetCore.SpaProxy/10.0.7": {
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.SpaProxy.dll": {
-            "assemblyVersion": "10.0.6.0",
-            "fileVersion": "10.0.626.17701"
+            "assemblyVersion": "10.0.7.0",
+            "fileVersion": "10.0.726.21808"
           }
         }
       },
@@ -622,26 +621,6 @@
           }
         }
       },
-      "MySqlConnector/2.4.0": {
-        "runtime": {
-          "lib/net9.0/MySqlConnector.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.4.0.0"
-          }
-        }
-      },
-      "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "9.0.6",
-          "MySqlConnector": "2.4.0"
-        },
-        "runtime": {
-          "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.0.0"
-          }
-        }
-      },
       "System.ClientModel/1.0.0": {
         "dependencies": {
           "System.Memory.Data": "1.0.2"
@@ -886,12 +865,12 @@
       "path": "microsoft.aspnetcore.openapi/10.0.5",
       "hashPath": "microsoft.aspnetcore.openapi.10.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SpaProxy/10.0.6": {
+    "Microsoft.AspNetCore.SpaProxy/10.0.7": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-m7dB5DTFFnXodL55eeCI1B4GTNgouwIc7N90l59gn7wdZi9zgsG/CleQP90RH0dKlsmWWBHm1QiDhikt/oa69g==",
-      "path": "microsoft.aspnetcore.spaproxy/10.0.6",
-      "hashPath": "microsoft.aspnetcore.spaproxy.10.0.6.nupkg.sha512"
+      "sha512": "sha512-K1zHPjHZap3NKURVED91/v2E9e5mazt/n0cIxY8S0PXDMk+bAUUbXWsOyz/mLAF+p5Mhv5ns6Pnff2sXIPaFqQ==",
+      "path": "microsoft.aspnetcore.spaproxy/10.0.7",
+      "hashPath": "microsoft.aspnetcore.spaproxy.10.0.7.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/7.0.0": {
       "type": "package",
@@ -1081,20 +1060,6 @@
       "sha512": "sha512-YqueG52R/Xej4VVbKuRIodjiAhV0HR/XVbLbNrJhCZnzjnSjgMJ/dCdV0akQQxavX6hp/LC6rqLGLcXeQYU7XA==",
       "path": "mono.texttemplating/3.0.0",
       "hashPath": "mono.texttemplating.3.0.0.nupkg.sha512"
-    },
-    "MySqlConnector/2.4.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-78M+gVOjbdZEDIyXQqcA7EYlCGS3tpbUELHvn6638A2w0pkPI625ixnzsa5staAd3N9/xFmPJtkKDYwsXpFi/w==",
-      "path": "mysqlconnector/2.4.0",
-      "hashPath": "mysqlconnector.2.4.0.nupkg.sha512"
-    },
-    "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-cl7S4s6CbJno0LjNxrBHNc2xxmCliR5i40ATPZk/eTywVaAbHCbdc9vbGc3QThvwGjHqrDHT8vY9m1VF/47o0g==",
-      "path": "pomelo.entityframeworkcore.mysql/9.0.0",
-      "hashPath": "pomelo.entityframeworkcore.mysql.9.0.0.nupkg.sha512"
     },
     "System.ClientModel/1.0.0": {
       "type": "package",
