@@ -83,6 +83,24 @@ Thumbs.db
 *.tmp
 
 # ============================================================
+# File uploads & storage
+# ============================================================
+FileStorage/
+DSGRDMS.Server/FileStorage/
+
+# ============================================================
+# Leftover package files (should only be in dsgrdms.client)
+# ============================================================
+DSGRDMS.Server/package.json
+DSGRDMS.Server/node_modules/
+
+# ============================================================
+# PDF worker files
+# ============================================================
+**/pdf.worker.min.js
+**/pdf.worker.js
+
+# ============================================================
 # Only track source code - ignore all generated files
 # ============================================================
 !.vscode/extensions.json
