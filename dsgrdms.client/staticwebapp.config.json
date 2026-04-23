@@ -1,7 +1,17 @@
 {
+  "mimeTypes": {
+    ".js": "application/javascript",
+    ".mjs": "application/javascript",
+    ".jsx": "application/javascript",
+    ".css": "text/css",
+    ".json": "application/json",
+    ".svg": "image/svg+xml",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2"
+  },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/assets/*", "/*.{png,jpg,gif,ico,css,js,json,svg,woff,woff2}"]
+    "exclude": ["/assets/*", "/*.{png,jpg,gif,ico,css,js,mjs,json,svg,woff,woff2}"]
   },
   "routes": [
     {
