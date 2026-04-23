@@ -146,13 +146,13 @@
 
 /* Footer */
 .review-modal-footer {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    padding: 1rem 1.75rem;
-    border-top: 1px solid rgba(66, 100, 104, 0.08);
-    flex-wrap: wrap;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 1rem !important;
+    padding: 1.5rem 1.75rem !important;
+    border-top: 1px solid rgba(66, 100, 104, 0.08) !important;
+    align-items: center !important;
+    width: 100% !important;
 }
 
 .review-api-error {
@@ -181,19 +181,21 @@
 
 /* Buttons */
 .btn-cancel {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid rgba(66, 100, 104, 0.2);
-    border-radius: 7px;
-    background: transparent;
-    font-size: 0.875rem;
-    font-weight: 300;
-    color: #426468;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Open Sans', inherit;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    padding: 0.35rem 0.75rem !important;
+    border: 1px solid rgba(66, 100, 104, 0.2) !important;
+    border-radius: 7px !important;
+    background: transparent !important;
+    font-size: 0.75rem !important;
+    font-weight: 400 !important;
+    color: #426468 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-family: 'Open Sans', inherit !important;
+    white-space: nowrap !important;
 }
 
 .btn-cancel:hover {
@@ -207,23 +209,25 @@
 }
 
 .btn-reject {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 7px;
-    background: #dc2626;
-    font-size: 0.875rem;
-    font-weight: 300;
-    color: #fff;
-    cursor: pointer;
-    transition: background 0.15s;
-    font-family: 'Open Sans', inherit;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    padding: 0.35rem 0.75rem !important;
+    border: none !important;
+    border-radius: 7px !important;
+    background: #991b1b !important;
+    font-size: 0.75rem !important;
+    font-weight: 400 !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    transition: background 0.15s !important;
+    font-family: 'Open Sans', inherit !important;
+    white-space: nowrap !important;
 }
 
 .btn-reject:hover {
-    background: #b91c1c;
+    background: #7f1515;
 }
 
 .btn-reject:disabled {
@@ -232,23 +236,25 @@
 }
 
 .btn-approve {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 7px;
-    background: #426468;
-    font-size: 0.875rem;
-    font-weight: 300;
-    color: #fff;
-    cursor: pointer;
-    transition: background 0.15s;
-    font-family: 'Open Sans', inherit;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    padding: 0.35rem 0.75rem !important;
+    border: none !important;
+    border-radius: 7px !important;
+    background: #166534 !important;
+    font-size: 0.75rem !important;
+    font-weight: 400 !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    transition: background 0.15s !important;
+    font-family: 'Open Sans', inherit !important;
+    white-space: nowrap !important;
 }
 
 .btn-approve:hover {
-    background: #2d3a3d;
+    background: #12542a;
 }
 
 .btn-approve:disabled {
