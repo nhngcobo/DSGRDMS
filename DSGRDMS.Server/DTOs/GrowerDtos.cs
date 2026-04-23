@@ -51,6 +51,7 @@ public class GrowerResponse
     public double? GpsLat { get; set; }
     public double? GpsLng { get; set; }
     public string Status { get; set; } = string.Empty;
+    public string FurthestStep { get; set; } = "registration";  // Track verification progress
     public int? Compliance { get; set; }
     public string Risk { get; set; } = "low";
     public bool IsDraft { get; set; }
@@ -60,4 +61,9 @@ public class GrowerResponse
     public string VisitStatus { get; set; } = "Pending";      // Pending | Scheduled | Visited | Completed
     public DateTime? ScheduledDate { get; set; }
     public string? Findings { get; set; }
+}
+
+public class UpdateFurthestStepRequest
+{
+    [Required] public string Step { get; set; } = string.Empty;  // registration | verification | field_visit | agreement | completed
 }

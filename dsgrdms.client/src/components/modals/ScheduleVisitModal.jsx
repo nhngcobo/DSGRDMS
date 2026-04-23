@@ -5,7 +5,7 @@ import { useNotification } from '../../context/NotificationContext';
 import { fieldVisitsApi } from '../../services/fieldVisitsApi';
 import './ScheduleVisitModal.css';
 
-export default function ScheduleVisitModal({ applicationId, grower, onClose, onScheduled }) {
+export default function ScheduleVisitModal({ applicationId, growerId, grower, onClose, onScheduled }) {
     const { user } = useAuth();
     const { showError, showSuccess } = useNotification();
     
@@ -14,6 +14,9 @@ export default function ScheduleVisitModal({ applicationId, grower, onClose, onS
     const [purpose, setPurpose] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
+
+    // Determine the actual grower ID from various prop formats
+    const actualGrowerId = grower?.id || growerId || applicationId;
 
     const minDate = new Date().toISOString().split('T')[0];
 
@@ -29,7 +32,7 @@ export default function ScheduleVisitModal({ applicationId, grower, onClose, onS
         setError('');
 
         try {
-            await fieldVisitsApi.scheduleVisit(applicationId, {
+            await fieldVisitsApi.scheduleVisit(actualGrowerId, {
                 scheduledDate: selectedDate,
                 scheduledTime: selectedTime,
                 purpose,

@@ -19,6 +19,7 @@ public class Grower
     public double? GpsLat { get; set; }
     public double? GpsLng { get; set; }
     public string Status { get; set; } = "pending";        // pending | inspection_pending | review_pending | approved | rejected | info_requested
+    public string FurthestStep { get; set; } = "registration";  // Track furthest step reached in verification: registration | verification | field_visit | agreement | completed
     public bool IsDraft { get; set; }
     public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
 }

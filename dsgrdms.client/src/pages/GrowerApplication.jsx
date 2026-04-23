@@ -68,6 +68,8 @@ export default function GrowerApplication() {
         if (!form.treeSpecies)      errs.treeSpecies = 'Required';
         if (!form.plantationSize)   errs.plantationSize = 'Required';
         if (form.plantationSize && isNaN(form.plantationSize)) errs.plantationSize = 'Must be a number';
+        if (!form.gpsLat)           errs.gpsLat = 'Location (Latitude) is required';
+        if (!form.gpsLng)           errs.gpsLng = 'Location (Longitude) is required';
         return errs;
     }
 
@@ -311,35 +313,41 @@ export default function GrowerApplication() {
 
                                         {/* GPS Latitude */}
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-900 mb-2">GPS Latitude</label>
+                                            <label className="block text-sm font-bold text-gray-900 mb-2">GPS Latitude *</label>
                                             <input
                                                 type="number"
                                                 step="0.0001"
                                                 placeholder="e.g. -29.8587"
                                                 value={form.gpsLat}
-                                                onChange={e => setForm({...form, gpsLat: e.target.value})}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-600 focus:border-transparent outline-none"
+                                                onChange={e => { setForm({...form, gpsLat: e.target.value}); setErrors({...errors, gpsLat: ''}) }}
+                                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-600 focus:border-transparent outline-none ${
+                                                    errors.gpsLat ? 'border-red-500' : 'border-gray-300'
+                                                }`}
                                             />
+                                            {errors.gpsLat && <p className="text-xs text-red-600 mt-1">{errors.gpsLat}</p>}
                                         </div>
 
                                         {/* GPS Longitude */}
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-900 mb-2">GPS Longitude</label>
+                                            <label className="block text-sm font-bold text-gray-900 mb-2">GPS Longitude *</label>
                                             <input
                                                 type="number"
                                                 step="0.0001"
                                                 placeholder="e.g. 30.9823"
                                                 value={form.gpsLng}
-                                                onChange={e => setForm({...form, gpsLng: e.target.value})}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-600 focus:border-transparent outline-none"
+                                                onChange={e => { setForm({...form, gpsLng: e.target.value}); setErrors({...errors, gpsLng: ''}) }}
+                                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-600 focus:border-transparent outline-none ${
+                                                    errors.gpsLng ? 'border-red-500' : 'border-gray-300'
+                                                }`}
                                             />
+                                            {errors.gpsLng && <p className="text-xs text-red-600 mt-1">{errors.gpsLng}</p>}
                                         </div>
                                     </div>
 
                                     <button
                                         type="submit"
-                                        disabled={submitting}
-                                        className="w-full px-6 py-3 bg-teal-700 text-white font-bold rounded-lg hover:bg-teal-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                        disabled={submitting || Object.keys(errors).length > 0}
+                                        className="w-full px-6 py-3 bg-teal-700 text-white font-bold rounded-lg hover:bg-teal-800 transition-colors disabled:bg-gray-400 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         Submit & Continue <ArrowRight size={18} />
                                     </button>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, CheckCircle, XCircle, AlertCircle, AlertTriangle, Upload, Users, MapPin, Droplet, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { fetchGrowerById } from '../services/growersApi';
+import { fetchGrowerById, updateFurthestStep } from '../services/growersApi';
 import { fetchComplianceSummary, uploadComplianceDocument } from '../services/complianceApi';
 import { useNotification } from '../context/NotificationContext';
 import { friendlyError } from '../utils/apiErrors';
@@ -45,26 +45,6 @@ export default function ComplianceDocuments() {
     // Step progression order for persistent state
     const STEP_ORDER = ['registration', 'verification', 'field_visit', 'agreement', 'completed'];
 
-    // Helper to get the furthest step reached from localStorage
-    const getFurthestStep = () => {
-        const saved = localStorage.getItem(`grower_${user?.growerId}_furthest_step`);
-        if (saved && STEP_ORDER.includes(saved)) {
-            return saved;
-        }
-        return 'registration';
-    };
-
-    // Helper to update furthest step if current step is further along
-    const updateFurthestStep = (step) => {
-        const currentIndex = STEP_ORDER.indexOf(step);
-        const savedStep = localStorage.getItem(`grower_${user?.growerId}_furthest_step`);
-        const savedIndex = savedStep ? STEP_ORDER.indexOf(savedStep) : -1;
-        
-        if (currentIndex > savedIndex) {
-            localStorage.setItem(`grower_${user?.growerId}_furthest_step`, step);
-        }
-    };
-
     // Fetch grower data and compliance documents
     useEffect(() => {
         async function loadGrowerData() {
@@ -82,8 +62,8 @@ export default function ComplianceDocuments() {
                 setGrowerData(grower);
                 setComplianceData(compliance);
 
-                // Auto-navigate to furthest step reached (once-off workflow)
-                const furthestStep = getFurthestStep();
+                // Auto-navigate to furthest step reached from backend
+                const furthestStep = grower?.furthestStep || 'registration';
                 setCurrentStep(furthestStep);
             } catch (err) {
                 showError(friendlyError(err));
@@ -104,12 +84,28 @@ export default function ComplianceDocuments() {
         });
     };
 
+    const allRequirementsApproved = () => {
+        // Check if all required registration documents are approved
+        return REGISTRATION_REQUIREMENTS.every(req => {
+            const compDoc = complianceData?.documents?.find(doc => doc.docTypeId === req.docTypeId);
+            return compDoc && compDoc.status === 'approved';
+        });
+    };
+
     const allFieldVisitDocsMet = () => {
         // Check if all required field visit documents are either checked OR uploaded
         return FIELD_VISIT_DOCUMENTS.filter(doc => doc.required).every(doc => {
             const compDoc = complianceData?.documents?.find(d => d.docTypeId === doc.docTypeId);
             const isUploaded = compDoc && compDoc.status !== 'not_uploaded';
             return fieldVisitDocs[doc.id] || isUploaded;
+        });
+    };
+
+    const allFieldVisitDocsApproved = () => {
+        // Check if all required field visit documents are approved
+        return FIELD_VISIT_DOCUMENTS.filter(doc => doc.required).every(doc => {
+            const compDoc = complianceData?.documents?.find(d => d.docTypeId === doc.docTypeId);
+            return compDoc && compDoc.status === 'approved';
         });
     };
 
@@ -121,31 +117,48 @@ export default function ComplianceDocuments() {
         setFieldVisitDocs(prev => ({ ...prev, [docId]: !prev[docId] }));
     };
 
+    // Helper function to advance step and update backend
+    const advanceStep = async (newStep, nextUI) => {
+        if (!user?.growerId) return;
+        try {
+            await updateFurthestStep(user.growerId, newStep);
+            setCurrentStep(nextUI);
+        } catch (err) {
+            showError(friendlyError(err));
+        }
+    };
+
+    // Helper function to go back a step
+    const goBackStep = async (previousStep) => {
+        if (!user?.growerId) return;
+        try {
+            await updateFurthestStep(user.growerId, previousStep);
+            setCurrentStep(previousStep);
+        } catch (err) {
+            showError(friendlyError(err));
+        }
+    };
+
     const handleVerification = () => {
         if (allRequirementsMet()) {
-            updateFurthestStep('field_visit');
-            setCurrentStep('field_visit');
+            advanceStep('field_visit', 'field_visit');
         } else {
-            updateFurthestStep('verification');
-            setCurrentStep('assistance_check');
+            advanceStep('verification', 'assistance_check');
         }
     };
 
     const handleAssistanceDecision = (needsHelp) => {
         setNeedsAssistance(needsHelp);
         if (needsHelp) {
-            updateFurthestStep('verification');
-            setCurrentStep('assistance');
+            advanceStep('verification', 'assistance');
         } else {
-            updateFurthestStep('verification');
-            setCurrentStep('completed_incomplete');
+            advanceStep('verification', 'completed_incomplete');
         }
     };
 
     const handleFieldVisitComplete = () => {
         if (allFieldVisitDocsMet() && allRequirementsMet()) {
-            updateFurthestStep('agreement');
-            setCurrentStep('agreement');
+            advanceStep('agreement', 'agreement');
         } else {
             alert('Please complete all required field visit documents before proceeding.');
         }
@@ -153,8 +166,7 @@ export default function ComplianceDocuments() {
 
     const handleAgreementSigned = () => {
         setAgreementSigned(true);
-        updateFurthestStep('completed');
-        setCurrentStep('completed');
+        advanceStep('completed', 'completed');
     };
 
     const handleReturnToVerification = () => {
@@ -167,8 +179,6 @@ export default function ComplianceDocuments() {
         setFieldVisitDocs(FIELD_VISIT_DOCUMENTS.reduce((acc, doc) => ({ ...acc, [doc.id]: false }), {}));
         setNeedsAssistance(false);
         setAgreementSigned(false);
-        // Clear the step progression tracking
-        localStorage.removeItem(`grower_${user.growerId}_furthest_step`);
     };
 
     // Handle document upload
@@ -271,8 +281,7 @@ export default function ComplianceDocuments() {
                         )}
                     </div>
                     <button className="btn btn-primary" onClick={() => {
-                        updateFurthestStep('verification');
-                        setCurrentStep('verification');
+                        advanceStep('verification', 'verification');
                     }}>
                         Start Verification
                     </button>
@@ -336,7 +345,7 @@ export default function ComplianceDocuments() {
                     </div>
 
                     <div className="verification-status">
-                        {allRequirementsMet() ? (
+                        {allRequirementsApproved() ? (
                             <div className="status-message success">
                                 <CheckCircle size={20} />
                                 <span>All documents ready! A field officer will schedule a visit to your property.</span>
@@ -344,14 +353,19 @@ export default function ComplianceDocuments() {
                         ) : (
                             <div className="status-message warning">
                                 <AlertCircle size={20} />
-                                <span>Some documents are missing. You may need assistance.</span>
+                                <span>Waiting for approval. Please ensure all 4 documents are approved before proceeding.</span>
                             </div>
                         )}
                     </div>
 
-                    <button className="btn btn-primary" onClick={handleVerification}>
-                        Continue to Next Step
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+                        <button className="btn btn-secondary" onClick={() => goBackStep('registration')}>
+                            Back
+                        </button>
+                        <button className="btn btn-primary" onClick={handleVerification} disabled={!allRequirementsApproved()}>
+                            Continue to Next Step
+                        </button>
+                    </div>
                 </div>
             )}
 
@@ -459,9 +473,28 @@ export default function ComplianceDocuments() {
                         })}
                     </div>
 
-                    <button className="btn btn-primary" onClick={handleFieldVisitComplete}>
-                        Mark Field Visit Complete
-                    </button>
+                    <div className="verification-status">
+                        {allFieldVisitDocsApproved() ? (
+                            <div className="status-message success">
+                                <CheckCircle size={20} />
+                                <span>All field visit documents approved! You may now proceed to the next step.</span>
+                            </div>
+                        ) : (
+                            <div className="status-message warning">
+                                <AlertCircle size={20} />
+                                <span>Waiting for approval. Please ensure all 5 field visit documents are approved before proceeding.</span>
+                            </div>
+                        )}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+                        <button className="btn btn-secondary" onClick={() => goBackStep('verification')}>
+                            Back
+                        </button>
+                        <button className="btn btn-primary" onClick={handleFieldVisitComplete} disabled={!allFieldVisitDocsApproved()}>
+                            Mark Field Visit Complete
+                        </button>
+                    </div>
                 </div>
             )}
 

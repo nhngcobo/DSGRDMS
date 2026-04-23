@@ -12,6 +12,8 @@ import Settings from './pages/Settings';
 import Messages from './pages/Messages';
 import LandingPage from './pages/LandingPage';
 import GrowerDossier from './pages/GrowerDossier';
+import PlantingRecords from './components/PlantingRecords';
+import PlantingRecordsReview from './components/PlantingRecordsReview';
 import { useAuth } from './context/AuthContext';
 import './App.css';
 
@@ -46,8 +48,7 @@ function App() {
                         <Route path="/growers/:id"  element={<GrowerDetail />} />
                         <Route path="/applications" element={<Applications />} />
                         <Route path="/compliance"   element={<Compliance />} />
-                        <Route path="/field-visits" element={<FieldVisitCoordination />} />
-                        <Route path="/messages"     element={<Messages />} />
+                        <Route path="/field-visits" element={<FieldVisitCoordination />} />                        <Route path="/planting-records" element={<PlantingRecordsReview />} />                        <Route path="/messages"     element={<Messages />} />
                         <Route path="/settings"     element={<Settings />} />
                     </>}
 
@@ -56,6 +57,7 @@ function App() {
                         <Route path="/" element={<GrowerDossier />} />
                         <Route path="/compliance" element={<Compliance />} />
                         <Route path="/field-visits" element={<FieldVisitTimeline />} />
+                        <Route path="/planting-records" element={<PlantingRecords />} />
                         <Route path="/messages" element={<Messages />} />
                         <Route path="/settings" element={<Settings />} />
                     </>}

@@ -30,6 +30,8 @@ builder.Services.AddScoped<IComplianceService, ComplianceService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFieldVisitRepository, FieldVisitRepository>();
 builder.Services.AddScoped<IFieldVisitService, FieldVisitService>();
+builder.Services.AddScoped<IPlantingRecordRepository, PlantingRecordRepository>();
+builder.Services.AddScoped<IPlantingRecordService, PlantingRecordService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"]!;
@@ -49,6 +51,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             NameClaimType            = "name",
         };
     });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 {

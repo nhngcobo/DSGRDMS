@@ -233,7 +233,7 @@ export default function ReviewApplicationModal({ applicationId, onClose, onRevie
                 </div>
 
                 {/* Actions Footer */}
-                <div className="review-modal-footer">
+                <div className="review-application-footer">
                     {hasOutstandingDocuments && (
                         <div className="review-documents-warning">
                             <Info size={16} />

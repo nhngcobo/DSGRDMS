@@ -493,6 +493,20 @@
     box-shadow: 0 8px 20px rgba(66, 100, 104, 0.25);
 }
 
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary:disabled {
+    background: #a0a8aa;
+}
+
+.btn-primary:disabled:hover {
+    background: #a0a8aa;
+    box-shadow: 0 4px 12px rgba(66, 100, 104, 0.15);
+}
+
 .btn-secondary {
     background: var(--color-surface-container-highest, #e3e2e2);
     color: var(--color-primary, #426468);

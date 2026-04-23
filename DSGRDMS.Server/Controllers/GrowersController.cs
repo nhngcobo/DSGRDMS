@@ -56,5 +56,27 @@ public class GrowersController(IGrowerService growerService) : ControllerBase
 
         return Ok(ApiResponse<GrowerResponse>.Ok(result, "Grower updated successfully"));
     }
+
+    // PUT api/growers/{growerId}/furthest-step
+    [HttpPut("{growerId}/furthest-step")]
+    [Authorize]
+    public async Task<IActionResult> UpdateFurthestStep(string growerId, [FromBody] UpdateFurthestStepRequest req)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ApiResponse<GrowerResponse>.Fail("Invalid request data", ModelState));
+
+        try
+        {
+            var result = await growerService.UpdateFurthestStepAsync(growerId, req.Step);
+            if (result is null)
+                return NotFound(ApiResponse<GrowerResponse>.Fail($"Grower with ID '{growerId}' not found"));
+
+            return Ok(ApiResponse<GrowerResponse>.Ok(result, "Verification step updated successfully"));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ApiResponse<GrowerResponse>.Fail(ex.Message));
+        }
+    }
 }
 

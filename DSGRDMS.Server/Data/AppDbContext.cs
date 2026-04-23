@@ -10,6 +10,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<FieldVisit> FieldVisits { get; set; }
+    public DbSet<PlantingRecord> PlantingRecords { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,6 +51,21 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(v => v.ScheduledDate);
             e.Property(v => v.OfficerId).HasMaxLength(255);
             e.Property(v => v.OfficerName).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<PlantingRecord>(e =>
+        {
+            e.HasKey(p => p.Id);
+            e.HasIndex(p => p.GrowerId);
+            e.HasIndex(p => p.Status);
+            e.HasIndex(p => p.DatePlanted);
+            e.Property(p => p.PlantSpecies).HasMaxLength(255);
+            e.Property(p => p.PlantingArea).HasMaxLength(500);
+            e.Property(p => p.Status).HasMaxLength(50);
+            e.Property(p => p.PhotoFilenames).HasConversion(
+                v => string.Join(',', v),
+                v => v.Split(',', System.StringSplitOptions.RemoveEmptyEntries).ToList()
+            );
         });
     }
 }

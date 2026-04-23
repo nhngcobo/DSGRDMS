@@ -124,6 +124,48 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         return ToResponse(updated, score, latestVisit);
     }
 
+    public async Task<GrowerResponse?> UpdateFurthestStepAsync(string growerId, string step)
+    {
+        // Validate step is one of the allowed values
+        var validSteps = new[] { "registration", "verification", "field_visit", "agreement", "completed" };
+        if (!validSteps.Contains(step))
+            throw new ArgumentException($"Invalid step: {step}");
+
+        var updated = await repo.UpdateAsync(growerId, g =>
+        {
+            var stepOrder = new Dictionary<string, int>
+            {
+                { "registration", 0 },
+                { "verification", 1 },
+                { "field_visit", 2 },
+                { "agreement", 3 },
+                { "completed", 4 }
+            };
+
+            int currentOrder = stepOrder.TryGetValue(g.FurthestStep, out var order) ? order : -1;
+            int newOrder = stepOrder[step];
+
+            // Allow forward progression always
+            // Allow backward movement only on steps 1 and 2 (verification and field_visit)
+            // This enables growers to re-upload if documents are rejected
+            if (newOrder > currentOrder || (newOrder >= 1 && newOrder <= 2))
+            {
+                g.FurthestStep = step;
+            }
+        });
+        
+        if (updated is null) return null;
+
+        var docs          = await complianceRepo.GetByGrowerIdAsync(growerId);
+        var approvedCount = docs.Count(d => d.Status == "approved" && RequiredDocIds.Contains(d.DocumentTypeId));
+        var score         = (int)Math.Round((double)approvedCount / RequiredDocCount * 100);
+        
+        var visits = await fieldVisitRepo.GetByGrowerAsync(growerId);
+        var latestVisit = visits.OrderByDescending(v => v.ScheduledDate).FirstOrDefault();
+        
+        return ToResponse(updated, score, latestVisit);
+    }
+
     // ── mapping ──────────────────────────────────────────────────────────────
 
     private static string DeriveRisk(int score) => score switch
@@ -151,6 +193,7 @@ public class GrowerService(IGrowerRepository repo, IComplianceRepository complia
         GpsLat            = g.GpsLat,
         GpsLng            = g.GpsLng,
         Status            = g.Status,
+        FurthestStep      = g.FurthestStep,
         Compliance        = score,
         Risk              = DeriveRisk(score),
         IsDraft           = g.IsDraft,

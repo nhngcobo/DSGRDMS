@@ -4,6 +4,7 @@ using DSGRDMS.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DSGRDMS.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260423010126_AddFurthestStepToGrower")]
+    partial class AddFurthestStepToGrower
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -282,69 +285,6 @@ namespace DSGRDMS.Server.Migrations
                     b.HasIndex("SenderUserId");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("DSGRDMS.Server.Models.PlantingRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("ApprovedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("DatePlanted")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("FieldOfficerId")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("GrowerId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("IssuesEncountered")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("NumberOfPlantsPlanted")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OfficerNotes")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("PhotoFilenames")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("PlantSpecies")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("PlantingArea")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DatePlanted");
-
-                    b.HasIndex("GrowerId");
-
-                    b.HasIndex("Status");
-
-                    b.ToTable("PlantingRecords");
                 });
 
             modelBuilder.Entity("DSGRDMS.Server.Models.User", b =>

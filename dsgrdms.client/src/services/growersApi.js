@@ -71,3 +71,13 @@ export async function updateGrower(growerId, formData) {
     // Unwrap the new API response format if it exists
     return result?.data || result;
 }
+
+export async function updateFurthestStep(growerId, step) {
+    const res = await apiFetch(`${BASE}/${encodeURIComponent(growerId)}/furthest-step`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ step }),
+    });
+    const result = await handleResponse(res);
+    return result?.data || result;
+}

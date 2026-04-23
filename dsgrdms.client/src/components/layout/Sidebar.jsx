@@ -10,6 +10,7 @@ import {
     MessageSquare,
     Sprout,
     Calendar,
+    Leaf,
 } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import { useAuth } from '../../context/AuthContext';
@@ -45,12 +46,14 @@ export default function Sidebar() {
         { to: '/applications', label: 'Applications',       icon: FileText },
         { to: '/field-visits', label: 'Field Visit Coordination', icon: ClipboardList },
         { to: '/compliance',   label: 'Compliance Hub',     icon: ShieldCheck },
+        { to: '/planting-records', label: 'Planting Records', icon: Leaf },
         { to: '/messages',     label: 'Messaging',          icon: MessageSquare },
     ];
     const growerNav = [
         { to: '/',             label: 'Grower Overview', icon: Sprout },
         { to: '/compliance',   label: 'Compliance Documents',     icon: ShieldCheck },
         { to: '/field-visits', label: 'Visit Timeline',     icon: Calendar },
+        { to: '/planting-records', label: 'Planting Records',     icon: Leaf },
         { to: '/messages',     label: 'Messaging',          icon: MessageSquare },
     ];
 

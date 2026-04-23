@@ -8,4 +8,5 @@ public interface IGrowerService
     Task<GrowerResponse?> GetByIdAsync(string growerId);
     Task<(GrowerResponse? Result, string? ConflictMessage)> RegisterAsync(RegisterGrowerRequest request);
     Task<GrowerResponse?> UpdateAsync(string growerId, UpdateGrowerRequest request);
+    Task<GrowerResponse?> UpdateFurthestStepAsync(string growerId, string step);
 }
