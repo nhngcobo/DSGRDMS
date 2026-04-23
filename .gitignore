@@ -86,3 +86,5 @@ Thumbs.db
 # Only track source code - ignore all generated files
 # ============================================================
 !.vscode/extensions.json
+
+DSGRDMS.Server/node_modules/
