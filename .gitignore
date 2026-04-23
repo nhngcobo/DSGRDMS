@@ -42,7 +42,7 @@ DSGRDMS.Server/obj/
 # React / Vite (dsgrdms.client)
 # ============================================================
 dsgrdms.client/node_modules/
-dsgrdms.client/dist/
+dsgrdms.client/build/
 dsgrdms.client/dist-ssr/
 dsgrdms.client/*.local
 dsgrdms.client/.vite/
