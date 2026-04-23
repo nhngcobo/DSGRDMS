@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "C:\\Program Files\\dotnet\\dotnet.exe",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/DSGRDMS.Server/DSGRDMS.Server.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "npm: dev - dsgrdms.client",
+            "type": "npm",
+            "script": "dev",
+            "path": "dsgrdms.client/",
+            "problemMatcher": []
+        }
+    ]
+}
