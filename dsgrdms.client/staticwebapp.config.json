@@ -1,24 +1,38 @@
 {
-  "mimeTypes": {
-    ".js": "application/javascript",
-    ".mjs": "application/javascript",
-    ".jsx": "application/javascript",
-    ".css": "text/css",
-    ".json": "application/json",
-    ".svg": "image/svg+xml",
-    ".woff": "font/woff",
-    ".woff2": "font/woff2"
-  },
-  "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/assets/*", "/*.{png,jpg,gif,ico,css,js,mjs,json,svg,woff,woff2}"]
-  },
   "routes": [
+    {
+      "route": "/assets/*.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "route": "/*.js",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "route": "/assets/*.mjs",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "route": "/assets/*.css",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8"
+      }
+    },
     {
       "route": "/api/*",
       "allowedRoles": ["anonymous"]
     }
   ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/*.{png,jpg,gif,ico,css,js,mjs,json,svg,woff,woff2}"]
+  },
   "globalHeaders": {
     "Cache-Control": "no-store"
   },
@@ -27,5 +41,10 @@
       "rewrite": "/index.html",
       "statusCode": 200
     }
+  },
+  "mimeTypes": {
+    ".js": "application/javascript",
+    ".mjs": "application/javascript",
+    ".css": "text/css"
   }
 }
