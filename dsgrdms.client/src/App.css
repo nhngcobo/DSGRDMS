@@ -8,4 +8,15 @@
     flex: 1;
     overflow-y: auto;
     background: #f9fafb;
+    position: relative;
+}
+
+.mobile-menu-btn {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: none;
+    }
 }

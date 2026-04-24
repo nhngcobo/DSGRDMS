@@ -1,4 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Menu } from 'lucide-react';
 import Sidebar from './components/layout/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Growers from './pages/Growers';
@@ -19,6 +21,7 @@ import './App.css';
 
 function App() {
     const { user } = useAuth();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     if (!user) {
         return <LandingPage />;
@@ -26,8 +29,11 @@ function App() {
 
     return (
         <div className="app-layout">
-            <Sidebar />
+            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)} />
             <main className="app-main">
+                <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
+                    <Menu size={24} />
+                </button>
                 <Routes>
                     {/* Admin routes */}
                     {user.role === 'admin' && <>

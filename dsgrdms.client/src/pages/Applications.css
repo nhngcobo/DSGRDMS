@@ -462,12 +462,18 @@
 
 @media (max-width: 768px) {
     .applications-page {
-        padding: 1.5rem;
+        padding: 1.5rem 1rem;
+    }
+    
+    .applications-header h1 {
+        font-size: 1.5rem;
     }
 
     .applications-toolbar {
         flex-direction: column;
         align-items: stretch;
+        gap: 1rem;
+        padding: 1.25rem 1rem;
     }
 
     .search-box {
@@ -476,36 +482,79 @@
 
     .applications-stats {
         grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .applications-stats .stat-card {
+        padding: 1.25rem;
     }
 
     .filter-group {
+        display: flex;
         flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .filter-btn {
+        flex: 1 1 auto;
+        min-width: fit-content;
+        padding: 0.65rem 1rem;
+        white-space: nowrap;
+    }
+    
+    .applications-table-card {
+        border-radius: 8px;
+        overflow-x: auto;
     }
 
     .applications-table {
         font-size: 0.8125rem;
+        min-width: 700px;
     }
 
     .applications-table th,
     .applications-table td {
-        padding: 0.75rem 0.85rem;
+        padding: 0.85rem 1rem;
+    }
+    
+    .applications-table th:first-child,
+    .applications-table td:first-child {
+        padding-left: 1rem;
+    }
+    
+    .applications-table th:last-child,
+    .applications-table td:last-child {
+        padding-right: 1rem;
+    }
+    
+    .pagination-controls {
+        padding: 1rem;
     }
 }
 
 @media (max-width: 480px) {
     .applications-page {
-        padding: 1rem;
+        padding: 1rem 0.75rem;
     }
 
     .applications-header h1 {
-        font-size: 1.5rem;
+        font-size: 1.375rem;
     }
 
     .applications-stats .stat-value {
         font-size: 1.75rem;
     }
+    
+    .applications-stats .stat-card {
+        padding: 1rem;
+    }
 
     .pagination-info {
         display: none;
+    }
+    
+    .pagination-controls button:not(.pagination-page) {
+        min-width: 2rem;
+        height: 2rem;
     }
 }

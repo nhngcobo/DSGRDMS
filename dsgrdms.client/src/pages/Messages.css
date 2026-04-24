@@ -542,13 +542,138 @@
 
 /* ── Mobile responsive ─────────────────────────────────────────── */
 @media (max-width: 768px) {
+    .msg-page {
+        padding: 1.5rem 1rem;
+        gap: 1.25rem;
+    }
+    
+    .msg-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .msg-title {
+        font-size: 1.5rem;
+    }
+    
+    .msg-compose-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .msg-tabs {
+        overflow-x: auto;
+        gap: 2px;
+        padding-bottom: 0;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .msg-tab {
+        padding: 0.65rem 1rem;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+    
     .msg-pane-layout {
         grid-template-columns: 1fr;
+        min-height: 500px;
+        gap: 0;
     }
+    
     .msg-list-pane.hide-mobile,
     .msg-detail-pane.hide-mobile {
         display: none;
     }
-    .msg-back-btn { display: flex; }
-    .msg-page { padding: 1rem; }
+    
+    .msg-list-pane,
+    .msg-detail-pane {
+        border-radius: 8px;
+    }
+    
+    .msg-item {
+        padding: 12px 14px;
+    }
+    
+    .msg-detail-header {
+        padding: 1.25rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .msg-detail-body {
+        padding: 1.25rem 1rem;
+    }
+    
+    .msg-actions {
+        padding: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .msg-reply-form {
+        padding: 1rem;
+    }
+    
+    .msg-reply-form textarea {
+        min-height: 120px;
+    }
+    
+    .msg-reply-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .msg-reply-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .msg-back-btn {
+        display: flex;
+    }
+}
+
+@media (max-width: 480px) {
+    .msg-page {
+        padding: 1rem 0.75rem;
+    }
+    
+    .msg-title {
+        font-size: 1.375rem;
+    }
+    
+    .msg-tabs {
+        gap: 0;
+    }
+    
+    .msg-tab {
+        font-size: 0.8125rem;
+        padding: 0.6rem 0.85rem;
+    }
+    
+    .msg-tab-badge {
+        font-size: 0.65rem;
+        padding: 1px 5px;
+    }
+    
+    .msg-item {
+        padding: 10px 12px;
+    }
+    
+    .msg-detail-header {
+        padding: 1rem 0.75rem;
+    }
+    
+    .msg-detail-body {
+        padding: 1rem 0.75rem;
+    }
+    
+    .msg-actions {
+        padding: 0.75rem;
+    }
+    
+    .msg-reply-form {
+        padding: 0.75rem;
+    }
 }

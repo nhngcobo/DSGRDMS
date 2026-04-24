@@ -63,6 +63,28 @@
     transform: translateY(-1px);
 }
 
+.btn-success {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #16a34a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(22, 163, 74, 0.2);
+}
+
+.btn-success:hover {
+    background: #15803d;
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+    transform: translateY(-1px);
+}
+
 /* Table card */
 .growers-table-card {
     background: #fff;
@@ -403,36 +425,82 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .growers-page {
-        padding: 1.5rem;
+        padding: 1.5rem 1rem;
     }
 
     .growers-header {
         flex-direction: column;
         gap: 1rem;
         align-items: stretch;
+        margin-bottom: 1.5rem;
+    }
+    
+    .growers-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .btn-primary,
+    .btn-success {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
     }
 
     .growers-toolbar {
         flex-direction: column;
         align-items: stretch;
         gap: 1rem;
+        padding: 1.25rem 1rem;
     }
 
     .search-box {
         max-width: none;
     }
+    
+    .filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .filter-btn {
+        flex: 1 1 auto;
+        min-width: fit-content;
+        padding: 0.65rem 1rem;
+        white-space: nowrap;
+    }
+    
+    .growers-table-card {
+        border-radius: 8px;
+        overflow-x: auto;
+    }
 
     .growers-table {
         font-size: 0.8125rem;
+        min-width: 600px;
     }
 
     .growers-table th,
     .growers-table td {
         padding: 0.85rem 1rem;
     }
+    
+    .growers-table th:first-child,
+    .growers-table td:first-child {
+        padding-left: 1rem;
+    }
+    
+    .growers-table th:last-child,
+    .growers-table td:last-child {
+        padding-right: 1rem;
+    }
 
     .pagination-controls button:not(.pagination-page) {
         min-width: 2rem;
         height: 2rem;
+    }
+    
+    .pagination-controls {
+        padding: 1rem;
     }
 }

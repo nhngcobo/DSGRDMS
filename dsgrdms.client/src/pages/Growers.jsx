@@ -87,7 +87,7 @@ export default function Growers() {
                     <h1>{tg.title}</h1>
                     <p>{tg.subtitle}</p>
                 </div>
-                <button className="btn-primary" onClick={() => setShowModal(true)}>
+                <button className="btn-success" onClick={() => setShowModal(true)}>
                     <Plus size={16} />
                     {tg.newRegistration}
                 </button>

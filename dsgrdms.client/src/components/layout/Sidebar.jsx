@@ -11,6 +11,8 @@ import {
     Sprout,
     Calendar,
     Leaf,
+    X,
+    Menu,
 } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import { useAuth } from '../../context/AuthContext';
@@ -18,7 +20,7 @@ import { useEffect, useState } from 'react';
 import { fetchUnreadCount } from '../../services/messagesApi';
 import './Sidebar.css';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose, onOpen }) {
     const t = useT();
     const { user, token, logout } = useAuth();
     const navigate = useNavigate();
@@ -79,8 +81,13 @@ export default function Sidebar() {
     }
 
     return (
-        <aside className="sidebar">
+        <>
+            {isOpen && <div className="sidebar-overlay" onClick={onClose} />}
+            <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
             <div className="sidebar-header">
+                <button className="sidebar-expand" onClick={onOpen}>
+                    <Menu size={24} />
+                </button>
                 <div className="sidebar-brand">
                     <div className="sidebar-logo-wrapper">
                         <img src="/logov2.png" alt="GrowHub Logo" className="sidebar-logo-icon" />
@@ -88,8 +95,9 @@ export default function Sidebar() {
                     <div className="sidebar-brand-text">
                         <div className="sidebar-brand-name">GrowHub Plantation</div>
                     </div>
-                </div>
-            </div>
+                </div>                <button className="sidebar-close" onClick={onClose}>
+                    <X size={24} />
+                </button>            </div>
 
             <nav className="sidebar-nav">
                 {navItems.map(({ to, label, icon: Icon, badge }) => (
@@ -131,5 +139,6 @@ export default function Sidebar() {
                 </div>
             </div>
         </aside>
+        </>
     );
 }
